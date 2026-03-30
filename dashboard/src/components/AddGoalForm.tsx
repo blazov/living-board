@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { ModelSelector } from "@/components/ModelSelector";
 
 interface Props {
   onClose: () => void;
@@ -12,6 +13,7 @@ export function AddGoalForm({ onClose, onAdded }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState(5);
+  const [model, setModel] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -19,12 +21,16 @@ export function AddGoalForm({ onClose, onAdded }: Props) {
     if (!title.trim()) return;
 
     setSaving(true);
+    const metadata: Record<string, unknown> = {};
+    if (model) metadata.model = model;
+
     const { error } = await supabase.from("goals").insert({
       title: title.trim(),
       description: description.trim() || null,
       priority,
       status: "pending",
       created_by: "user",
+      metadata,
     });
 
     if (!error) {
@@ -72,6 +78,10 @@ export function AddGoalForm({ onClose, onAdded }: Props) {
               onChange={(e) => setPriority(Number(e.target.value))}
               className="w-20 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30"
             />
+          </div>
+          <div>
+            <label className="block text-xs text-white/40 mb-1">Model (optional)</label>
+            <ModelSelector value={model} onChange={setModel} />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button

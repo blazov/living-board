@@ -52,7 +52,23 @@ Pick ONE task to work on this cycle:
 
 ### Phase 3: Execute
 
-Do the actual work. Use all available tools:
+**Model delegation:** Before executing, check the task's `metadata.model` and the parent goal's `metadata.model` (task-level overrides goal-level). If a model is specified and it is NOT your current model (opus), delegate the work to a subagent:
+
+```
+Agent(
+  model: "<haiku|sonnet|opus>",
+  prompt: "You are executing a task for the Living Board autonomous agent.
+    Goal: <goal title and description>
+    Task: <task title and description>
+    Context: <any relevant learnings or prior task results>
+
+    Do the work and return a clear summary of what you accomplished, any artifacts produced, and any blockers encountered."
+)
+```
+
+If no model is specified in metadata, execute the task yourself (as opus).
+
+**Available tools** (yours and subagents'):
 - **WebSearch / WebFetch**: Research, find information, check platforms
 - **Bash**: Run scripts, process data, interact with APIs
 - **Read / Write / Edit**: Work with files in the repo (artifacts/)
@@ -60,6 +76,11 @@ Do the actual work. Use all available tools:
 - **Google Calendar MCP**: Schedule-aware actions
 
 Work concretely -- produce real artifacts, not just plans. If blocked on something, record exactly why and move to the next task.
+
+**Model guidelines** (when the user hasn't specified a preference):
+- **opus** (default): Goal decomposition, strategic planning, complex research, creative writing
+- **sonnet**: Standard execution tasks, email drafting, data gathering, file operations
+- **haiku**: Simple status checks, formatting, lookups, mechanical updates
 
 ### Phase 4: Record
 

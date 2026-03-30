@@ -112,7 +112,7 @@ export default function Home() {
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto p-4">
             {activeTab === "tasks" && (
-              <TaskPanel goal={selectedGoal} tasks={selectedTasks} />
+              <TaskPanel goal={selectedGoal} tasks={selectedTasks} onChanged={fetchAll} />
             )}
             {activeTab === "activity" && (
               <ActivityFeed logs={selectedGoalId ? selectedLogs : logs} goals={goals} />
