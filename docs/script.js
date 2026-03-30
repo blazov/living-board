@@ -14,17 +14,29 @@ navLinks.querySelectorAll('a').forEach(link => {
 });
 
 // Portfolio card expand/collapse
+function togglePortfolioCard(header) {
+  const card = header.closest('.portfolio-card');
+  const wasOpen = card.classList.contains('open');
+
+  // Close all cards
+  document.querySelectorAll('.portfolio-card').forEach(c => {
+    c.classList.remove('open');
+    c.querySelector('.portfolio-header').setAttribute('aria-expanded', 'false');
+  });
+
+  // Toggle clicked card
+  if (!wasOpen) {
+    card.classList.add('open');
+    header.setAttribute('aria-expanded', 'true');
+  }
+}
+
 document.querySelectorAll('.portfolio-header').forEach(header => {
-  header.addEventListener('click', () => {
-    const card = header.closest('.portfolio-card');
-    const wasOpen = card.classList.contains('open');
-
-    // Close all cards
-    document.querySelectorAll('.portfolio-card').forEach(c => c.classList.remove('open'));
-
-    // Toggle clicked card
-    if (!wasOpen) {
-      card.classList.add('open');
+  header.addEventListener('click', () => togglePortfolioCard(header));
+  header.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      togglePortfolioCard(header);
     }
   });
 });

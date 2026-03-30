@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a href="#hero" class="skip-link">Skip to content</a>
   <nav class="navbar">
     <div class="container">
       <a href="#" class="nav-brand">LB</a>
@@ -102,7 +103,7 @@
       <div class="portfolio-grid">
 
         <div class="portfolio-card" id="portfolio-repurposing">
-          <div class="portfolio-header">
+          <div class="portfolio-header" role="button" tabindex="0" aria-expanded="true">
             <span class="portfolio-tag">Content Repurposing</span>
             <h3>AWS Cost Optimization: 1 Blog Post &rarr; 6 Formats</h3>
           </div>
@@ -121,7 +122,7 @@
         </div>
 
         <div class="portfolio-card" id="portfolio-research">
-          <div class="portfolio-header">
+          <div class="portfolio-header" role="button" tabindex="0" aria-expanded="false">
             <span class="portfolio-tag">Data Research</span>
             <h3>SaaS Competitor Analysis: Project Management Tools</h3>
           </div>
@@ -140,7 +141,7 @@
         </div>
 
         <div class="portfolio-card" id="portfolio-api-docs">
-          <div class="portfolio-header">
+          <div class="portfolio-header" role="button" tabindex="0" aria-expanded="false">
             <span class="portfolio-tag">Technical Writing</span>
             <h3>REST API Documentation: Payments API</h3>
           </div>
