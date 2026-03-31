@@ -115,48 +115,62 @@ Learnings extracted from every cycle, with confidence scores that increase throu
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          Living Board                               │
-│                                                                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                │
-│  │  CLAUDE.md  │  │  Dashboard  │  │  Artifacts  │                │
-│  │  Agent      │  │  Next.js    │  │  Content,   │                │
-│  │  Protocol   │  │  + Vercel   │  │  logs, code │                │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘                │
-│         │                │                │                         │
-│         ▼                ▼                ▼                         │
-│  ┌──────────────────────────────────────────────┐                  │
-│  │              Supabase (Postgres)              │                  │
-│  │                                               │                  │
-│  │  goals ─ tasks ─ execution_log ─ learnings   │                  │
-│  │  snapshots ─ goal_comments ─ agent_config    │                  │
-│  └──────────────────────────────────────────────┘                  │
-│         │                                                           │
-│         ▼                                                           │
-│  ┌──────────────────────────────────────────────┐                  │
-│  │         Dual-Layer Memory System              │                  │
-│  │                                               │                  │
-│  │  Layer 1: Supabase learnings table            │                  │
-│  │           (always available, dashboard-visible)│                  │
-│  │                                               │                  │
-│  │  Layer 2: mem0 (Qdrant + Ollama)              │                  │
-│  │           (semantic vector search across all   │                  │
-│  │            learnings for cross-goal patterns)  │                  │
-│  └──────────────────────────────────────────────┘                  │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                            Living Board                                  │
+│                                                                          │
+│   ┌───────────────┐     ┌───────────────┐     ┌───────────────┐         │
+│   │   CLAUDE.md   │     │   Dashboard   │     │   Artifacts   │         │
+│   │   Agent       │     │   Next.js     │◄──┐ │   Content,    │         │
+│   │   Protocol    │     │   + Vercel    │   │ │   logs, code  │         │
+│   └───────┬───────┘     └───────┬───────┘   │ └───────┬───────┘         │
+│           │                     │            │         │                  │
+│           │            comments │            │ view    │                  │
+│           ▼              ▼      ▼            │         ▼                  │
+│   ┌──────────────────────────────────────────────────────────┐           │
+│   │                   Supabase (Postgres)                     │           │
+│   │                                                           │           │
+│   │   ┌────────────────────────────────────────────────┐     │           │
+│   │   │  Execution Layer                                │     │           │
+│   │   │  goals ─ tasks ─ execution_log ─ snapshots     │     │           │
+│   │   └────────────────────────────────────────────────┘     │           │
+│   │                                                           │           │
+│   │   ┌────────────────────────────────────────────────┐     │           │
+│   │   │  Collaboration Layer                            │     │───────┐  │
+│   │   │  goal_comments ─ agent_config                   │     │       │  │
+│   │   └────────────────────────────────────────────────┘     │       │  │
+│   │                                                           │       │  │
+│   │   ┌────────────────────────────────────────────────┐     │       │  │
+│   │   │  Memory Layer (structured)                      │     │       │  │
+│   │   │  learnings (confidence scores, categories,      │     │       │  │
+│   │   │            per-goal + global, validated count)   │     │       │  │
+│   │   └──────────────────────┬─────────────────────────┘     │       │  │
+│   └──────────────────────────┼───────────────────────────────┘       │  │
+│                              │ dual-write                            │  │
+│                              ▼                                       │  │
+│   ┌──────────────────────────────────────────────────────┐           │  │
+│   │  Memory Layer (semantic)                              │           │  │
+│   │                                                       │           │  │
+│   │  mem0 ── Qdrant (vector DB) + Ollama (embeddings)    │           │  │
+│   │                                                       │           │  │
+│   │  ● Semantic similarity search across ALL learnings   │           │  │
+│   │  ● Cross-goal pattern discovery                       │───────────┘  │
+│   │  ● Strategy success/failure tracking                  │  surfaces    │
+│   │  ● Memory consolidation during reflections           │  insights    │
+│   └──────────────────────────────────────────────────────┘               │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Database Schema (7 tables)
 
-| Table | Purpose |
-|-------|---------|
-| `goals` | High-level objectives with priority, status, and parent-goal hierarchy |
-| `tasks` | Concrete steps within a goal, ordered by `sort_order`, with attempt tracking |
-| `execution_log` | Audit trail of every agent cycle — actions, summaries, and detailed JSON |
-| `learnings` | Accumulated knowledge with confidence scores and category tags |
-| `snapshots` | Compressed state for fast context loading — the agent reads this first each cycle |
-| `goal_comments` | Human-agent collaboration threads — questions, direction changes, feedback |
-| `agent_config` | Operational key-value settings |
+| Table | Role | Key Fields |
+|-------|------|------------|
+| `goals` | **Execution** — high-level objectives | priority, status, parent hierarchy, `created_by` (user or agent) |
+| `tasks` | **Execution** — concrete steps per goal | sort_order, attempts/max_attempts, result, blocked_reason |
+| `execution_log` | **Execution** — audit trail of every cycle | action type, summary, JSON details, duration |
+| `snapshots` | **Execution** — compressed state for fast boot | active_goals, current_focus, recent_outcomes, open_blockers |
+| `learnings` | **Memory** — accumulated knowledge | confidence (0-1), category, times_validated, per-goal or global |
+| `goal_comments` | **Collaboration** — human-agent threads | comment_type, acknowledged_at, agent_response |
+| `agent_config` | **Collaboration** — operational settings | key-value pairs |
 
 See [`artifacts/living-board-template/schema.sql`](artifacts/living-board-template/schema.sql) for the full DDL.
 
