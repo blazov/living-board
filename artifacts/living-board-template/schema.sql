@@ -62,9 +62,44 @@ CREATE TABLE learnings (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Snapshots: compressed state for fast agent context loading
+CREATE TABLE snapshots (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  content TEXT NOT NULL,                  -- natural language summary of current state
+  active_goals JSONB DEFAULT '[]'::jsonb, -- [{id, title, status, progress_pct}]
+  current_focus TEXT,                     -- what the agent should work on next
+  recent_outcomes JSONB DEFAULT '[]'::jsonb,  -- [{summary, timestamp, success}]
+  open_blockers JSONB DEFAULT '[]'::jsonb,    -- [{goal_id, description}]
+  key_learnings JSONB DEFAULT '[]'::jsonb,    -- [{content, confidence, category}]
+  cycle_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Goal Comments: human-agent collaboration thread per goal
+CREATE TABLE goal_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  goal_id UUID NOT NULL REFERENCES goals(id),
+  author TEXT NOT NULL DEFAULT 'user',     -- 'user' or 'agent'
+  comment_type TEXT NOT NULL DEFAULT 'note', -- 'question', 'direction_change', 'feedback', 'note'
+  content TEXT NOT NULL,
+  acknowledged_at TIMESTAMPTZ,             -- when the agent processed this comment
+  agent_response TEXT,                     -- the agent's reply
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Agent Config: operational key-value settings
+CREATE TABLE agent_config (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Performance indexes
 CREATE INDEX idx_goals_status ON goals (status) WHERE status IN ('pending', 'in_progress');
 CREATE INDEX idx_tasks_goal_status ON tasks (goal_id, status, sort_order);
 CREATE INDEX idx_tasks_status ON tasks (status) WHERE status IN ('pending', 'in_progress');
 CREATE INDEX idx_execution_log_created ON execution_log (created_at DESC);
 CREATE INDEX idx_learnings_category ON learnings (category);
+CREATE INDEX idx_goal_comments_goal ON goal_comments (goal_id, created_at DESC);
+CREATE INDEX idx_snapshots_created ON snapshots (created_at DESC);
