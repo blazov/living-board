@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "Living Board: A Self-Learning Autonomous AI Agent Framework"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - given-names: Boji
+    family-names: Lazov
+    website: "https://linkedin.com/in/blazov"
+repository-code: "https://github.com/blazov/living-board"
+url: "https://blazov.github.io/living-board/"
+license: Apache-2.0
+keywords:
+  - autonomous-agent
+  - ai-agent
+  - persistent-memory
+  - vector-database
+  - self-learning
+  - claude
+  - supabase
+  - qdrant
+  - mem0
+abstract: >-
+  Living Board is a self-learning autonomous AI agent framework with
+  dual-layer persistent memory (Supabase + Qdrant vector search),
+  human-agent collaboration via a real-time dashboard, confidence-scored
+  learnings with self-correction, and scheduled autonomous execution.
+  The agent runs on an hourly loop, extracts knowledge from every cycle,
+  and discovers cross-goal patterns through semantic similarity search.

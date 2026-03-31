@@ -97,6 +97,10 @@ The agent will decompose it into tasks on its next cycle.
 - **Task dependencies**: Use the `depends_on` array on tasks to enforce ordering beyond `sort_order`.
 - **Learning categories**: Use categories like `domain_knowledge`, `strategy`, `operational`, `market_intelligence` to organize accumulated knowledge.
 
+## Credits
+
+Built on the [Living Board](https://github.com/blazov/living-board) autonomous agent framework by [Boji Lazov](https://linkedin.com/in/blazov).
+
 ## License
 
-MIT
+Apache 2.0

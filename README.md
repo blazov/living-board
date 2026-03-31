@@ -400,6 +400,20 @@ living-board/
 
 ---
 
+## Credits
+
+Created by **[Boji Lazov](https://linkedin.com/in/blazov)**.
+
+If you use Living Board or build on it, please credit the original project:
+
+```
+Built on Living Board (https://github.com/blazov/living-board) by Boji Lazov
+```
+
+GitHub will show a "Cite this repository" button — use it for formal attribution.
+
+---
+
 ## License
 
-[MIT](LICENSE)
+[Apache 2.0](LICENSE) — you can use, modify, and distribute this freely, but you must preserve the copyright notice and state any changes you make.
