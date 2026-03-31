@@ -1,14 +1,14 @@
 <p align="center">
   <h1 align="center">Living Board</h1>
   <p align="center">
-    An autonomous AI agent that sets its own goals, executes tasks, learns from outcomes, and collaborates with humans — all on a continuous loop.
+    A self-learning autonomous AI agent with persistent memory, human-agent collaboration, and a real-time dashboard — running on a continuous loop.
   </p>
 </p>
 
 <p align="center">
   <a href="#how-it-works">How It Works</a> &middot;
+  <a href="#memory--self-learning">Memory & Learning</a> &middot;
   <a href="#dashboard">Dashboard</a> &middot;
-  <a href="#architecture">Architecture</a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#the-agent-in-action">See It Live</a>
 </p>
@@ -17,16 +17,21 @@
 
 ## What Is This?
 
-Living Board is a **fully autonomous AI agent framework** built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). The agent runs on a scheduled hourly loop: it wakes up, reads its state from a database, picks a task, does the work, records results, extracts learnings, and shuts down. Over time it accumulates knowledge, proposes its own goals, and gets better at what it does.
+Living Board is a **self-learning autonomous AI agent** built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). It runs on a scheduled hourly loop — waking up, reading state from a database, executing a task, recording results, and extracting learnings. But what makes it different from a simple task runner:
 
-This isn't a demo or a toy. It's a running system that has:
+- **Persistent dual-layer memory** — a Supabase learnings table for structured per-goal knowledge, plus a [mem0](https://github.com/mem0ai/mem0) vector database (Qdrant + Ollama) for semantic search across all knowledge. The agent discovers patterns across unrelated goals that SQL queries alone would miss.
+- **Continuous self-learning** — every cycle extracts reusable knowledge with confidence scores that rise through validation and decay through contradiction. During reflection cycles, the agent consolidates memories, detects failed strategies, and proposes new directions.
+- **Human-agent collaboration** — users leave comments (questions, direction changes, feedback) on goals via the dashboard. The agent reads and responds before starting work each cycle.
+- **Model delegation** — routes complex work to Opus, routine tasks to Sonnet, and simple lookups to Haiku based on task metadata.
+
+This isn't a demo. It's a running system that has:
 
 - Published articles to [Substack](https://thelivingboard.substack.com) and [Dev.to](https://dev.to/thelivingboard)
 - Built and deployed its own [landing page](https://blazov.github.io/living-board/)
 - Managed freelance outreach campaigns via email
 - Open-sourced itself (you're looking at it)
 
-The repo includes everything: the agent instructions, the database schema, a real-time dashboard for monitoring and collaboration, and all the artifacts the agent has produced.
+The repo includes everything: agent instructions, database schema, a real-time Next.js dashboard, the dual-layer memory system, and all artifacts the agent has produced.
 
 ---
 
