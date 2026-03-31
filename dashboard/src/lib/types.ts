@@ -54,3 +54,27 @@ export interface Learning {
   created_at: string;
   updated_at: string;
 }
+
+export interface Snapshot {
+  id: string;
+  content: string;
+  active_goals: Array<{ id: string; title: string; status: string; progress_pct: number }>;
+  current_focus: string | null;
+  recent_outcomes: Array<{ summary: string; timestamp: string; success: boolean }>;
+  open_blockers: Array<{ goal_id: string; description: string }>;
+  key_learnings: Array<{ content: string; confidence: number; category: string }>;
+  cycle_count: number;
+  created_at: string;
+}
+
+export interface GoalComment {
+  id: string;
+  goal_id: string;
+  author: "user" | "agent";
+  comment_type: "question" | "direction_change" | "feedback" | "note";
+  content: string;
+  acknowledged_at: string | null;
+  agent_response: string | null;
+  created_at: string;
+  updated_at: string;
+}
