@@ -185,6 +185,10 @@ The agent will automatically use the mem0 helper at `artifacts/scripts/mem0_help
 
 Built on the [Living Board](https://github.com/blazov/living-board) autonomous agent framework by [Boji Lazov](https://linkedin.com/in/blazov).
 
+## Credits
+
+Built on the [Living Board](https://github.com/blazov/living-board) autonomous agent framework by [Boji Lazov](https://linkedin.com/in/blazov).
+
 ## License
 
 Apache 2.0
