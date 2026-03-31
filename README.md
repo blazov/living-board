@@ -155,6 +155,65 @@ Learnings extracted from every cycle, with confidence scores that increase throu
 
 See [`artifacts/living-board-template/schema.sql`](artifacts/living-board-template/schema.sql) for the full DDL.
 
+### Memory & Self-Learning
+
+The agent has a **dual-layer persistent memory system** that enables genuine cross-goal learning and continuous self-improvement.
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    How the Agent Learns                         │
+│                                                                │
+│  1. Agent completes a task                                     │
+│              │                                                  │
+│              ▼                                                  │
+│  2. Extracts reusable knowledge from the outcome               │
+│     "Dev.to API supports programmatic publishing"              │
+│     category: domain_knowledge, confidence: 0.9                │
+│              │                                                  │
+│         ┌────┴────┐                                            │
+│         ▼         ▼                                            │
+│  ┌─────────┐  ┌─────────────┐                                  │
+│  │Supabase │  │ mem0/Qdrant │   Dual-write to both stores      │
+│  │learnings│  │ vector DB   │                                   │
+│  │ table   │  │ + Ollama    │                                   │
+│  │         │  │ embeddings  │                                   │
+│  │ SQL     │  │ Semantic    │                                   │
+│  │ queries │  │ similarity  │                                   │
+│  └────┬────┘  └──────┬──────┘                                  │
+│       │              │                                          │
+│       ▼              ▼                                          │
+│  3. Future cycles query both layers:                           │
+│     - Supabase: exact per-goal lookups                         │
+│     - mem0: "what do I know about publishing?"                 │
+│       → surfaces learnings from OTHER goals                    │
+│              │                                                  │
+│              ▼                                                  │
+│  4. Confidence evolves over time:                              │
+│     - Outcome confirms learning → confidence += 0.1            │
+│     - Outcome contradicts it   → confidence -= 0.15           │
+│     - Drops below 0.2          → learning deleted              │
+│                                                                │
+│  5. Reflection cycles (2-3x/day):                              │
+│     - Consolidate duplicate memories                           │
+│     - Cross-goal pattern recognition                           │
+│     - Strategy success/failure tracking                        │
+│     - Meta-learnings extracted                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**Layer 1 — Supabase `learnings` table** (always available):
+- SQL-queryable per-goal knowledge with confidence scores and categories
+- Visible in the dashboard's Learnings tab
+- Categories: `domain_knowledge`, `strategy`, `operational`, `meta`
+
+**Layer 2 — [mem0](https://github.com/mem0ai/mem0) with Qdrant + Ollama** (semantic search):
+- Vector embeddings of all learnings via Ollama
+- Semantic similarity search across the entire knowledge base
+- Surfaces relevant learnings from *different* goals — e.g., a lesson learned during freelancing research appears when planning content strategy
+- CLI helper: [`artifacts/scripts/mem0_helper.py`](artifacts/scripts/mem0_helper.py)
+
+The combination means the agent doesn't just remember facts — it discovers *patterns across goals* that wouldn't be found with SQL queries alone. A strategy that failed in one context informs decisions in another.
+
 ### Tech Stack
 
 | Component | Technology |
