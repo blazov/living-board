@@ -49,35 +49,49 @@ The repo includes everything: agent instructions, database schema, a real-time N
 │              │   │              │   │              │   │              │
 │   Orient     │──▶│   Decide     │──▶│   Execute    │──▶│   Record     │
 │              │   │              │   │              │   │              │
-│  Read state  │   │  Pick one    │   │  Do the work │   │  Update DB   │
-│  from DB,    │   │  task from   │   │  using web   │   │  Log results │
-│  check for   │   │  highest     │   │  search,     │   │  Extract     │
-│  user        │   │  priority    │   │  APIs, file  │   │  learnings   │
-│  comments    │   │  goal        │   │  ops, email  │   │  Snapshot    │
-│              │   │              │   │              │   │  state       │
-└──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘
-        ▲                                                        │
-        │              ┌──────────────┐                          │
-        └──────────────│   Reflect    │◀─────────────────────────┘
-                       │  (2-3x/day)  │
-                       │              │
-                       │  Review the  │
-                       │  full board, │
-                       │  propose new │
-                       │  goals       │
-                       └──────────────┘
+│  Read snap-  │   │  Pick one    │   │  Do the work │   │  Update DB   │
+│  shot, check │   │  task from   │   │  using web   │   │  Log results │
+│  comments,   │   │  highest     │   │  search,     │   │  Dual-write  │
+│  search      │   │  priority    │   │  APIs, file  │   │  learnings   │
+│  memory      │   │  goal        │   │  ops, email  │   │  to SQL +    │
+│  (both       │   │              │   │              │   │  vector DB   │
+│  layers)     │   │              │   │              │   │              │
+└──────┬───────┘   └──────────────┘   └──────────────┘   └──────┬───────┘
+       │                                                        │
+       │         ┌────────────────────────────────────┐         │
+       │         │      Dual-Layer Memory System      │         │
+       │         │                                    │         │
+       ├────────▶│  Supabase    ──  SQL queries,      │◀────────┤
+       │  read   │  learnings       per-goal facts    │  write  │
+       │         │                                    │         │
+       │         │  Qdrant/mem0 ──  Semantic search,  │         │
+       │         │  vectors         cross-goal        │         │
+       │         │                  pattern discovery  │         │
+       │         └────────────────────────────────────┘         │
+       │                                                        │
+       │              ┌──────────────┐                          │
+       └──────────────│   Reflect    │◀─────────────────────────┘
+                      │  (2-3x/day)  │
+                      │              │
+                      │  Consolidate │
+                      │  memories,   │
+                      │  validate    │
+                      │  learnings,  │
+                      │  propose     │
+                      │  new goals   │
+                      └──────────────┘
 ```
 
 Every cycle follows four phases:
 
 | Phase | What Happens |
 |-------|-------------|
-| **Orient** | Reads the latest snapshot from Supabase. Checks for user comments. Loads relevant learnings. |
+| **Orient** | Reads the latest snapshot. Checks for user comments. Searches **both memory layers** — Supabase for per-goal facts, Qdrant for semantically similar learnings across all goals. |
 | **Decide** | Picks exactly one task — the next pending task from the highest-priority active goal. |
-| **Execute** | Does the actual work: web research, writing, API calls, email, file creation. Can delegate to different Claude models (Opus/Sonnet/Haiku) based on task complexity. |
-| **Record** | Writes results back. Logs execution. Extracts reusable learnings. Regenerates the state snapshot. |
+| **Execute** | Does the actual work: web research, writing, API calls, email, browser automation. Can delegate to different Claude models (Opus/Sonnet/Haiku) based on task complexity. |
+| **Record** | Writes results back. Logs execution. **Dual-writes learnings** to Supabase + Qdrant vector DB with confidence scores. Regenerates the state snapshot. |
 
-Every 2-3 cycles, the agent runs a **reflection** instead: it reviews the entire board, evaluates what's working, consolidates memories, and proposes new goals.
+Every 2-3 cycles, the agent runs a **reflection** instead: it consolidates duplicate memories, validates learnings against outcomes (confidence rises on confirmation, decays on contradiction), detects failed strategies, and proposes new goals.
 
 ---
 
