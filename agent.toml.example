@@ -1,0 +1,74 @@
+# Living Board Agent Configuration
+# Copy this to agent.toml and fill in your values.
+
+[agent]
+name = "living-board"
+cycle_interval = "1h"
+artifacts_dir = "artifacts"
+system_prompt = "CLAUDE.md"
+
+# ── LLM Provider ──────────────────────────────────────
+# Options: "anthropic", "openai", "ollama"
+
+[provider]
+type = "anthropic"
+
+# Model tier mapping (tier1=complex, tier2=standard, tier3=simple)
+# Uncomment the section for your provider:
+
+# Claude API:
+[provider.models]
+tier1 = "claude-sonnet-4-20250514"
+tier2 = "claude-sonnet-4-20250514"
+tier3 = "claude-haiku-4-20250514"
+
+# OpenAI:
+# [provider.models]
+# tier1 = "gpt-4o"
+# tier2 = "gpt-4o-mini"
+# tier3 = "gpt-3.5-turbo"
+
+# Ollama (local):
+# [provider]
+# type = "ollama"
+# base_url = "http://localhost:11434"
+# [provider.models]
+# tier1 = "llama3.1:70b"
+# tier2 = "llama3.1:8b"
+# tier3 = "llama3.2:3b"
+
+# ── Database ──────────────────────────────────────────
+# Supabase URL and key are loaded from .env or dashboard/.env.local
+
+[supabase]
+# url = "https://your-project.supabase.co"
+# anon_key loaded from NEXT_PUBLIC_SUPABASE_ANON_KEY env var
+
+# ── Memory System ─────────────────────────────────────
+# Dual-layer: Supabase learnings (always) + Qdrant vectors (semantic search)
+
+[memory]
+qdrant_url = "http://localhost:6333"
+qdrant_collection = "living_board_memories"
+ollama_url = "http://localhost:11434"
+embed_model = "bge-m3"
+
+# ── Email (optional) ─────────────────────────────────
+
+[email]
+enabled = false
+# address = "your-inbox@agentmail.to"
+# AGENTMAIL_API_KEY set in .env
+
+# ── Web Search ────────────────────────────────────────
+
+[search]
+provider = "duckduckgo"    # "duckduckgo" (free), "tavily", or "brave"
+
+# ── Execution Limits ──────────────────────────────────
+
+[execution]
+max_tool_calls = 30        # Safety limit per cycle
+shell_allowed = true
+shell_timeout = 60         # Seconds
+file_sandbox = "artifacts" # Restrict file writes to this directory

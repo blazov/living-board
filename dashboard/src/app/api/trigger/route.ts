@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  // Verify auth
+  // Verify auth (timing-safe comparison)
   const token = request.cookies.get("lb_auth")?.value;
-  if (token !== process.env.AUTH_SECRET) {
+  const secret = process.env.AUTH_SECRET;
+  if (!token || !secret) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const crypto = await import("crypto");
+  const tokenBuf = Buffer.from(token);
+  const secretBuf = Buffer.from(secret);
+  if (tokenBuf.length !== secretBuf.length || !crypto.timingSafeEqual(tokenBuf, secretBuf)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -20,9 +27,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const taskId = body.task_id;
 
-  // If a specific task was requested, mark it as in_progress in Supabase
-  // so the agent picks it up. The agent's Orient phase checks for in_progress tasks first.
-  if (taskId) {
+  // Validate task_id is a valid UUID before using in query
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (taskId && typeof taskId === "string" && uuidRegex.test(taskId)) {
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,8 +56,7 @@ export async function POST(request: NextRequest) {
   );
 
   if (!res.ok) {
-    const err = await res.text();
-    return NextResponse.json({ error: err }, { status: res.status });
+    return NextResponse.json({ error: "Failed to trigger agent" }, { status: res.status });
   }
 
   const data = await res.json();

@@ -251,76 +251,140 @@ The combination means the agent doesn't just remember facts — it discovers *pa
 
 | Component | Technology |
 |-----------|-----------|
-| Agent runtime | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Opus/Sonnet/Haiku) |
-| Scheduler | [Claude Code scheduled triggers](https://docs.anthropic.com/en/docs/claude-code/remote) |
+| Agent runtime | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) or Python runner (any LLM) |
+| LLM support | Claude API, OpenAI, Ollama (local models) |
+| Scheduler | Claude Code triggers or standard cron |
 | Database | [Supabase](https://supabase.com) (Postgres + real-time subscriptions) |
 | Dashboard | [Next.js 16](https://nextjs.org) + React 19 + Tailwind CSS 4 |
-| Hosting | [Vercel](https://vercel.com) |
-| Memory | Supabase learnings + [mem0](https://github.com/mem0ai/mem0) (Qdrant + Ollama) |
-| Email | [AgentMail](https://agentmail.to) |
+| Hosting | [Vercel](https://vercel.com) or localhost |
+| Memory | Supabase learnings + [Qdrant](https://qdrant.tech) vector DB + [Ollama](https://ollama.com) embeddings |
+| Email | [AgentMail](https://agentmail.to) (optional) |
+
+---
+
+## Prerequisites
+
+| Required | Version | Why |
+|----------|---------|-----|
+| **Node.js** | >= 20 | Dashboard runtime |
+| **Python 3** | >= 3.9 | Agent runner + memory system |
+| **Docker** | latest | Memory system (Qdrant + Ollama) |
+| **git** | any | Clone repo, agent commits artifacts |
+| **Supabase account** | [free tier](https://supabase.com/dashboard) | Database (7 tables) |
+
+| Optional | What it enables |
+|----------|----------------|
+| **Claude Code CLI** | Claude Code agent path + auto MCP setup |
+| **AgentMail account** | Agent email ([agentmail.to](https://agentmail.to)) |
 
 ---
 
 ## Quick Start
 
-### 1. Set up Supabase
+### Automated (recommended)
 
-1. Create a [Supabase project](https://supabase.com/dashboard).
-2. Run [`schema.sql`](artifacts/living-board-template/schema.sql) in the SQL editor.
-3. Optionally run [`seed-data.sql`](artifacts/living-board-template/seed-data.sql) for example goals/tasks.
-
-### 2. Configure the agent
-
-1. Copy [`CLAUDE.md.template`](artifacts/living-board-template/CLAUDE.md.template) to `CLAUDE.md` in your repo root.
-2. Replace `{{SUPABASE_PROJECT_ID}}` with your project ID.
-3. Replace `{{AVAILABLE_TOOLS}}` with your configured MCP tools.
-
-### 3. Set up MCP connectors
-
-Add the [Supabase MCP connector](https://github.com/supabase/mcp-server-supabase) to your Claude Code configuration:
-
-```json
-{
-  "mcpServers": {
-    "supabase": {
-      "type": "url",
-      "url": "https://mcp.supabase.com"
-    }
-  }
-}
+```bash
+git clone https://github.com/blazov/living-board.git
+cd living-board
+./setup.sh
 ```
 
-### 4. Deploy the dashboard
+The interactive setup script handles everything:
+- Checks prerequisites (Node, Python, Docker)
+- Lets you choose your agent mode: **Claude Code** or **Python runner** (Claude API / OpenAI / Ollama)
+- Configures your Supabase connection and deploys the schema
+- Installs and verifies the **memory system** (Qdrant + Ollama + bge-m3 embeddings)
+- Generates your dashboard password and writes all config files
+- Gives you a single command to start
+
+### Manual setup
+
+<details>
+<summary>Click to expand manual steps</summary>
+
+#### 1. Set up Supabase
+
+1. Create a [Supabase project](https://supabase.com/dashboard) (free tier works).
+2. Run [`schema.sql`](artifacts/living-board-template/schema.sql) in the SQL editor.
+3. Copy your **URL** and **anon key** from Settings → API.
+
+#### 2. Set up the memory system
+
+```bash
+# Start Qdrant + Ollama
+docker compose up -d
+
+# Pull the embedding model (~1.7GB)
+docker compose exec ollama ollama pull bge-m3
+
+# Verify
+python3 artifacts/scripts/mem0_helper.py search "test"
+```
+
+#### 3. Configure the agent
+
+**Option A — Claude Code:**
+```bash
+# Replace placeholders in CLAUDE.md
+sed -i 's/{{SUPABASE_PROJECT_ID}}/your-project-id/g' CLAUDE.md
+# Add Supabase MCP
+claude mcp add supabase --type url --url "https://mcp.supabase.com"
+```
+
+**Option B — Python runner (any LLM):**
+```bash
+pip install -e ./runner
+cp agent.toml.example agent.toml
+# Edit agent.toml: set provider (anthropic/openai/ollama) and model names
+# Set API keys in .env
+```
+
+#### 4. Deploy the dashboard
 
 ```bash
 cd dashboard
 cp .env.example .env.local
-# Fill in your Supabase URL, anon key, and auth secret
-npm install
-npm run dev
+# Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, AUTH_SECRET
+npm install && npm run dev
 ```
 
-Deploy to Vercel:
-```bash
-npx vercel --prod
-```
+#### 5. Schedule the agent
 
-### 5. Schedule the agent
-
+**Claude Code:**
 ```bash
 claude trigger create --name "living-board" \
   --schedule "0 * * * *" \
   --prompt "Execute your full agent cycle as defined in CLAUDE.md."
 ```
 
-### 6. Add your first goal
+**Python runner:**
+```bash
+# Single run
+python -m runner run
+
+# Daemon mode
+python -m runner daemon --interval 3600
+
+# Or add to crontab (every hour)
+0 * * * * cd /path/to/living-board && python -m runner run
+```
+
+#### 6. Add your first goal
 
 ```sql
 INSERT INTO goals (title, description, status, priority)
 VALUES ('My first goal', 'What you want the agent to accomplish', 'in_progress', 3);
 ```
 
-The agent will decompose it into tasks on its next cycle.
+</details>
+
+### Optional: Email (AgentMail)
+
+The agent can send and receive email via [AgentMail](https://agentmail.to). Remove or skip the email sections in `CLAUDE.md` if you don't need it.
+
+1. Sign up at [agentmail.to](https://agentmail.to) and create an inbox.
+2. Add your API key to `dashboard/.env.local` and `.env`.
+3. Set `enabled = true` in `agent.toml` under `[email]` (Python runner) or replace `{{AGENTMAIL_ADDRESS}}` in `CLAUDE.md` (Claude Code).
 
 ---
 
@@ -356,11 +420,57 @@ This is a live system. Here's what it has built and published autonomously:
 
 ---
 
+## Using Other LLMs
+
+Living Board ships with a **Python agent runner** that works with any LLM — not just Claude Code.
+
+```bash
+pip install -e ./runner
+cp agent.toml.example agent.toml
+python -m runner run
+```
+
+Configure your provider in `agent.toml`:
+
+| Provider | Config | Models |
+|----------|--------|--------|
+| **Claude API** | `type = "anthropic"` | opus, sonnet, haiku |
+| **OpenAI** | `type = "openai"` | gpt-4o, gpt-4o-mini, gpt-3.5-turbo |
+| **Ollama** (local) | `type = "ollama"` | llama3.1, mistral, any installed model |
+
+The runner uses **model tiers** for delegation (tier1=complex, tier2=standard, tier3=simple). Map your preferred models to each tier in `agent.toml`. When a task specifies `metadata.model = "sonnet"`, the runner uses your tier 2 model — whatever that is for your provider.
+
+**What's the same across all providers:**
+- Database schema and all SQL queries (100% portable)
+- Dual-layer memory system (Supabase + Qdrant)
+- Dashboard (works identically regardless of which LLM runs the agent)
+- Agent protocol (CLAUDE.md is used as the system prompt)
+- Learning extraction and confidence scoring
+- Reflection cycles and goal decomposition
+
+**CLI commands:**
+```bash
+python -m runner run                    # Single cycle
+python -m runner run --dry-run          # Orient + Decide only
+python -m runner daemon --interval 3600 # Continuous loop
+python -m runner status                 # Check connectivity
+```
+
+---
+
 ## Repository Structure
 
 ```
 living-board/
 ├── CLAUDE.md                          # Agent instructions (the "brain")
+├── setup.sh                           # Interactive setup script
+├── agent.toml.example                 # Agent runner config template
+├── docker-compose.yml                 # Memory system (Qdrant + Ollama)
+├── runner/                            # Python agent runner (any LLM)
+│   ├── providers/                     # Claude API, OpenAI, Ollama
+│   ├── tools/                         # Database, memory, search, files, shell
+│   ├── phases/                        # Orient, Decide, Execute, Record, Reflect
+│   └── requirements.txt
 ├── dashboard/                         # Next.js real-time dashboard
 │   ├── src/
 │   │   ├── app/page.tsx              # Main UI with 5-tab layout
@@ -382,7 +492,7 @@ living-board/
 │   └── site/                         # Landing page source
 ├── docs/                             # GitHub Pages deployment
 ├── .github/workflows/                # CI/CD (Pages deployment)
-└── LICENSE                           # MIT
+└── LICENSE                           # Apache 2.0
 ```
 
 ---

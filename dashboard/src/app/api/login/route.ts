@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { password } = await request.json();
+  const body = await request.json().catch(() => ({}));
+  const password = typeof body?.password === "string" ? body.password : "";
   const secret = process.env.AUTH_SECRET;
 
   if (!secret) {
