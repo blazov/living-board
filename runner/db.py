@@ -82,6 +82,13 @@ class SupabaseClient:
         rows = self._request(path)
         return [Learning(**r) for r in rows]
 
+    def get_learnings_since(self, since: str) -> list[Learning]:
+        """Get all learnings created after a timestamp (ISO 8601)."""
+        rows = self._request(
+            f"learnings?select=*&created_at=gt.{since}&order=created_at.asc"
+        )
+        return [Learning(**r) for r in rows]
+
     def get_unacknowledged_comments(self) -> list[GoalComment]:
         rows = self._request(
             "goal_comments?select=*,goals(title)&acknowledged_at=is.null&order=created_at.asc"

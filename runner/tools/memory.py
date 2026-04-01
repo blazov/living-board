@@ -278,6 +278,85 @@ class MemoryStoreTool(Tool):
             return ToolResult(success=False, output="", error=str(exc))
 
 
+SYNC_FILE = ".last_qdrant_sync"
+
+
+def sync_learnings(db: Any, config: MemoryConfig) -> int:
+    """Sync Supabase learnings → Qdrant that were created since last sync.
+
+    Reads .last_qdrant_sync for the last sync timestamp. Queries Supabase
+    for any learnings created after that, embeds them, and stores in Qdrant.
+    Updates the sync file on success.
+
+    Returns the number of learnings synced. Catches all exceptions so sync
+    failure never blocks the agent cycle.
+    """
+    from pathlib import Path
+
+    backend = _MemoryBackend(config)
+
+    if not backend.is_available():
+        log.info("Qdrant sync: backend unavailable, skipping")
+        return 0
+
+    try:
+        # Read last sync timestamp
+        sync_path = Path(SYNC_FILE)
+        if sync_path.exists():
+            since = sync_path.read_text().strip()
+        else:
+            since = "1970-01-01T00:00:00Z"
+            log.info("Qdrant sync: no sync file found, will sync all learnings")
+
+        # Query Supabase for new learnings
+        learnings = db.get_learnings_since(since)
+        if not learnings:
+            log.info("Qdrant sync: 0 learnings to sync")
+            return 0
+
+        log.info("Qdrant sync: %d learnings to sync", len(learnings))
+        backend.ensure_collection()
+
+        synced = 0
+        latest_ts = since
+        for learning in learnings:
+            try:
+                embedding = backend.get_embedding(learning.content)
+                point_id = str(uuid.uuid4())
+                payload = {
+                    "content": learning.content,
+                    "category": learning.category,
+                    "confidence": learning.confidence,
+                    "goal_id": learning.goal_id,
+                    "task_id": learning.task_id,
+                    "created_at": learning.created_at.isoformat() if learning.created_at else time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "validated_count": learning.times_validated,
+                    "agent_id": "living-board",
+                    "supabase_id": learning.id,
+                }
+                backend._request(
+                    f"{backend.qdrant_url}/collections/{backend.collection}/points",
+                    {"points": [{"id": point_id, "vector": embedding, "payload": payload}]},
+                    method="PUT",
+                )
+                synced += 1
+                if learning.created_at:
+                    ts = learning.created_at.isoformat()
+                    if ts > latest_ts:
+                        latest_ts = ts
+            except Exception as exc:
+                log.warning("Qdrant sync: failed to sync learning %s: %s", learning.id, exc)
+
+        # Update sync timestamp
+        sync_path.write_text(latest_ts + "\n")
+        log.info("Qdrant sync: synced %d/%d learnings", synced, len(learnings))
+        return synced
+
+    except Exception as exc:
+        log.warning("Qdrant sync failed (non-fatal): %s", exc)
+        return 0
+
+
 def create_memory_tools(config: MemoryConfig) -> list[Tool]:
     """Create memory tools from a MemoryConfig.
 
