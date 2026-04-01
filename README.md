@@ -66,7 +66,7 @@ The repo includes everything: agent instructions, database schema, a real-time N
        │         │                                    │         │
        │         │  Qdrant/mem0 ──  Semantic search,  │         │
        │         │  vectors         cross-goal        │         │
-       │         │                  pattern discovery │        │
+       │         │                  pattern discovery │         │
        │         └────────────────────────────────────┘         │
        │                                                        │
        │              ┌──────────────┐                          │
