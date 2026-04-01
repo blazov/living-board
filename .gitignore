@@ -12,3 +12,4 @@ agent.toml
 __pycache__/
 *.egg-info/
 runner/*.egg-info/
+.last_qdrant_sync

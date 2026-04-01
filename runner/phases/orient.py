@@ -144,7 +144,16 @@ def orient(
     else:
         log.info("No unacknowledged comments")
 
-    # ── Step 3: Semantic memory recall ──
+    # ── Step 3: Sync Supabase learnings → Qdrant ──
+    # Catches up any learnings created while Qdrant was unreachable
+    # (e.g., overnight via remote trigger). Runs every cycle but is
+    # a no-op when there's nothing new to sync.
+    from ..tools.memory import sync_learnings
+    synced = sync_learnings(db, config.memory)
+    if synced > 0:
+        log.info("Synced %d learnings from Supabase to Qdrant", synced)
+
+    # ── Step 4: Semantic memory recall ──
     # Build a search query from the top-priority goal + its first pending task
     memory_query_parts: list[str] = []
     if goals:
