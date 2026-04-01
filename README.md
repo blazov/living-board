@@ -39,9 +39,9 @@ The repo includes everything: agent instructions, database schema, a real-time N
 
 ```
                         ┌─────────────────────────────────┐
-                        │         Scheduled Trigger        │
-                        │      (runs every hour via        │
-                        │       Claude Code cron)          │
+                        │         Scheduled Trigger       │
+                        │      (runs every hour via       │
+                        │       Claude Code cron)         │
                         └───────────────┬─────────────────┘
                                         │
                                         ▼
@@ -66,7 +66,7 @@ The repo includes everything: agent instructions, database schema, a real-time N
        │         │                                    │         │
        │         │  Qdrant/mem0 ──  Semantic search,  │         │
        │         │  vectors         cross-goal        │         │
-       │         │                  pattern discovery  │         │
+       │         │                  pattern discovery │        │
        │         └────────────────────────────────────┘         │
        │                                                        │
        │              ┌──────────────┐                          │
@@ -132,46 +132,46 @@ Learnings extracted from every cycle, with confidence scores that increase throu
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                            Living Board                                  │
 │                                                                          │
-│   ┌───────────────┐     ┌───────────────┐     ┌───────────────┐         │
-│   │   CLAUDE.md   │     │   Dashboard   │     │   Artifacts   │         │
-│   │   Agent       │     │   Next.js     │◄──┐ │   Content,    │         │
-│   │   Protocol    │     │   + Vercel    │   │ │   logs, code  │         │
-│   └───────┬───────┘     └───────┬───────┘   │ └───────┬───────┘         │
-│           │                     │            │         │                  │
-│           │            comments │            │ view    │                  │
-│           ▼              ▼      ▼            │         ▼                  │
+│   ┌───────────────┐     ┌───────────────┐     ┌───────────────┐          │
+│   │   CLAUDE.md   │     │   Dashboard   │     │   Artifacts   │          │
+│   │   Agent       │     │   Next.js     │◄──┐ │   Content,    │          │
+│   │   Protocol    │     │   + Vercel    │   │ │   logs, code  │          │
+│   └───────┬───────┘     └───────┬───────┘   │ └───────┬───────┘          │
+│           │                     │           │         │                  │
+│           │            comments │           │ view    │                  │
+│           ▼              ▼      ▼           │         ▼                  │
 │   ┌──────────────────────────────────────────────────────────┐           │
-│   │                   Supabase (Postgres)                     │           │
-│   │                                                           │           │
+│   │                   Supabase (Postgres)                    │           │
+│   │                                                          │           │
 │   │   ┌────────────────────────────────────────────────┐     │           │
-│   │   │  Execution Layer                                │     │           │
+│   │   │  Execution Layer                               │     │           │
 │   │   │  goals ─ tasks ─ execution_log ─ snapshots     │     │           │
 │   │   └────────────────────────────────────────────────┘     │           │
-│   │                                                           │           │
+│   │                                                          │           │
 │   │   ┌────────────────────────────────────────────────┐     │           │
-│   │   │  Collaboration Layer                            │     │───────┐  │
-│   │   │  goal_comments ─ agent_config                   │     │       │  │
+│   │   │  Collaboration Layer                           │     │───────┐  │
+│   │   │  goal_comments ─ agent_config                  │     │       │  │
 │   │   └────────────────────────────────────────────────┘     │       │  │
-│   │                                                           │       │  │
+│   │                                                          │       │  │
 │   │   ┌────────────────────────────────────────────────┐     │       │  │
-│   │   │  Memory Layer (structured)                      │     │       │  │
-│   │   │  learnings (confidence scores, categories,      │     │       │  │
-│   │   │            per-goal + global, validated count)   │     │       │  │
+│   │   │  Memory Layer (structured)                     │     │       │  │
+│   │   │  learnings (confidence scores, categories,     │     │       │  │
+│   │   │            per-goal + global, validated count) │     │       │  │
 │   │   └──────────────────────┬─────────────────────────┘     │       │  │
 │   └──────────────────────────┼───────────────────────────────┘       │  │
 │                              │ dual-write                            │  │
 │                              ▼                                       │  │
 │   ┌──────────────────────────────────────────────────────┐           │  │
-│   │  Memory Layer (semantic)                              │           │  │
-│   │                                                       │           │  │
+│   │  Memory Layer (semantic)                             │           │  │
+│   │                                                      │           │  │
 │   │  mem0 ── Qdrant (vector DB) + Ollama (embeddings)    │           │  │
-│   │                                                       │           │  │
+│   │                                                      │           │  │
 │   │  ● Semantic similarity search across ALL learnings   │           │  │
-│   │  ● Cross-goal pattern discovery                       │───────────┘  │
-│   │  ● Strategy success/failure tracking                  │  surfaces    │
+│   │  ● Cross-goal pattern discovery                      │───────────┘  │
+│   │  ● Strategy success/failure tracking                 │  surfaces    │
 │   │  ● Memory consolidation during reflections           │  insights    │
-│   └──────────────────────────────────────────────────────┘               │
-└──────────────────────────────────────────────────────────────────────────┘
+│   └──────────────────────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Database Schema (7 tables)
@@ -194,36 +194,36 @@ The agent has a **dual-layer persistent memory system** that enables genuine cro
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    How the Agent Learns                         │
+│                    How the Agent Learns                        │
 │                                                                │
 │  1. Agent completes a task                                     │
-│              │                                                  │
-│              ▼                                                  │
+│              │                                                 │
+│              ▼                                                 │
 │  2. Extracts reusable knowledge from the outcome               │
 │     "Dev.to API supports programmatic publishing"              │
 │     category: domain_knowledge, confidence: 0.9                │
-│              │                                                  │
+│              │                                                 │
 │         ┌────┴────┐                                            │
 │         ▼         ▼                                            │
 │  ┌─────────┐  ┌─────────────┐                                  │
 │  │Supabase │  │ mem0/Qdrant │   Dual-write to both stores      │
-│  │learnings│  │ vector DB   │                                   │
-│  │ table   │  │ + Ollama    │                                   │
-│  │         │  │ embeddings  │                                   │
-│  │ SQL     │  │ Semantic    │                                   │
-│  │ queries │  │ similarity  │                                   │
+│  │learnings│  │ vector DB   │                                  │
+│  │ table   │  │ + Ollama    │                                  │
+│  │         │  │ embeddings  │                                  │
+│  │ SQL     │  │ Semantic    │                                  │
+│  │ queries │  │ similarity  │                                  │
 │  └────┬────┘  └──────┬──────┘                                  │
-│       │              │                                          │
-│       ▼              ▼                                          │
+│       │              │                                         │
+│       ▼              ▼                                         │
 │  3. Future cycles query both layers:                           │
 │     - Supabase: exact per-goal lookups                         │
 │     - mem0: "what do I know about publishing?"                 │
 │       → surfaces learnings from OTHER goals                    │
-│              │                                                  │
-│              ▼                                                  │
+│              │                                                 │
+│              ▼                                                 │
 │  4. Confidence evolves over time:                              │
 │     - Outcome confirms learning → confidence += 0.1            │
-│     - Outcome contradicts it   → confidence -= 0.15           │
+│     - Outcome contradicts it   → confidence -= 0.15            │
 │     - Drops below 0.2          → learning deleted              │
 │                                                                │
 │  5. Reflection cycles (2-3x/day):                              │
