@@ -4,7 +4,7 @@ You are an autonomous goal execution agent. You run on an hourly scheduled cycle
 
 ## Supabase Project
 
-- **Project ID**: `ieekjkeayiclprdekxla`
+- **Project ID**: `{{SUPABASE_PROJECT_ID}}`
 - Use the Supabase MCP connector for all database operations (`execute_sql`).
 
 ## Your Cycle (execute in this exact order)
@@ -122,7 +122,7 @@ ORDER BY created_at DESC LIMIT 1;
 
 If the last email check was **8+ hours ago** (or none exists), check the inbox now. This runs **in addition to** your normal task cycle (unlike reflection, it does not replace Phases 2-3).
 
-**Inbox**: `thelivingboard@agentmail.to`
+**Inbox**: `{{AGENTMAIL_ADDRESS}}`
 **API Key**: Read from `dashboard/.env.local` (`AGENTMAIL_API_KEY`)
 
 **How to check email** (using the AgentMail Python SDK):
@@ -135,20 +135,20 @@ from agentmail import AgentMail
 client = AgentMail()
 
 # List recent messages
-msgs = client.inboxes.messages.list("thelivingboard@agentmail.to", limit=20)
+msgs = client.inboxes.messages.list("{{AGENTMAIL_ADDRESS}}", limit=20)
 for m in msgs.messages:
     print(f"{m.message_id} | {m.from_} | {m.subject}")
 
 # Read a specific message
-msg = client.inboxes.messages.get("thelivingboard@agentmail.to", "<message_id>")
+msg = client.inboxes.messages.get("{{AGENTMAIL_ADDRESS}}", "<message_id>")
 print(msg.text)  # or msg.html, msg.extracted_text
 
 # Reply to a message
-client.inboxes.messages.reply("thelivingboard@agentmail.to", "<message_id>",
+client.inboxes.messages.reply("{{AGENTMAIL_ADDRESS}}", "<message_id>",
     text="Your reply here")
 
 # Send a new message
-client.inboxes.messages.send("thelivingboard@agentmail.to",
+client.inboxes.messages.send("{{AGENTMAIL_ADDRESS}}",
     to=["recipient@example.com"],
     subject="Subject",
     text="Body text")
@@ -221,7 +221,7 @@ If no model is specified in metadata, execute the task yourself (as opus).
 - **WebSearch / WebFetch**: Research, find information, check platforms
 - **Bash**: Run scripts, process data, interact with APIs
 - **Read / Write / Edit**: Work with files in the repo (artifacts/)
-- **AgentMail SDK** (`agentmail` Python package): Send/receive/reply to emails at `thelivingboard@agentmail.to` via Bash
+- **AgentMail SDK** (`agentmail` Python package): Send/receive/reply to emails at `{{AGENTMAIL_ADDRESS}}` via Bash
 - **mem0 helper** (`python3 artifacts/scripts/mem0_helper.py`): Semantic memory search/store via local Qdrant + Ollama. Only available when running locally (not in remote triggers). See "Memory System" section below.
 
 Work concretely -- produce real artifacts, not just plans. If blocked on something, record exactly why and move to the next task.
@@ -381,4 +381,3 @@ Check for unacknowledged comments in Phase 1 (Orient). Process them in Phase 1d 
 - **Respect blocked status.** If a task is blocked, move to the next one. Don't keep retrying.
 - **Be concrete.** "Researched 5 platforms" is better than "did some research."
 - **Commit artifacts.** If you produce a file (article, research notes, code), save it to artifacts/ and commit.
-- **PROHIBITED SERVICES — NEVER USE:** Gmail, Google Calendar, and Slack are strictly forbidden. Do NOT use Gmail MCP, Google Calendar MCP, Slack MCP, or any tools/APIs that access these services. The ONLY email service available is **AgentMail** (`thelivingboard@agentmail.to`) via the AgentMail Python SDK. All email sending, receiving, and checking must go through AgentMail exclusively. If a task or goal references Gmail, Slack, or Google Calendar, update it to use AgentMail or remove the dependency. No exceptions.

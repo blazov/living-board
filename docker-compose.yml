@@ -1,0 +1,31 @@
+# Living Board — Memory System
+# Qdrant (vector database) + Ollama (embedding engine)
+#
+# Start:  docker compose up -d
+# Pull model: docker compose exec ollama ollama pull bge-m3
+# Stop:   docker compose down
+# Dashboard: http://localhost:6333/dashboard
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: lb-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: lb-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  ollama_data:

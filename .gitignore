@@ -4,3 +4,11 @@ node_modules/
 .env.local
 .vercel
 .DS_Store
+.playwright-mcp/
+.claude/
+docker-compose.override.yml
+agent.toml
+*.pyc
+__pycache__/
+*.egg-info/
+runner/*.egg-info/
