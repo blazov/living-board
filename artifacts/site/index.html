@@ -13,6 +13,7 @@
       <a href="#" class="nav-brand">LB</a>
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
+        <li><a href="#living-board">Living Board</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -39,7 +40,7 @@
       <h2>About</h2>
       <div class="about-content">
         <p>I specialize in turning complex technical concepts into clear, actionable content. My AI-augmented workflow means you get the quality of a senior writer with turnaround times that beat traditional freelancers.</p>
-        <p>Whether you need API documentation that developers actually want to read, a single blog post repurposed into a full content ecosystem, or deep-dive research with strategic recommendations — I deliver polished, professional work on tight timelines.</p>
+        <p>I also build autonomous AI systems. <a href="#living-board">Living Board</a> is my flagship open-source project &mdash; a self-learning agent with persistent memory, a real-time collaboration dashboard, and multi-model delegation. It runs continuously, learning from every cycle.</p>
         <div class="about-stats">
           <div class="stat">
             <span class="stat-number">5</span>
@@ -50,10 +51,54 @@
             <span class="stat-label">Typical Turnaround</span>
           </div>
           <div class="stat">
-            <span class="stat-number">6+</span>
-            <span class="stat-label">Output Formats</span>
+            <span class="stat-number">7</span>
+            <span class="stat-label">Active Agent Goals</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured-project" id="living-board">
+    <div class="container">
+      <h2>Featured Project: Living Board</h2>
+      <p class="project-intro">A self-learning autonomous AI agent with persistent memory, human-agent collaboration, and a real-time dashboard &mdash; running on a continuous loop.</p>
+      <div class="project-features">
+        <div class="feature-card">
+          <div class="service-icon">&#129504;</div>
+          <h3>Dual-Layer Memory</h3>
+          <p>Structured SQL knowledge in Supabase, plus semantic vector search via Qdrant &amp; Ollama. The agent discovers cross-goal patterns that SQL alone would miss.</p>
+        </div>
+        <div class="feature-card">
+          <div class="service-icon">&#128257;</div>
+          <h3>Continuous Self-Learning</h3>
+          <p>Every cycle extracts reusable knowledge with confidence scores. Scores rise through validation, decay through contradiction. Failed strategies are detected and replaced.</p>
+        </div>
+        <div class="feature-card">
+          <div class="service-icon">&#128101;</div>
+          <h3>Human-Agent Collaboration</h3>
+          <p>Leave comments on goals via the real-time dashboard &mdash; questions, direction changes, or feedback. The agent reads and responds each cycle.</p>
+        </div>
+        <div class="feature-card">
+          <div class="service-icon">&#128200;</div>
+          <h3>Real-Time Dashboard</h3>
+          <p>Next.js dashboard with goal tracking, task management, activity feed, knowledge base, and collaboration tools. Full visibility into every agent cycle.</p>
+        </div>
+        <div class="feature-card">
+          <div class="service-icon">&#128240;</div>
+          <h3>Daily Activity Digests</h3>
+          <p>Transparent daily logs of everything the agent did, published to the repo. Complete audit trail from day one.</p>
+        </div>
+        <div class="feature-card">
+          <div class="service-icon">&#128268;</div>
+          <h3>Open-Source Template</h3>
+          <p>Full schema, agent protocol, dashboard, and memory system &mdash; ready to clone. Works with Claude, OpenAI, or any local model via Ollama.</p>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/blazov/living-board" class="btn btn-primary">View on GitHub</a>
+        <a href="https://thelivingboard.substack.com" class="btn btn-outline">Read on Substack</a>
+        <a href="https://dev.to/thelivingboard" class="btn btn-outline">Dev.to Articles</a>
       </div>
     </div>
   </section>
@@ -100,6 +145,25 @@
     <div class="container">
       <h2>Portfolio</h2>
       <div class="portfolio-grid">
+
+        <div class="portfolio-card open" id="portfolio-living-board">
+          <div class="portfolio-header">
+            <span class="portfolio-tag">Autonomous AI Agent</span>
+            <h3>Living Board: Self-Learning Agent with Persistent Memory</h3>
+          </div>
+          <div class="portfolio-body">
+            <p>Built and operate a fully autonomous AI agent that runs on an hourly loop, managing its own goals, learning from outcomes, and collaborating with humans via a real-time dashboard.</p>
+            <ul>
+              <li><strong>Dual-Layer Memory</strong> &mdash; Supabase (SQL) + Qdrant vector DB with semantic search across all learnings</li>
+              <li><strong>Self-Learning</strong> &mdash; Confidence-scored knowledge that rises through validation and decays through contradiction</li>
+              <li><strong>Human Collaboration</strong> &mdash; Dashboard comments system for questions, feedback, and direction changes</li>
+              <li><strong>Model Delegation</strong> &mdash; Routes tasks to Opus, Sonnet, or Haiku based on complexity</li>
+              <li><strong>Multi-Platform Publishing</strong> &mdash; Autonomously publishes to Substack, Dev.to, and manages email outreach</li>
+              <li><strong>Open Source</strong> &mdash; Complete template with schema, dashboard, memory system, and agent protocol</li>
+            </ul>
+            <p class="portfolio-meta">A live system that has published articles, built its own landing page, and open-sourced itself. Tech: Claude Code, Supabase, Next.js, Qdrant, Ollama, AgentMail.</p>
+          </div>
+        </div>
 
         <div class="portfolio-card" id="portfolio-repurposing">
           <div class="portfolio-header">
