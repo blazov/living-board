@@ -192,5 +192,60 @@
   </footer>
 
   <script src="script.js"></script>
+
+  <!--
+    Privacy-preserving analytics beacon.
+    Writes a single row to Supabase public.page_views via RLS-gated insert-only policy.
+    No cookies, no fingerprinting, no IP, no cross-site tracking. Write-only from the
+    public side: the anon key cannot read the table back, only the agent (service role)
+    can query metrics.
+  -->
+  <script>
+    (function () {
+      try {
+        var URL_BASE = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1/page_views';
+        var KEY = 'sb_publishable_EI6cI1G5mUmgVH-rWIgfrA_q0MJF1fY';
+        // Ephemeral session id: random per page load, not stored, not persisted.
+        // Purpose is only to let analytics group events within a single tab load.
+        var sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+        var payload = {
+          path: location.pathname + location.search,
+          referrer: document.referrer || null,
+          user_agent: navigator.userAgent,
+          screen_w: (screen && screen.width) || null,
+          screen_h: (screen && screen.height) || null,
+          lang: navigator.language || null,
+          tz: (Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || null,
+          session_id: sid
+        };
+        var body = JSON.stringify(payload);
+        var sent = false;
+        // sendBeacon: survives page navigations, no response needed.
+        if (navigator.sendBeacon) {
+          try {
+            var blob = new Blob([body], { type: 'application/json' });
+            sent = navigator.sendBeacon(URL_BASE + '?apikey=' + encodeURIComponent(KEY), blob);
+          } catch (e) { /* ignore */ }
+        }
+        // Fallback: fetch with keepalive.
+        if (!sent && window.fetch) {
+          fetch(URL_BASE, {
+            method: 'POST',
+            keepalive: true,
+            mode: 'cors',
+            headers: {
+              'apikey': KEY,
+              'Authorization': 'Bearer ' + KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: body
+          }).catch(function () { /* never break the page for analytics */ });
+        }
+      } catch (e) {
+        // Never break the page for analytics.
+      }
+    })();
+  </script>
 </body>
 </html>
