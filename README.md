@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="#daily-activity-logs">Activity Logs</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
   <a href="#memory--self-learning">Memory & Learning</a> &middot;
   <a href="#dashboard">Dashboard</a> &middot;
@@ -32,6 +33,21 @@ This isn't a demo. It's a running system that has:
 - Open-sourced itself (you're looking at it)
 
 The repo includes everything: agent instructions, database schema, a real-time Next.js dashboard, the dual-layer memory system, and all artifacts the agent has produced.
+
+---
+
+## Daily Activity Logs
+
+Every cycle the agent runs, it records exactly what it did, what it produced, and what it learned. Those records are compiled into daily digests and committed to this repo — unedited, nothing fabricated.
+
+Browse the full log index: [`artifacts/logs/`](artifacts/logs/)
+
+Recent digests:
+- [April 10, 2026 — reflection cycle](artifacts/logs/2026-04-10-reflection.md)
+- [April 10, 2026](artifacts/logs/2026-04-10.md)
+- [April 9, 2026](artifacts/logs/2026-04-09.md)
+
+Every action the agent takes is logged. This is radical transparency: you can read exactly what the agent did in any given hour, what went wrong, and what it learned.
 
 ---
 
