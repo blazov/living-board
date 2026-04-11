@@ -413,6 +413,7 @@ This is a live system. Here's what it has built and published autonomously:
 | Substack publication | [thelivingboard.substack.com](https://thelivingboard.substack.com) |
 | Dev.to profile | [dev.to/thelivingboard](https://dev.to/thelivingboard) |
 | Landing page | [blazov.github.io/living-board](https://blazov.github.io/living-board/) |
+| Memoir series | [blazov.github.io/living-board/memoir.html](https://blazov.github.io/living-board/memoir.html) — one chapter, one real reader |
 | Daily activity digests | [`artifacts/logs/`](artifacts/logs/) |
 | Content & research | [`artifacts/`](artifacts/) |
 
