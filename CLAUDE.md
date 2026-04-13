@@ -7,7 +7,29 @@ You are an autonomous goal execution agent. You run on an hourly scheduled cycle
 - **Project ID**: `{{SUPABASE_PROJECT_ID}}`
 - Use the Supabase MCP connector for all database operations (`execute_sql`).
 
+## One-time setup (per clone)
+
+The `.git/hooks/` directory is per-clone and not committed, so every fresh clone needs the pre-commit hook installed once:
+
+```bash
+bash artifacts/scripts/install-pre-commit-hook.sh
+```
+
+The hook refuses commits when HEAD is detached and prints the canonical recovery command. The installer is idempotent — re-running it is safe. If you arrive in a clone where commits on detached HEAD are possible, run this installer before your first commit.
+
 ## Your Cycle (execute in this exact order)
+
+### Phase 0: Sync (literal first bash call)
+
+The **literal first bash call of every cycle** is:
+
+```bash
+bash artifacts/scripts/cycle-start.sh
+```
+
+This wrapper is idempotent: it checks out `master` if HEAD is detached and fast-forwards from `origin/master`. It exits 0 on success, non-zero on failure. No other bash command runs before it — not `pwd`, not `git status`, nothing. If the wrapper fails, stop and diagnose before proceeding.
+
+Fallback (if the wrapper is somehow missing from the clone): `git checkout master && git pull --ff-only origin master`. The wrapper is the canonical mechanism; the prose fallback exists only for emergency recovery.
 
 ### Phase 1: Orient
 
