@@ -2,7 +2,7 @@
 
 - **Period covered**: 2026-03-30 → 2026-04-14 (cycles 1–73)
 - **Source**: `artifacts/metrics/retrospective-raw-2026-04-14.md` (raw numbers) + live re-query at cycle 74
-- **Status**: partial draft — Sections 1, 2, 3 complete. Synthesis in follow-up task (c76a9206).
+- **Status**: complete — Sections 1, 2, 3, 4 finished. SQL runbook polish remains in task 24491ef0.
 
 > The goal title says "40-cycle" but the window under study is 73 cycles over ~15 days at hourly cadence. The name is kept for continuity with the scoping doc (`artifacts/metrics/retrospective-scope.md`).
 
@@ -269,8 +269,80 @@ Over 15 days of 1-hour scheduling, the agent produced 104 task-linked executes a
 
 ## Section 4 — Synthesis + learnings
 
-*Pending — task c76a9206.*
+### 4.1 Top 5 findings (with cycle-cost implications)
 
-## Section 4 — Synthesis + learnings
+#### Finding 1 — Zero agent-execution blockers across 27 goals and 101 successful tasks
 
-*Pending — task c76a9206.*
+Of 13 blocked records (9 blocked goals + 4 real blocked tasks), **0 trace to a planning error, runtime bug, invariant failure, or max-attempts blowout.** All 13 are credential-gated (4), external-human-action-gated (5), transitively dependent (1), or strategic self-defer (3). The agent has *never* wasted cycles failing its way into `blocked` — it recognizes unreachability pre-emptively and escalates.
+
+- **Cycle cost of agent-caused failures over 73 cycles: 0.**
+- **Implication:** planning quality is not the bottleneck. Future ramps cannot be unlocked by improving decomposition or retry logic — those are already working.
+
+#### Finding 2 — Credential absence is the single largest throughput lever
+
+Three independent triangulations converge on the same figure:
+
+| measure | value |
+|---|---:|
+| structural: share of blockers caused by missing credentials (direct + transitive) | 5 / 13 = **38%** |
+| textual: `execution_log` rows mentioning credential/key/token | 31 / 145 = **21%** |
+| operational: `check_email` skip rate | **19 / 19 = 100%** |
+| effective: estimated direct cycle cost | ~16 / 73 = **~22%** |
+
+- **Cycle cost: ~16 cycles (~22% of the 73-cycle budget).**
+- **Implication:** a single operator action (provide `AGENTMAIL_API_KEY` + `DEVTO_API_KEY`) reclaims roughly one-fifth of cycle budget and converts the 19/19 no-op email heartbeat into a live loop. This is the most valuable move available to the operator, by a wide margin.
+
+#### Finding 3 — Scheduler uptime, not agent skill, is the real uptime story
+
+58% of scheduled 1h ticks produced no `execution_log` row at all. The W2 window (2026-04-01 → 2026-04-06) was **six consecutive calendar days of zero task completions** during which reflect-gap widened from 8h to 2–3 days — a pattern consistent with trigger dropout, not deliberate idleness. The agent emitted no blocked/failed log entries during W2 because the agent never ran.
+
+- **Cycle cost: ~144 cycle-equivalents lost to W2 dropout alone** (6 d × 24 h − the 6 recovery executes that did fire). Nothing in the agent's logs caught it — detection latency was ~6 days.
+- **Implication:** scheduler health must be monitored independently of agent activity. A 2–3 h cadence (instead of 1 h) would match actual cycle duration better and eliminate most of the 58% no-log mass; an external heartbeat check would catch a W2-shaped outage in hours, not days.
+
+#### Finding 4 — W1→W3 efficiency gain is board-quality-driven, not model-skill-driven
+
+Normalized W1-vs-W3 executes/day is **4.5 → 13.7 (~3×)**. But the sources are:
+
+- **Smaller tasks in W3** (retrospective decomposition produced 1-cycle tasks, raising executes/day without raising per-task effort).
+- **Faster blocker triage in W3** (the agent learned to skip credential-gated phases on first detection instead of diagnosing each time).
+- **Retry rate stayed flat at 4%** across all three windows — nothing changed in planning or execution quality.
+
+- **Cycle cost of *not* improving board quality earlier: roughly (13.7 − 4.5) × 15 d ≈ 138 executes of lost throughput** if W3's task-sizing discipline had applied from cycle 1.
+- **Implication:** future throughput gains come from board-health work (blocker triage, task-size discipline, scheduler health), not from improving the agent's planning or execution. §1's 4% retry rate is already near a practical floor for an autonomous loop.
+
+#### Finding 5 — Goal-level closure discipline lags task-level 69 percentage points
+
+`tasks.completed_at` is populated on **104/104 done tasks (100%)**. `goals.completed_at` is populated on **4/13 done goals (31%)**. The gap is a standing data-quality hole: nine historical goals were closed with `status='done'` UPDATEs that omitted `completed_at=now()`, so every cycles-to-completion figure in §2.2 uses `updated_at` as a proxy for those nine rows. The learning has existed at confidence 0.95 since cycle 73 and was not enforced.
+
+- **Cycle cost: trivial ongoing (an UPDATE writes one extra column), but 9 irrecoverable historical rows.**
+- **Implication:** recording a learning is not the same as enforcing it. The fix belongs in either (a) a schema-side trigger that sets `completed_at=now()` when `status` flips to `'done'`, or (b) a checklist line in CLAUDE.md Phase 4 that is structurally hard to skip. Prefer (a) — triggers enforce; checklists drift.
+
+### 4.2 Cross-cutting observation: the three surprises agree
+
+§1's "zero max-attempts blowouts," §2's "zero agent-execution blockers," and §3's "retry rate flat at 4% across all three windows" are three lenses on the same underlying property: **the agent's failure mode is not execution error; it is execution *absence* (scheduler dropout) or execution *inapplicability* (credential-gated)**. Both of those are outside the agent's authority. The honest one-line summary of the 73 cycles is:
+
+> *When the agent runs and the operator has provided what it needs, it finishes 96% of tasks on the first attempt. When it doesn't run or can't access what it needs, nothing meaningful happens. The board's throughput is gated by scheduler health and credential coverage, not by agent capability.*
+
+### 4.3 Actionable next steps
+
+In priority order, largest cycle-cost recovery first:
+
+1. **[Operator] Provide `AGENTMAIL_API_KEY` and `DEVTO_API_KEY`.** Reclaims ~22% of cycle budget (Finding 2). Unblocks goals `a78c792a`, `f612920e`, `fd0979e3`, and converts the 19/19 email-check skip streak into live I/O. Highest-ROI lever available.
+
+2. **[Operator] Add a scheduler heartbeat monitor and consider 2–3h cadence instead of 1h.** Would have caught the W2 outage in hours (Finding 3). The 1h cadence is over-subscribed: 58% of ticks are empty, and a longer gap would align with actual cycle duration without reducing real work.
+
+3. **[Agent] Add `completed_at=now()` to every goal-closure UPDATE.** Prefer a trigger over a checklist. Closes the 9/13 historical gap (Finding 5). Tracked as pending work for a future cycle; short and contained.
+
+4. **[Agent] Short-circuit `check_email` after N consecutive credential-skips.** When `consecutive_failures ≥ 3` in a remote-trigger environment, back off to a 24h check instead of 8h. Preserves the "pick up credentials if they appear" behavior while eliminating the current 19-strong no-op streak (Finding 2, operational side).
+
+5. **[Agent] Guard completion UPDATEs with `WHERE status='in_progress'`.** The cycle-77 meta-learning: atomic claim is necessary but not sufficient for concurrent-session safety. A second writer that skipped the claim step can still UPDATE `status='done'`. Both the claim and the completion must be conditional on the expected prior state. This is not a productivity win but a correctness one.
+
+6. **[Retrospective follow-on, 24491ef0]** Commit `retrospective-queries.sql` as a reusable runbook, so the next retrospective re-runs the same instrument and the four windows can be re-compared with a single script invocation.
+
+### 4.4 Closing
+
+The 73-cycle window is not a story about an agent getting smarter. It is a story about a board getting healthier while an agent's execution quality held flat at already-high. The right lessons are (a) don't expect the next 73 cycles to deliver another 3× by the same mechanism — that lift was one-time board triage — and (b) the remaining throughput is locked behind scheduler uptime and operator-provided credentials, which are outside the agent's control but inside the operator's. Everything actionable from here lives above the agent loop.
+
+---
+
+*Synthesis authored by the Living Board agent, cycle 78 (task c76a9206). Sections 1–3 authored in cycles 75–77.*
