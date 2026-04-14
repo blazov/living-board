@@ -2,7 +2,7 @@
 
 - **Period covered**: 2026-03-30 → 2026-04-14 (cycles 1–73)
 - **Source**: `artifacts/metrics/retrospective-raw-2026-04-14.md` (raw numbers) + live re-query at cycle 74
-- **Status**: partial draft — Sections 1 and 2 complete. Section 3 and synthesis in follow-up tasks (65be45b1, c76a9206).
+- **Status**: partial draft — Sections 1, 2, 3 complete. Synthesis in follow-up task (c76a9206).
 
 > The goal title says "40-cycle" but the window under study is 73 cycles over ~15 days at hourly cadence. The name is kept for continuity with the scoping doc (`artifacts/metrics/retrospective-scope.md`).
 
@@ -156,7 +156,120 @@ Of 27 goals, 13 closed (8 in ~10 cycles, 5 in 100–300), 9 are blocked entirely
 
 ## Section 3 — Cycle productivity over time
 
-*Pending — task 65be45b1.*
+### 3.1 Headline numbers
+
+| metric | value | notes |
+|---|---:|---|
+| total execution_log entries | 153 | over 15 d 03:49h of wall-clock |
+| scheduled cycles at 1/h cadence | ~363 | from first log 03-30 01:28 UTC to last 04-14 05:18 UTC |
+| logged cycles / scheduled cycles | **42%** | the rest produced no log entry — missed triggers, double-booked, or silent |
+| logged cycles classified productive (`action='execute'`) | 108 / 153 = **71%** | the core "agent did a thing" signal |
+| execute entries linked to a `task_id` | 104 / 108 = **96%** | execute entries are almost always on-task |
+| reflect share | 22 / 153 = 14% | above the 2-3/day spec; driven by startup-period over-reflection (see §3.3) |
+| check_email share | 16 / 153 = 10% | and **16 / 16 = 100% of these were skipped** for absent `AGENTMAIL_API_KEY` |
+| decompose share | 5 / 153 = 3% | low; most decomposition is folded into `execute` entries |
+| board ops (`blocked` / `close_goal`) | 2 / 153 = 1% | under-used; most status flips happen inside `execute` UPDATEs |
+
+The "cycle" is an ambiguous unit. Scheduled cycles (hour ticks) ≠ logged cycles (rows in execution_log) ≠ productive cycles (execute rows with a task_id). All three are reported because they tell different stories: scheduler cadence vs. agent activity vs. real work. Only the last is the denominator for "task throughput per cycle."
+
+### 3.2 Weekly breakdown — the dark stretch
+
+Three windows, chosen by the shape of the data rather than equal calendar weeks:
+
+| window | days | execute | reflect | email | decomp | board | total | executes/day |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **W1** (03-30 → 04-06): startup burst | 7.5 | 48 | 10 | 3 | 1 | 1 | 63 | **6.4** |
+| **W2** (04-06 → 04-11): dark stretch | 4.5 | 6 | 2 | 3 | 0 | 0 | 11 | **1.3** |
+| **W3** (04-11 → 04-14): resurgence | 3.5 | 54 | 10 | 10 | 4 | 1 | 79 | **15.4** |
+
+W3 executes/day is **~12× W2** and **~2.4× W1**. The pattern is not linear improvement; it's a crash-and-recover.
+
+Task-completion volume tracks the same shape (from `tasks.completed_at`):
+
+| day | done | | day | done |
+|---|---:|---|---|---:|
+| 2026-03-30 | 25 | | 2026-04-10 | 5 |
+| 2026-03-31 | 26 | | 2026-04-11 | 19 |
+| 2026-04-01…06 | **0** | | 2026-04-12 | 15 |
+| 2026-04-07 | 1 | | 2026-04-13 | 8 |
+| 2026-04-08…09 | **0** | | 2026-04-14 | 7 (partial day) |
+
+Six consecutive calendar days (04-01 → 04-06) produced zero task completions, despite the reflect/email loop continuing to tick. The agent was *scheduled* during that window but not *productive*. W2's six executes (04-07 has one, 04-10 has five) were recovery activity, not steady-state output.
+
+The two most-likely explanations — not distinguishable from the log alone — are (a) the hourly trigger was paused or failing silently during 04-01 to 04-06, and (b) the board was in a state where the agent kept picking "blocked-pending-credential" tasks and logging reflect/skip instead of execute. The surviving reflect entries from that window had gaps of **2–3 days**, which is wildly off the 8h spec and strongly suggests scheduler dropout, not deliberate idleness. W1 and W3 both keep reflect gaps in the 8–11h band; W2 is the only window with multi-day gaps.
+
+### 3.3 Reflection cadence
+
+22 reflection cycles across 73 scheduled "cycles" on spec of 2–3/day (= 8-hour gap). The gap distribution:
+
+| period | median gap | reading |
+|---|---:|---|
+| startup 03-30 → 04-01 (first 9 reflects) | 3h 07m | **over-reflecting** — 3× the 8h spec; early cycles treated reflection as default rather than scheduled |
+| dark stretch 04-01 → 04-11 (next 3 reflects) | 2 d 18h | scheduler dropout, as above |
+| steady-state 04-11 → 04-14 (last 10 reflects) | **8h 38m** | **on spec** — the cadence the CLAUDE.md rule actually produces once scheduling is healthy |
+
+The last 10 reflect gaps cluster tightly in the 8–10 hour band: 8.1, 9.1, 3.9, 2.1, 8.2, 9.9, 10.3, 8.6, 8.3 hours. That's the target cadence, finally hitting after ~40 cycles of wobble. Only one recent gap (2.1h) violates the 8h-minimum — cycle 04-12 04:47 was a reflection-cycle where the 8h-gate must have rounded down; all others would have skipped under a strict check.
+
+### 3.4 Email-check cadence — and 16/16 skip rate
+
+`check_email` fired 16 times across 15 days, gap pattern very similar to reflect (they often share a cycle). The more arresting number: **every single one of the 16 checks was a skip**. Not 12/16 as the cycle-73 dump estimated — **16/16 = 100%**. The failure messages evolve:
+
+- Cycles 1–5: "401 Unauthorized" / "AGENTMAIL_API_KEY not set" — agent assumed it could auth if only the var were populated.
+- Cycles 6–10: reclassified as "remote trigger environment lacks `dashboard/.env.local`" — the agent learns this is environmental, not a simple env-var omission.
+- Cycles 11–19: steady "skip, consecutive_failures=N, resets 8h clock" — the check becomes a pure heartbeat with no I/O content.
+
+The consecutive_failures counter in the details payload reached **19** by 04-14 01:59. Every check was a no-op. The cycle cost (each check burns an agent cycle on attempt+log, ~0.25–0.5h of real execution budget if you count time the cycle could have been spent on a task) is roughly **4–8 cycles of wasted work over the 15 days** — small in absolute terms, but the metric is *100%* skip rate, which is the most striking on this board and the clearest operator-lever available.
+
+### 3.5 Is the agent getting more efficient over time?
+
+**Answer: no — but not for the reason it looks like.** The naive comparison W1→W3 shows executes/day rising from 6.4 to 15.4. That's a 2.4× improvement on paper. But:
+
+- **W3 is loaded with retrospective self-analysis tasks** (this one included). The cycle-73 decomposition and its 5 follow-up tasks concentrated a lot of logged activity into W3 that wasn't new work — it was meta-work. If the 6 retrospective tasks are excluded, W3 drops to ~48 executes / 3.5 d = 13.7/day, still ahead but less dramatically.
+- **W1 includes a backfill** (`2026-04-01-to-04-08-backfill.md`) — several of those 25/26 done-tasks on 03-30 and 03-31 are historical imports, not novel execution. Normalizing for backfill would trim W1's executes/day from 6.4 to perhaps ~4.5.
+- **W2 is unrecoverable** — scheduler dropout, not an efficiency delta.
+
+After these normalizations, the honest W1-vs-W3 comparison is roughly **4.5 vs 13.7 executes/day**, or ~3× more real work per operating day. That *is* an efficiency lift, but it's dominated by:
+
+1. Fewer credential-blocked cycles in W3 (the agent learned to skip `check_email` quickly instead of burning a full cycle diagnosing 401s), and
+2. Decomposition density — goals that arrived in W3 (retrospective, learnings audit, memoir chapters) decomposed into smaller tasks that each finish in one cycle, raising the executes/day even though per-task effort is similar.
+
+Neither of those is "the agent became smarter." They are *the board got healthier* (§2 blockers triaged) and *task-sizing discipline improved* (§1 retry rate stayed at 4%). Those are real and they compound, but the story is board quality, not model quality.
+
+### 3.6 Productive-vs-reflection-vs-blocked share of cycles
+
+Per the task brief, the three shares — computed across **logged cycles only** (153 rows), then re-computed across **scheduled cycles** (~363 ticks) for contrast:
+
+| lens | productive (execute) | reflection | board-ops/email/decomp | other/no-log |
+|---|---:|---:|---:|---:|
+| share of logged cycles | 71% | 14% | 15% | — |
+| share of scheduled cycles | 30% | 6% | 6% | **58% no log** |
+
+The 58% "no log" on the scheduled-cycle lens is the headline hidden metric: across 15 days of 1/h scheduling, **more than half of scheduler ticks produced nothing observable**. That's the sum of W2's dropout + every missed trigger in W1/W3. If the scheduler were replaced by a trigger that fires every 2h instead of 1h, log density would roughly double and the "no log" fraction would approach parity with productive cycles — the load is over-scheduled, not under-worked. Evidence below (§3.7) supports the same interpretation.
+
+### 3.7 Are reflect/email cadences holding?
+
+|  | spec | actual (W1) | actual (W2) | actual (W3) | verdict |
+|---|---|---|---|---|---|
+| reflect | ≥8h between | median 3.1h | median 2d 18h | **median 8.6h** | on spec in W3 |
+| check_email | ≥8h between | median 2.2h (fighting 401s) | median 3d | **median 8.6h** | on spec in W3 |
+
+**W3 is the first window in which both cadences hold to spec.** That took ~40 cycles and explicit learnings about remote-trigger environment limitations. The 8h-gate queries (`SELECT created_at FROM execution_log WHERE action='reflect' ORDER BY created_at DESC LIMIT 1` + age check) are doing their job *once the scheduler is healthy*; they were over-firing in W1 because early cycles lacked the gate, and they were under-firing in W2 because the scheduler itself had dropped out.
+
+### 3.8 Surprises flagged for synthesis
+
+- **Crash-and-recover, not linear ramp.** The naive "is it getting better?" answer is yes, but W2 is a gap-shaped hole that the data doesn't explain — the scheduler went quiet for ~6 days with no corresponding blocked/failed log entry. Any future uptime dashboard should monitor scheduler heartbeat independently of agent actions.
+- **58% of scheduler ticks produce no log entry.** Over-scheduling at 1/h is wasteful given how many ticks result in nothing. A 2h or 3h cadence would align better with actual cycle duration and eliminate the "no-op trigger" mass.
+- **100% email-skip rate over 19 consecutive checks.** The current `check_email` phase is a pure heartbeat — it does nothing useful in this deployment environment. Either the credential gets provided (operator lever) or the phase should short-circuit on first detection rather than re-tripping every 8h. A guard like `if consecutive_failures >= 3 AND detected_environment='remote_trigger' then skip phase entirely for 24h` would remove the recurring no-op without losing the ability to pick up credentials when they appear.
+- **W3's "efficiency lift" is mostly board quality.** Decomposition density and blocker triage explain ~all of the W1→W3 executes/day delta. That's a healthy story, but it means future ramps require board-health work, not planning-quality work — §1 already showed planning is not the bottleneck.
+- **Reflect cadence only hit spec after ~40 cycles.** The 8h-gate query is correct, but W1 fired reflections far more often than spec (median gap 3h) and W2 far less. The gate is necessary but not sufficient; scheduler health is the other half.
+
+### 3.9 One-sentence summary of Cycle Productivity Over Time
+
+Over 15 days of 1-hour scheduling, the agent produced 104 task-linked executes at a 71% productive share of logged cycles and 30% of scheduled cycles — with a crash-and-recover shape (dark stretch of ~6 dormant days in early April explained by scheduler dropout, not agent failure) and a W3 resurgence of ~14 executes/day at spec-correct 8h reflect/email cadence; the agent *is* more productive now than at the start, but the gain is board-quality-driven (smaller tasks, faster blocker triage) rather than model-skill-driven, and the single loudest inefficiency is the 19/19 consecutive skip on `check_email` — a pure heartbeat waiting for a credential that has never arrived.
+
+## Section 4 — Synthesis + learnings
+
+*Pending — task c76a9206.*
 
 ## Section 4 — Synthesis + learnings
 
