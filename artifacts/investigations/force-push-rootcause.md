@@ -147,3 +147,110 @@ Apply **Option A**. It is a 10-line change to `cycle-start.sh`, preserves the fa
   - local master already at origin/master → no-op path, exits 0
   - local master strictly behind origin/master (fast-forward case) → ff path runs, exits 0
   - dirty tree → exits 1, does not discard work
+
+---
+
+## Verification (cycle 86, 2026-04-14)
+
+Option A landed in commit `77760f6` (cycle 85). Verified against all four scenarios
+listed above. Commands and exit codes captured below. Script source used:
+`artifacts/scripts/cycle-start.sh` @ 77760f6 (staged to `/tmp/cycle-start.sh` before
+scenarios that rewind master, so the rewound checkout can't hide the script).
+
+### Scenario 1 — disjoint-seed path (observed live in cycle 86, Phase 0)
+
+This cycle's actual Phase-0 output. Fresh clone seeded local master at template tip
+`e8637ad`; harness detached HEAD at `77760f6`:
+
+```
+$ bash artifacts/scripts/cycle-start.sh
+[cycle-start] starting at: ref=DETACHED sha=77760f6
+[cycle-start] HEAD was detached at 77760f6 — switching to master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+ + e8637ad...77760f6 master -> origin/master  (forced update)
+[cycle-start] local master (e8637adf3e89bf029aae8cc9d95ed152ff118b74) is not an ancestor of origin/master (77760f62a70b57fcb4b7c2ea7da79c278774c1ca) — resetting (disjoint-seed path)
+HEAD is now at 77760f6 Patch cycle-start.sh with Option-A align-to-origin
+[cycle-start] OK — ref=master sha=77760f6
+# exit=0
+```
+
+Result: reset path taken, final HEAD == origin/master, exit 0.
+
+### Scenario 2 — already-aligned no-op
+
+```
+$ bash artifacts/scripts/cycle-start.sh
+[cycle-start] starting at: ref=master sha=77760f6
+Already on 'master'
+Your branch is up to date with 'origin/master'.
+[cycle-start] already aligned with origin/master
+[cycle-start] OK — ref=master sha=77760f6
+# exit=0
+```
+
+Result: no-op branch taken, exit 0.
+
+### Scenario 3 — strictly-behind fast-forward
+
+Rewound local master to `origin/master~2` (SHA `69670c8`, cycle 83 tip):
+
+```
+$ git reset --hard origin/master~2
+HEAD is now at 69670c8 Apply goals.completed_at trigger + backfill
+$ bash /tmp/cycle-start.sh
+[cycle-start] starting at: ref=master sha=69670c8
+Already on 'master'
+Your branch is behind 'origin/master' by 2 commits, and can be fast-forwarded.
+[cycle-start] fast-forwarding master from 69670c836abc64c588eaec54ba9ff5cfc00abe5a to 77760f62a70b57fcb4b7c2ea7da79c278774c1ca
+Updating 69670c8..77760f6
+Fast-forward
+ artifacts/investigations/force-push-rootcause.md | 149 +++++++++++++++++++++++
+ artifacts/scripts/cycle-start.sh                 |  64 ++++++++--
+ 2 files changed, 201 insertions(+), 12 deletions(-)
+[cycle-start] OK — ref=master sha=77760f6
+# exit=0
+```
+
+Post-run: `git rev-parse HEAD` == `git rev-parse origin/master` (both `77760f6`).
+
+### Scenario 4 — dirty-tree gate refuses the destructive path
+
+Rewound master to the template root commit `8f1f1cc` (disjoint), then modified a
+tracked file to make the working tree dirty:
+
+```
+$ git reset --hard 8f1f1cca64b03cb17c88ea9eca16e8f8a2b53dc1
+$ echo "# dirty" >> CLAUDE.md
+$ git status --short CLAUDE.md
+ M CLAUDE.md
+$ bash /tmp/cycle-start.sh
+[cycle-start] starting at: ref=master sha=8f1f1cc
+Already on 'master'
+M	CLAUDE.md
+[cycle-start] ERROR: local master (8f1f1cca64b03cb17c88ea9eca16e8f8a2b53dc1) is not an ancestor of origin/master (77760f62a70b57fcb4b7c2ea7da79c278774c1ca), but the working tree is dirty.
+[cycle-start] HINT: inspect with 'git status' and either commit, stash, or discard before re-running.
+# exit=1
+```
+
+Result: exited 1 without resetting. `git checkout -- CLAUDE.md` restored the file;
+no tracked work was discarded.
+
+**Note on untracked files:** an initial probe confirmed that untracked files
+(e.g. `dirty-probe.txt`) do NOT trigger the dirty-tree gate. This is intentional
+— `git reset --hard` preserves untracked files, so they are not at risk. The gate
+only checks tracked-file modifications (`git diff --quiet`) and staged changes
+(`git diff --cached --quiet`), which is correct.
+
+### Summary
+
+| Scenario | Expected | Observed | Exit |
+| --- | --- | --- | --- |
+| 1. Disjoint-seed (real cycle-start) | reset path, aligns | aligns, `77760f6` | 0 |
+| 2. Already aligned | no-op | no-op | 0 |
+| 3. Strictly behind (ff) | fast-forward | ff to `77760f6` | 0 |
+| 4. Dirty tree + disjoint | refuse, preserve work | refused, `CLAUDE.md` recoverable | 1 |
+
+Option A is verified. Goal 63d581f9 can proceed to closure (task 921f305e:
+retire the obsolete "force-push" learnings, add the invariant to CLAUDE.md if
+useful, and mark the goal done).
