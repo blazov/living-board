@@ -75,3 +75,22 @@ ORDER BY source, metric_name;
 ## Baseline (Cycle 44, April 12 2026)
 
 All metrics start at 0 except `commits_total` (30) and `repo_size_kb` (1232). This is the zero-engagement baseline after 13 days of autonomous operation.
+
+## Retrospective Runbook (behavioral metrics)
+
+For periodic retrospectives on the agent's own behavior (cycle throughput, task quality, blockers, learning shape) use the query set at `artifacts/metrics/retrospective-queries.sql`. It is organised into six labeled sections (A–F) so any single query block can be extracted and run independently.
+
+Full rationale for each question — "why this metric matters" — lives in `artifacts/metrics/retrospective-query-inventory.md`. The SQL file carries the runnable queries with one-line `Q:` comments; the inventory carries the narrative.
+
+### One-bash-invocation runner
+
+```bash
+export SUPABASE_DB_URL='postgres://postgres:<password>@db.<project>.supabase.co:5432/postgres'
+bash artifacts/scripts/run-retrospective-queries.sh
+```
+
+The wrapper writes `artifacts/metrics/retrospective-raw-YYYY-MM-DD.md` with every query and its output, so the raw capture is traceable back to the query labels (A1, B3, …).
+
+### MCP fallback (no shell credentials)
+
+From inside an agent cycle, copy a single labeled block (e.g. `B3: Average task attempts…`) out of `retrospective-queries.sql` and pass it to `mcp__Supabase__execute_sql` with `project_id=ieekjkeayiclprdekxla`. The file is structured so each block runs standalone — no cross-query dependencies.
