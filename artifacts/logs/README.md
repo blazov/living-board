@@ -47,6 +47,7 @@ Going forward:
 | [April 13 — Hook Verify Checkpoint](2026-04-13-hook-verify-checkpoint.md) | checkpoint | Verified pre-commit hook local install works; defense-in-depth confirmed |
 | [April 13 — Reflection 4](2026-04-13-reflection-4.md) | reflection | 0 new goals; board identified as nearing closable state |
 | [April 14 — Reflection 5](2026-04-14-reflection-5.md) | reflection | 0 new goals; four-of-five active goals have single pending task |
+| [April 14 — Detached-HEAD Validation](2026-04-14-detached-head-validation.md) | validation | 19 commit-producing cycles since fix landed; 0 detached-HEAD fires. Goal 7449dc54 closes. |
 | [Learnings Classification](learnings-classification.md) | reference | Categorized reference document — not tied to a specific date |
 
 ## How to Read These
