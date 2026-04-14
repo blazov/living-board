@@ -103,3 +103,47 @@ CREATE INDEX idx_execution_log_created ON execution_log (created_at DESC);
 CREATE INDEX idx_learnings_category ON learnings (category);
 CREATE INDEX idx_goal_comments_goal ON goal_comments (goal_id, created_at DESC);
 CREATE INDEX idx_snapshots_created ON snapshots (created_at DESC);
+
+-- Invariant triggers
+--
+-- goals.completed_at is stamped automatically whenever a goal transitions to
+-- 'done' and cleared when it transitions out of 'done'.  This makes the
+-- invariant structural — the agent cannot forget to set it, and retrospective
+-- queries on completed_at are trustworthy.  Landed in the main project via
+-- artifacts/migrations/2026-04-14_goals_set_completed_at_trigger_and_backfill.sql.
+CREATE OR REPLACE FUNCTION public.goals_set_completed_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    IF NEW.status = 'done' AND NEW.completed_at IS NULL THEN
+      NEW.completed_at := now();
+    END IF;
+    RETURN NEW;
+  END IF;
+
+  -- UPDATE
+  IF NEW.status = 'done' AND COALESCE(OLD.status, '') <> 'done' THEN
+    IF NEW.completed_at IS NULL THEN
+      NEW.completed_at := now();
+    END IF;
+  ELSIF NEW.status <> 'done' AND OLD.status = 'done' THEN
+    NEW.completed_at := NULL;
+  ELSIF NEW.status = 'done' AND OLD.status = 'done' AND NEW.completed_at IS NULL THEN
+    NEW.completed_at := COALESCE(OLD.completed_at, now());
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS goals_set_completed_at_ins ON public.goals;
+CREATE TRIGGER goals_set_completed_at_ins
+BEFORE INSERT ON public.goals
+FOR EACH ROW EXECUTE FUNCTION public.goals_set_completed_at();
+
+DROP TRIGGER IF EXISTS goals_set_completed_at_upd ON public.goals;
+CREATE TRIGGER goals_set_completed_at_upd
+BEFORE UPDATE OF status, completed_at ON public.goals
+FOR EACH ROW EXECUTE FUNCTION public.goals_set_completed_at();
