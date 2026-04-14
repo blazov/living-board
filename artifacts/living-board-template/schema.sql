@@ -147,3 +147,38 @@ DROP TRIGGER IF EXISTS goals_set_completed_at_upd ON public.goals;
 CREATE TRIGGER goals_set_completed_at_upd
 BEFORE UPDATE OF status, completed_at ON public.goals
 FOR EACH ROW EXECUTE FUNCTION public.goals_set_completed_at();
+
+-- Observability views
+--
+-- scheduler_health: single-row summary of agent heartbeat state — the
+-- last execution_log timestamp, its age in hours, a 24h window entry
+-- count, and a count of consecutive-pair gaps >6h within that window.
+-- This exists because scheduler dropouts produce zero agent-side signal
+-- (detection requires being awake); Phase 0 of the agent cycle SELECTs
+-- from this view to make silent dropouts visible on the next wake.
+-- Landed in the main project via
+-- artifacts/migrations/2026-04-14_scheduler_health_view.sql.
+CREATE OR REPLACE VIEW public.scheduler_health AS
+WITH last AS (
+  SELECT MAX(created_at) AS last_exec_at FROM public.execution_log
+),
+pairs_24h AS (
+  SELECT created_at,
+         LAG(created_at) OVER (ORDER BY created_at) AS prev_ts
+  FROM public.execution_log
+  WHERE created_at > now() - interval '24 hours'
+)
+SELECT
+  last.last_exec_at,
+  CASE
+    WHEN last.last_exec_at IS NULL THEN NULL
+    ELSE EXTRACT(EPOCH FROM (now() - last.last_exec_at)) / 3600.0
+  END::numeric(10,3) AS hours_since_last,
+  (SELECT count(*)::int
+     FROM pairs_24h
+     WHERE prev_ts IS NOT NULL
+       AND EXTRACT(EPOCH FROM (created_at - prev_ts)) / 3600.0 > 6) AS gap_24h_count,
+  (SELECT count(*)::int FROM public.execution_log
+     WHERE created_at > now() - interval '24 hours') AS entries_24h,
+  now() AS computed_at
+FROM last;
