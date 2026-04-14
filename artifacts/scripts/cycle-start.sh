@@ -10,18 +10,30 @@
 # What it does:
 #   1. Detect whether HEAD is detached (or already on master).
 #   2. Switch to master (idempotent).
-#   3. Fast-forward master from origin/master.
+#   3. Align local master to origin/master:
+#        - already aligned  -> no-op
+#        - strict ancestor  -> fast-forward
+#        - disjoint/diverged -> hard reset to origin/master (safe: see below)
+#
+# Why the disjoint-reset path exists (goal 63d581f9, cycle 84):
+#   Fresh clones seed local `master` to a stale open-source template tip
+#   (root 8f1f1cc). The agent's real history lives on origin/master
+#   (root 23c8e80). These are two disjoint DAGs that happen to share the
+#   name `master`, so `git pull --ff-only` always fails with "Not possible
+#   to fast-forward." Every agent-authored commit is pushed to origin
+#   during its own cycle -- nothing of value ever lives only on local
+#   master between cycles -- so resetting the stale seed is lossless.
+#   Full writeup: artifacts/investigations/force-push-rootcause.md
+#
+# Safety: before any destructive reset we refuse if the working tree is
+# dirty. `git checkout master` earlier in this script would already have
+# failed on overwriting-dirty paths, but we re-check explicitly so no
+# uncommitted work is ever silently discarded.
 #
 # Exit codes:
-#   0   success — HEAD is on master, up to date with origin/master
-#   1   git command failed (network, conflict, dirty tree)
+#   0   success -- HEAD is on master, equal to origin/master
+#   1   git command failed (network, conflict, dirty tree, etc.)
 #   2   not in a git repository
-#
-# Usage:
-#   bash artifacts/scripts/cycle-start.sh
-#
-# This script is safe to re-run. If already on master and up to date, it
-# is a no-op except for printing status.
 
 set -u
 
@@ -47,10 +59,38 @@ if ! git checkout master; then
   exit 1
 fi
 
-if ! git pull --ff-only origin master; then
-  echo "[cycle-start] ERROR: git pull --ff-only origin master failed" >&2
-  echo "[cycle-start] HINT: there may be local commits not on origin, or a network error." >&2
+# Fetch origin/master explicitly; do not merge yet. We inspect refs first.
+if ! git fetch origin master; then
+  echo "[cycle-start] ERROR: git fetch origin master failed" >&2
   exit 1
+fi
+
+local_sha="$(git rev-parse master)"
+remote_sha="$(git rev-parse origin/master)"
+
+if [ "$local_sha" = "$remote_sha" ]; then
+  echo "[cycle-start] already aligned with origin/master"
+elif git merge-base --is-ancestor "$local_sha" "$remote_sha"; then
+  # Normal fast-forward case: local master is strictly behind origin/master.
+  echo "[cycle-start] fast-forwarding master from $local_sha to $remote_sha"
+  if ! git merge --ff-only origin/master; then
+    echo "[cycle-start] ERROR: fast-forward merge failed" >&2
+    exit 1
+  fi
+else
+  # Disjoint or diverged. Local master is the template seed or similar
+  # non-agent state. The agent's canonical state is origin/master.
+  # Refuse to destroy uncommitted work -- safety gate before reset --hard.
+  if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "[cycle-start] ERROR: local master ($local_sha) is not an ancestor of origin/master ($remote_sha), but the working tree is dirty." >&2
+    echo "[cycle-start] HINT: inspect with 'git status' and either commit, stash, or discard before re-running." >&2
+    exit 1
+  fi
+  echo "[cycle-start] local master ($local_sha) is not an ancestor of origin/master ($remote_sha) — resetting (disjoint-seed path)"
+  if ! git reset --hard origin/master; then
+    echo "[cycle-start] ERROR: git reset --hard origin/master failed" >&2
+    exit 1
+  fi
 fi
 
 final_ref="$(git symbolic-ref --short -q HEAD || echo "DETACHED")"
