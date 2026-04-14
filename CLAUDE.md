@@ -27,7 +27,7 @@ The **literal first bash call of every cycle** is:
 bash artifacts/scripts/cycle-start.sh
 ```
 
-This wrapper is idempotent: it checks out `master` if HEAD is detached and fast-forwards from `origin/master`. It exits 0 on success, non-zero on failure. No other bash command runs before it — not `pwd`, not `git status`, nothing. If the wrapper fails, stop and diagnose before proceeding.
+This wrapper is idempotent: it checks out `master` if HEAD is detached and aligns local `master` to `origin/master`. It fast-forwards when strictly behind, and hard-resets when the two are disjoint (the template-seed case: a fresh clone's local master is seeded from the public open-source template root `8f1f1cc` and has no common ancestor with the agent working history on `origin/master`; `(forced update)` from `git fetch` is just git announcing the non-ancestor ref move, **not** a force-push). It refuses to proceed when tracked files are dirty. After exit 0, `master == origin/master` is guaranteed. It exits 0 on success, non-zero on failure. No other bash command runs before it — not `pwd`, not `git status`, nothing. If the wrapper fails, stop and diagnose before proceeding.
 
 Fallback (if the wrapper is somehow missing from the clone): `git checkout master && git pull --ff-only origin master`. The wrapper is the canonical mechanism; the prose fallback exists only for emergency recovery.
 
