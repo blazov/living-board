@@ -158,8 +158,11 @@ ORDER BY attempts DESC, updated_at DESC;
 
 -- B4: Cycles from goal creation to goal closure (per-goal).
 -- Q: How long does a closed goal take? Headline "cycles-to-goal" metric.
--- NOTE: coverage of completed_at is partial (see snapshot-level finding
--- on missing completion triggers); falls back to updated_at when NULL.
+-- NOTE: coverage of goals.completed_at is now 100% for status='done' rows,
+-- enforced by trigger goals_set_completed_at_upd / goals_set_completed_at_ins
+-- (migration 2026-04-14_goals_set_completed_at_trigger_and_backfill.sql,
+-- goal 8fc57114). The COALESCE(completed_at, updated_at) fallback is kept
+-- defensively but should never fire — see F4/F4b for the live assertion.
 SELECT g.id, g.title, g.created_at, g.completed_at,
        ROUND(EXTRACT(EPOCH FROM (COALESCE(g.completed_at, g.updated_at) - g.created_at))/3600.0::numeric, 1) AS hours_elapsed,
        g.completed_at IS NOT NULL AS has_completed_at,
@@ -389,10 +392,32 @@ GROUP BY 1
 ORDER BY 1 DESC;
 
 -- F4: Goals missing completed_at (schema-integrity check).
--- Q: How many "done" goals lack a completed_at timestamp? Recurring gap
--- flagged at cycle 78 — fix belongs in a trigger, not a checklist.
+-- Q: How many "done" goals lack a completed_at timestamp?
+-- HISTORY: recurring gap flagged at cycle 78 (9/14 done goals missing the
+-- timestamp, 36% coverage). Closed cycle 89 by goal 8fc57114, which
+-- (a) installed BEFORE INSERT/UPDATE triggers goals_set_completed_at_ins
+-- and goals_set_completed_at_upd that stamp completed_at on transition
+-- to 'done' and clear it on transition away, and (b) backfilled the 9
+-- historical rows from MAX(tasks.completed_at) per goal.
+-- EXPECTED: done_missing_completed_at = 0. The invariant is now
+-- trigger-enforced, not checklist-enforced — see F4b for the boolean
+-- pass/fail form suitable for grep'ing in CI or cycle-start preamble.
 SELECT COUNT(*) FILTER (WHERE status='done' AND completed_at IS NULL)  AS done_missing_completed_at,
        COUNT(*) FILTER (WHERE status='done')                           AS done_total
+FROM goals;
+
+-- F4b: Trigger-invariant assertion (boolean pass/fail).
+-- Q: Is the goals.completed_at invariant currently holding?
+-- Returns one row: invariant_holds = true when zero done-goals are
+-- missing completed_at. A 'false' here means the trigger was disabled,
+-- bypassed by a direct UPDATE on a replica, or dropped — investigate
+-- pg_trigger for goals_set_completed_at_ins / goals_set_completed_at_upd
+-- before assuming the data is wrong.
+SELECT
+  COUNT(*) FILTER (WHERE status='done' AND completed_at IS NULL) = 0
+    AS invariant_holds,
+  COUNT(*) FILTER (WHERE status='done' AND completed_at IS NULL)
+    AS violation_count
 FROM goals;
 
 -- End of retrospective-queries.sql
