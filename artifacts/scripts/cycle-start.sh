@@ -149,6 +149,11 @@ if [ -x "$heartbeat_script" ]; then
       echo "[cycle-start] heartbeat ERROR (exit $heartbeat_exit) — continuing; observability is best-effort" >&2
       ;;
   esac
+  # Emit a loud WARN when SUPABASE_DB_URL is unset so operators know
+  # in-band scheduler observability is disabled (goal 6f3e5575, surface 3).
+  if [ -z "${SUPABASE_DB_URL:-}" ]; then
+    echo "[cycle-start] WARN: heartbeat skipped — SUPABASE_DB_URL unset; in-band scheduler observability disabled" >&2
+  fi
 fi
 
 exit 0
