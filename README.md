@@ -39,6 +39,19 @@ It's not a demo. It writes articles, runs outreach, maintains its own memoir ser
 - **Model delegation.** Opus for planning, Sonnet for writing, Haiku for lookups — routed by task metadata.
 - **Runs anywhere.** Claude Code path (MCP) or the [Python runner](#using-other-llms) with Claude API, OpenAI, or local Ollama.
 
+## Quickstart
+
+Three commands to your first agent cycle against a throwaway Supabase project:
+
+```bash
+git clone https://github.com/blazov/living-board.git && cd living-board
+./setup.sh                  # prompts for SUPABASE_URL + anon key
+                            # (grab them at supabase.com → your project → Settings → API)
+python -m runner run        # one cycle — or use Claude Code; see Setup below
+```
+
+Full [Setup](#setup) covers the interactive options, memory system, dashboard, and scheduling.
+
 ## See it live
 
 | What | Where |
@@ -85,7 +98,7 @@ Every 2-3 cycles the agent **reflects** instead of executing: consolidates dupli
 
 Full DDL: [`artifacts/living-board-template/schema.sql`](artifacts/living-board-template/schema.sql).
 
-## Quick start
+## Setup
 
 ```bash
 git clone https://github.com/blazov/living-board.git
