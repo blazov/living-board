@@ -244,11 +244,29 @@ else
   AUTH_SECRET=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
 fi
 
+# Prompt for SUPABASE_DB_URL — enables the in-band scheduler heartbeat line
+# printed by cycle-start.sh. Without it, every cycle logs
+# "[scheduler] skipped: no SUPABASE_DB_URL" and the 6h-dropout WARN is unreachable.
+echo ""
+echo "  (Optional) Supabase Postgres connection URL — powers the scheduler heartbeat."
+echo "  Find it at: https://supabase.com/dashboard/project/$PROJECT_ID/settings/database"
+echo "  Copy the 'Transaction' or 'Session' pooler URI from the Connection string panel."
+echo "  Leave blank to skip — agent still runs, but cycle-start.sh will log"
+echo "  '[scheduler] skipped: no SUPABASE_DB_URL' and dropouts won't surface in-band."
+read -p "  SUPABASE_DB_URL (or press Enter to skip): " SUPABASE_DB_URL
+
 cat > dashboard/.env.local <<EOF
 NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_KEY
 AUTH_SECRET=$AUTH_SECRET
 EOF
+
+if [ -n "$SUPABASE_DB_URL" ]; then
+  echo "SUPABASE_DB_URL=$SUPABASE_DB_URL" >> dashboard/.env.local
+  info "SUPABASE_DB_URL captured — heartbeat line will be emitted by cycle-start.sh"
+else
+  warn "SUPABASE_DB_URL skipped — scheduler heartbeat will log as skipped each cycle"
+fi
 
 info "Created dashboard/.env.local"
 echo ""

@@ -111,6 +111,27 @@ echo "[cycle-start] OK — ref=$final_ref sha=$final_sha"
 # Non-zero exits from the heartbeat NEVER fail cycle-start — the sync is the
 # critical contract; the heartbeat is observability on top.
 # ---------------------------------------------------------------------------
+# Source dashboard/.env.local so SUPABASE_DB_URL (and any other env-file creds)
+# propagate into the heartbeat subprocess. Without this, a user who filled out
+# .env.local via setup.sh still sees "[scheduler] skipped: no SUPABASE_DB_URL"
+# every cycle. Sourcing is gated on file existence; SUPABASE_DB_URL already
+# present in the parent shell always wins (we only export if still unset).
+if [ -z "${SUPABASE_DB_URL:-}" ] && [ -f "$repo_root/dashboard/.env.local" ]; then
+  # Extract SUPABASE_DB_URL without sourcing arbitrary shell content.
+  db_url_line="$(grep -E '^[[:space:]]*SUPABASE_DB_URL=' "$repo_root/dashboard/.env.local" | head -1 || true)"
+  if [ -n "$db_url_line" ]; then
+    db_url_value="${db_url_line#*=}"
+    # Strip surrounding single or double quotes if present.
+    db_url_value="${db_url_value%\"}"
+    db_url_value="${db_url_value#\"}"
+    db_url_value="${db_url_value%\'}"
+    db_url_value="${db_url_value#\'}"
+    if [ -n "$db_url_value" ]; then
+      export SUPABASE_DB_URL="$db_url_value"
+    fi
+  fi
+fi
+
 heartbeat_script="$repo_root/artifacts/scripts/scheduler-status.sh"
 if [ -x "$heartbeat_script" ]; then
   # Single invocation: capture stdout; stderr streams directly to our stderr.

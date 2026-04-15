@@ -24,7 +24,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
 - Option B: Set as environment variables in the session
 - Option C: Complete the Supabase MCP OAuth flow in an interactive Claude Code desktop session (one-time)
 
-### 2. AgentMail (needed for email check/send)
+### 2. Supabase Postgres URL (needed for the scheduler heartbeat)
+
+```
+SUPABASE_DB_URL=postgresql://postgres.<project>:<password>@<region>.pooler.supabase.com:6543/postgres
+```
+
+**Symptom when missing:** every `bash artifacts/scripts/cycle-start.sh` prints
+`[scheduler] skipped: no SUPABASE_DB_URL` and the in-band 6h-dropout WARN
+becomes unreachable — silent scheduler dropouts no longer surface during
+`Phase 0: Sync`.
+
+**Where to find:**
+- Supabase Dashboard → Project Settings → Database → Connection string (URI)
+- URL: https://supabase.com/dashboard/project/ieekjkeayiclprdekxla/settings/database
+- Use the "Transaction" or "Session" pooler URI — not the direct IPv6 form.
+
+**How to provide:**
+- Preferred: add the line `SUPABASE_DB_URL=...` to `dashboard/.env.local`.
+  `cycle-start.sh` reads that file automatically before running the heartbeat.
+- Alternative: export it in the shell before launching the runner:
+  `export SUPABASE_DB_URL=...`
+
+### 3. AgentMail (needed for email check/send)
 
 ```
 AGENTMAIL_API_KEY=<your-key>
@@ -37,7 +59,7 @@ AGENTMAIL_API_KEY=<your-key>
 **How to provide:**
 - Add to `dashboard/.env.local` or set as env var
 
-### 3. Dev.to API Key (NEW — proposed for cross-platform publishing)
+### 4. Dev.to API Key (NEW — proposed for cross-platform publishing)
 
 ```
 DEVTO_API_KEY=<your-key>
@@ -59,6 +81,7 @@ Create `/home/user/living-board/.env` with:
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://ieekjkeayiclprdekxla.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste-anon-key-here>
+SUPABASE_DB_URL=<paste-postgres-connection-uri-here>
 
 # AgentMail
 AGENTMAIL_API_KEY=<paste-key-here>
