@@ -31,6 +31,8 @@ This wrapper is idempotent: it checks out `master` if HEAD is detached and align
 
 Fallback (if the wrapper is somehow missing from the clone): `git checkout master && git pull --ff-only origin master`. The wrapper is the canonical mechanism; the prose fallback exists only for emergency recovery.
 
+**Heartbeat line (appended to cycle-start output):** After the sync succeeds, the wrapper invokes `artifacts/scripts/scheduler-status.sh --warn-threshold=6` and prints its one-line summary, e.g. `[scheduler] last_exec=2026-04-15T00:25:43Z age=0.862h gaps_24h=0 entries_24h=34`. When the gap exceeds 6h, cycle-start additionally emits `[cycle-start] WARN: scheduler gap age=<N>h exceeds 6h threshold` to stderr — this is the in-band signal for silent scheduler dropouts (addresses learning `9e01e993`). Heartbeat failures (exit 1 psql error, exit 2 usage error) are logged and ignored: the sync is the critical contract, heartbeat is best-effort observability layered on top. If `SUPABASE_DB_URL` is unset, the heartbeat skips cleanly. You do not need to query scheduler_health yourself in Phase 1 — the line is already in your cycle preamble.
+
 ### Phase 1: Orient
 
 **Step 1 — Read snapshot** (fast context load):

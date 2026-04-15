@@ -96,4 +96,38 @@ fi
 final_ref="$(git symbolic-ref --short -q HEAD || echo "DETACHED")"
 final_sha="$(git rev-parse --short HEAD 2>/dev/null || echo "?")"
 echo "[cycle-start] OK — ref=$final_ref sha=$final_sha"
+
+# ---------------------------------------------------------------------------
+# Scheduler heartbeat check (goal 331b89e0, task d17cc5a2)
+#
+# Invoke scheduler-status.sh to surface silent-dropout warnings at cycle start.
+# The script writes its one-line summary to stdout; we pass that through so it
+# lands in the cycle-start log. Exit-code contract:
+#   0   healthy (or SUPABASE_DB_URL unset → graceful skip)
+#   1   psql failure           -> degrade, log [cycle-start] heartbeat ERROR
+#   2   usage error (our bug)  -> degrade, log [cycle-start] heartbeat ERROR
+#   3   gap > threshold        -> emit [cycle-start] WARN line to stderr
+#
+# Non-zero exits from the heartbeat NEVER fail cycle-start — the sync is the
+# critical contract; the heartbeat is observability on top.
+# ---------------------------------------------------------------------------
+heartbeat_script="$repo_root/artifacts/scripts/scheduler-status.sh"
+if [ -x "$heartbeat_script" ]; then
+  # Single invocation: capture stdout; stderr streams directly to our stderr.
+  heartbeat_summary="$("$heartbeat_script" --warn-threshold=6 2>&2)"
+  heartbeat_exit=$?
+  [ -n "$heartbeat_summary" ] && echo "$heartbeat_summary"
+  case $heartbeat_exit in
+    0) : ;;  # healthy or skipped (SUPABASE_DB_URL unset)
+    3)
+      # Parse `age=N.NNNh` from the summary for the WARN line.
+      age_field="$(printf '%s' "$heartbeat_summary" | grep -oE 'age=[^ ]+' | head -1)"
+      echo "[cycle-start] WARN: scheduler gap ${age_field:-unknown} exceeds 6h threshold" >&2
+      ;;
+    *)
+      echo "[cycle-start] heartbeat ERROR (exit $heartbeat_exit) — continuing; observability is best-effort" >&2
+      ;;
+  esac
+fi
+
 exit 0
