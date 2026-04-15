@@ -1,0 +1,87 @@
+=== Living Board fresh-clone smoke test ===
+Date (UTC): 2026-04-15T04:18:51+00:00
+Scratch dir: /tmp/lb-onboarding-scratch/scratch
+Origin: http://local_proxy@127.0.0.1:39321/git/blazov/living-board
+HEAD: 1d3e596  branch=master
+Tracked files: 192
+Top-level layout:
+  CITATION.cff
+  CLAUDE.md
+  FEEDBACK.md
+  LICENSE
+  README.md
+  agent.toml.example
+  artifacts
+  assets
+  dashboard
+  docker-compose.yml
+  docs
+  runner
+  setup.sh
+
+Env vars relevant to the agent (in this stripped subshell, HOME+PATH only):
+  SUPABASE_DB_URL        = <unset>
+  AGENTMAIL_API_KEY      = <unset>
+  DEVTO_API_KEY          = <unset>
+  GITHUB_TOKEN           = <unset>
+  OPENAI_API_KEY         = <unset>
+  ANTHROPIC_API_KEY      = <unset>
+
+=== Step 1: install-pre-commit-hook.sh (no project env vars) ===
++ env -i HOME=$HOME PATH=$PATH bash artifacts/scripts/install-pre-commit-hook.sh
+[install-hook] OK — pre-commit hook already-identical at .git/hooks/pre-commit
+[install-hook] Test it with: git commit --allow-empty -m test   (on master vs detached)
+EXIT: 0
+
+=== Step 1b: re-run install (idempotency check) ===
+[install-hook] OK — pre-commit hook already-identical at .git/hooks/pre-commit
+[install-hook] Test it with: git commit --allow-empty -m test   (on master vs detached)
+EXIT: 0
+
+=== Step 2: cycle-start.sh (no project env vars) ===
++ env -i HOME=$HOME PATH=$PATH bash artifacts/scripts/cycle-start.sh
+[cycle-start] starting at: ref=master sha=1d3e596
+Already on 'master'
+Your branch is up to date with 'origin/master'.
+From http://127.0.0.1:39321/git/blazov/living-board
+ * branch            master     -> FETCH_HEAD
+[cycle-start] already aligned with origin/master
+[cycle-start] OK — ref=master sha=1d3e596
+[scheduler] skipped: no SUPABASE_DB_URL
+EXIT: 0
+
+=== Step 3: post-state of scratch repo ===
+HEAD after cycle-start: 1d3e596
+Branch: master
+Hook installed?
+  -rwxr-xr-x 1 root root 775 Apr 15 04:18 /tmp/lb-onboarding-scratch/scratch/.git/hooks/pre-commit
+
+=== Step 4: pre-commit hook live test (master vs detached) ===
+-- on master, empty commit should be allowed (with allow-empty) --
+error: Debug: Namespace set to "git" (ignored)
+Debug: Key file set to "/home/claude/.ssh/commit_signing_key.pub" (ignored, using server key)
+Error: signing failed: Signing failed: signing operation failed: signing server returned status 400: {"error":{"message":"missing source","reason":"","type":"invalid_request_error"},"request_id":"req_011Ca4uvLJRhoWzeHuCKnuqK","type":"error"}
+Usage:
+  environment-runner code-sign [flags]
+
+Flags:
+  -h, --help   help for code-sign
+
+Error: signing failed: Signing failed: signing operation failed: signing server returned status 400: {"error":{"message":"missing source","reason":"","type":"invalid_request_error"},"request_id":"req_011Ca4uvLJRhoWzeHuCKnuqK","type":"error"}
+
+fatal: failed to write commit object
+EXIT: 128
+-- detach HEAD, empty commit should be REFUSED by hook --
+[pre-commit] REFUSED: HEAD is detached at bf30114
+[pre-commit] Commits made on a detached HEAD can be silently lost.
+[pre-commit] Recover with:
+[pre-commit]     bash artifacts/scripts/cycle-start.sh
+[pre-commit] (or: git checkout master && git pull --ff-only origin master)
+[pre-commit] To bypass intentionally: git commit --no-verify
+EXIT: 1
+-- restore master --
+  Previous HEAD position was bf30114 Integrate scheduler heartbeat into cycle-start.sh (goal 331b89e0 task d17cc5a2, cycle 96)
+  Switched to branch 'master'
+  Your branch is up to date with 'origin/master'.
+
+=== End of smoke test ===
