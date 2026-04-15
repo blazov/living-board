@@ -1,8 +1,15 @@
 -- Living Board: Autonomous Agent Schema
 -- Run this in your Supabase SQL editor to set up the database.
+--
+-- Re-runnability + portability: every CREATE uses IF NOT EXISTS so a
+-- partial-apply failure can be recovered by re-running the whole file,
+-- and pgcrypto is loaded explicitly so the gen_random_uuid() defaults
+-- work on non-Supabase Postgres (CI, devcontainer, plain docker postgres)
+-- in addition to Supabase where the extension is typically preloaded.
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Goals: high-level objectives the agent works toward
-CREATE TABLE goals (
+CREATE TABLE IF NOT EXISTS goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
@@ -17,7 +24,7 @@ CREATE TABLE goals (
 );
 
 -- Tasks: concrete steps within a goal
-CREATE TABLE tasks (
+CREATE TABLE IF NOT EXISTS tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID NOT NULL REFERENCES goals(id),
   title TEXT NOT NULL,
@@ -37,7 +44,7 @@ CREATE TABLE tasks (
 );
 
 -- Execution Log: audit trail of every agent cycle
-CREATE TABLE execution_log (
+CREATE TABLE IF NOT EXISTS execution_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trigger_run_id TEXT,                      -- links to scheduled trigger run
   goal_id UUID REFERENCES goals(id),
@@ -50,7 +57,7 @@ CREATE TABLE execution_log (
 );
 
 -- Learnings: accumulated knowledge across cycles
-CREATE TABLE learnings (
+CREATE TABLE IF NOT EXISTS learnings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID REFERENCES goals(id),       -- NULL = global learning
   task_id UUID REFERENCES tasks(id),
@@ -63,7 +70,7 @@ CREATE TABLE learnings (
 );
 
 -- Snapshots: compressed state for fast agent context loading
-CREATE TABLE snapshots (
+CREATE TABLE IF NOT EXISTS snapshots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   content TEXT NOT NULL,                  -- natural language summary of current state
   active_goals JSONB DEFAULT '[]'::jsonb, -- [{id, title, status, progress_pct}]
@@ -76,7 +83,7 @@ CREATE TABLE snapshots (
 );
 
 -- Goal Comments: human-agent collaboration thread per goal
-CREATE TABLE goal_comments (
+CREATE TABLE IF NOT EXISTS goal_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID NOT NULL REFERENCES goals(id),
   author TEXT NOT NULL DEFAULT 'user',     -- 'user' or 'agent'
@@ -89,20 +96,20 @@ CREATE TABLE goal_comments (
 );
 
 -- Agent Config: operational key-value settings
-CREATE TABLE agent_config (
+CREATE TABLE IF NOT EXISTS agent_config (
   key TEXT PRIMARY KEY,
   value JSONB NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- Performance indexes
-CREATE INDEX idx_goals_status ON goals (status) WHERE status IN ('pending', 'in_progress');
-CREATE INDEX idx_tasks_goal_status ON tasks (goal_id, status, sort_order);
-CREATE INDEX idx_tasks_status ON tasks (status) WHERE status IN ('pending', 'in_progress');
-CREATE INDEX idx_execution_log_created ON execution_log (created_at DESC);
-CREATE INDEX idx_learnings_category ON learnings (category);
-CREATE INDEX idx_goal_comments_goal ON goal_comments (goal_id, created_at DESC);
-CREATE INDEX idx_snapshots_created ON snapshots (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_goals_status ON goals (status) WHERE status IN ('pending', 'in_progress');
+CREATE INDEX IF NOT EXISTS idx_tasks_goal_status ON tasks (goal_id, status, sort_order);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status) WHERE status IN ('pending', 'in_progress');
+CREATE INDEX IF NOT EXISTS idx_execution_log_created ON execution_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_learnings_category ON learnings (category);
+CREATE INDEX IF NOT EXISTS idx_goal_comments_goal ON goal_comments (goal_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_snapshots_created ON snapshots (created_at DESC);
 
 -- Invariant triggers
 --
