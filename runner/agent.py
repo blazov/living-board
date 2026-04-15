@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
+from typing import Callable, Mapping, Optional
 
 from .config import AgentConfig
 from .db import SupabaseClient
@@ -13,6 +15,59 @@ from .providers import create_provider
 from .tools import create_tool_registry
 
 logger = logging.getLogger("living-board")
+
+
+# Credentials the agent relies on. Presence/absence is logged once per process
+# at the start of the first cycle so operators can immediately see what is
+# wired up in the current environment without grepping through the cycle body.
+# No secret values are ever emitted — only variable names.
+CREDENTIAL_ENV_VARS: tuple[str, ...] = (
+    "AGENTMAIL_API_KEY",
+    "DEVTO_API_KEY",
+    "SUPABASE_DB_URL",
+    "AUTH_SECRET",
+    "CLAUDE_API_KEY",
+    "TRIGGER_ID",
+    "SUBSTACK_COOKIE",
+)
+
+# Module-level guard: emit the banner exactly once per process, even if
+# AgentRunner is re-instantiated (tests, supervisors, etc.).
+_credentials_banner_emitted: bool = False
+
+
+def emit_credentials_banner(
+    env: Optional[Mapping[str, str]] = None,
+    emit: Optional[Callable[[str], None]] = None,
+    *,
+    force: bool = False,
+) -> Optional[str]:
+    """Emit a one-line credentials presence/absence banner.
+
+    Format: ``[credentials] present=A,B absent=C,D,E`` — variable names only.
+    Idempotent per process: subsequent calls are no-ops and return ``None``
+    unless ``force=True`` (used by tests). Returns the emitted line on the
+    first call, ``None`` thereafter.
+    """
+    global _credentials_banner_emitted
+    if _credentials_banner_emitted and not force:
+        return None
+
+    source = os.environ if env is None else env
+    present = [name for name in CREDENTIAL_ENV_VARS if source.get(name)]
+    absent = [name for name in CREDENTIAL_ENV_VARS if not source.get(name)]
+    line = (
+        f"[credentials] present={','.join(present) or '(none)'} "
+        f"absent={','.join(absent) or '(none)'}"
+    )
+
+    if emit is None:
+        logger.info(line)
+    else:
+        emit(line)
+
+    _credentials_banner_emitted = True
+    return line
 
 
 class AgentRunner:
@@ -27,6 +82,7 @@ class AgentRunner:
     def run_cycle(self) -> CycleResult:
         """Execute one full agent cycle."""
         start = time.time()
+        emit_credentials_banner()
         logger.info("Starting agent cycle...")
 
         # Phase 1: Orient (no LLM)
