@@ -109,6 +109,19 @@ if [ "$PREREQS_OK" = false ]; then
 fi
 
 # ──────────────────────────────────────────────
+# Step 1b: Install pre-commit hook (detached-HEAD guard)
+# ──────────────────────────────────────────────
+# .git/hooks is per-clone and not tracked, so every fresh clone needs this.
+# The installer is idempotent; running it outside a git repo (e.g. from an
+# archive) returns exit 2 — we warn and continue rather than abort setup.
+step "Installing pre-commit hook (detached-HEAD guard)..."
+if bash artifacts/scripts/install-pre-commit-hook.sh; then
+  info "Pre-commit hook installed (refuses commits on detached HEAD)"
+else
+  warn "Pre-commit hook install skipped (not a git clone?) — detached-HEAD guard inactive"
+fi
+
+# ──────────────────────────────────────────────
 # Step 2: Agent mode
 # ──────────────────────────────────────────────
 step "How do you want to run the agent?"
