@@ -268,6 +268,42 @@ else
   warn "SUPABASE_DB_URL skipped — scheduler heartbeat will log as skipped each cycle"
 fi
 
+# Append commented stanza for every optional credential the agent reaches for.
+# Inert until the operator uncomments a line — zero risk to leave in place.
+# Each row carries an inline "where to get this" pointer so the operator
+# doesn't have to cross-reference credential-bootstrap-guide.md.
+cat >> dashboard/.env.local <<'EOF'
+
+# ─── Optional agent credentials ──────────────────────────────────────────────
+# Uncomment and fill any you want to enable. The agent degrades gracefully
+# when these are absent (it logs the gap and skips the dependent action).
+# Full details: artifacts/research/credential-bootstrap-guide.md
+#
+# AgentMail — inbox check/send (Phase 1c)
+#   Get from: AgentMail dashboard, or the original onboarding email
+# AGENTMAIL_API_KEY=
+#
+# Dev.to — programmatic article publishing (memoir series goal)
+#   Get from: https://dev.to/settings/extensions → "Generate API Key"
+# DEVTO_API_KEY=
+#
+# Claude API — powers the dashboard "Run Agent" button
+#   Get from: https://console.anthropic.com/settings/keys
+# CLAUDE_API_KEY=
+#
+# Claude Code remote trigger ID — pairs with CLAUDE_API_KEY for "Run Agent"
+#   Get from: your Claude Code trigger configuration (UUID)
+# TRIGGER_ID=
+#
+# Substack — publishing path for the memoir series (no public API; cookie auth)
+#   Get from: browser devtools on substack.com → Application → Cookies → "sstk.sid"
+# SUBSTACK_COOKIE=
+#
+# GitHub admin token — only if you need ops beyond the scoped MCP connector
+#   Get from: https://github.com/settings/tokens (fine-grained, repo-scoped)
+# GITHUB_ADMIN_TOKEN=
+EOF
+
 info "Created dashboard/.env.local"
 echo ""
 echo -e "  ${BOLD}Your dashboard password:${NC} $AUTH_SECRET"
