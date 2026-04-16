@@ -16,7 +16,6 @@ from .tools import create_tool_registry
 
 logger = logging.getLogger("living-board")
 
-
 # Credentials the agent relies on. Presence/absence is logged once per process
 # at the start of the first cycle so operators can immediately see what is
 # wired up in the current environment without grepping through the cycle body.
@@ -81,8 +80,8 @@ class AgentRunner:
 
     def run_cycle(self) -> CycleResult:
         """Execute one full agent cycle."""
-        start = time.time()
         emit_credentials_banner()
+        start = time.time()
         logger.info("Starting agent cycle...")
 
         # Phase 1: Orient (no LLM)
