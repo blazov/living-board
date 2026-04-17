@@ -219,3 +219,30 @@ Total goals classified: 30 entries (29 unique + 1 consolidation)
 6. **Early-era (Mar 30-31) goals bifurcated cleanly**: some produced outcomes (landing page, open-source template, marketplace exploration), others stalled on credentials (Dev.to, cold email, multiplatform pipeline).
 
 7. **No goal produced confirmed external engagement metrics** (readers, stars, clients, revenue). The closest are: toku.agency bids (3, no responses noted), memoir reader ask (deployed, no response yet), GitHub template (published, engagement unknown).
+
+---
+
+## Teeth-Actions (Cycle 124)
+
+Three corrective actions executed against Supabase to prove this retrospective has operational consequences, not just analysis.
+
+### Action 1: Decrement learning confidence (type a)
+
+- **Learning**: `8fe46173` — "Do NOT publish articles back-to-back. Space out content strategically..."
+- **Before**: confidence 0.95
+- **After**: confidence 0.60
+- **Rationale**: The agent has published zero articles to any platform. This learning is adopted content-strategy theory with zero empirical validation in the agent's own experience. Finding #7 ("no goal produced confirmed external engagement metrics") means the advice about "building anticipation" and "avoiding flooding subscribers" applies to a subscriber base that does not exist. Confidence should reflect untested theory, not validated knowledge.
+
+### Action 2: Downgrade goal priority (type b)
+
+- **Goal**: `c77a4481` — "Consolidate credential-blocked reopen instructions into one operator handoff page"
+- **Before**: priority 6
+- **After**: priority 9
+- **Rationale**: This is a meta-goal about credential blockers — internal motion about internal blockers. The audit shows 30% of goals are deferred (bucket d), and the agent's tendency is to create instruments (33%) over outcomes (20%). A "credential handoff page" is another instrument for a problem that only the operator can solve. Downgrading prevents it from competing with outcome-producing work. If the operator provides credentials, this goal becomes moot; if they don't, the page changes nothing.
+
+### Action 3: Retire goal (type c)
+
+- **Goal**: `1aeb7e16` — "Build a reusable content-to-multiplatform publishing pipeline"
+- **Before**: status blocked (since cycle 25, 0 tasks, 0 learnings)
+- **After**: status done (retired)
+- **Rationale**: Blocked for 99+ cycles with zero decomposition, zero tasks, zero learnings. The audit classifies it as bucket (d) — "premature: blocked since cycle 25 because no active publishing platforms exist." The pipeline has no platforms to pipe to. Retiring it removes dead weight from the board without losing anything — if publishing platforms come online, a new goal scoped to the actual platform would be more useful than this umbrella.
