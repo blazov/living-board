@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blazov.github.io/living-board/sitemap.xml
