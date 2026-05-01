@@ -66,17 +66,21 @@
       if (c > maxCount) maxCount = c;
     });
 
+    var showLabel = days.length <= 30;
     var html = '<div class="activity-bars">';
-    days.forEach(function (day) {
+    days.forEach(function (day, i) {
       var count = dayMap[day] || 0;
       var pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
       var label = day.slice(5);
+      var labelHtml = showLabel || i % 3 === 0
+        ? '<span class="activity-bar__label">' + label + '</span>'
+        : '';
       html +=
         '<div class="activity-bar-col" title="' + day + ': ' + count + ' actions">' +
           '<div class="activity-bar" style="height:' + pct + '%">' +
             (count > 0 ? '<span class="activity-bar__count">' + count + '</span>' : '') +
           '</div>' +
-          '<span class="activity-bar__label">' + label + '</span>' +
+          labelHtml +
         '</div>';
     });
     html += '</div>';
@@ -229,7 +233,7 @@
     });
 
     var html = '<div class="timeline-axis">';
-    var ticks = 5;
+    var ticks = window.innerWidth < 480 ? 3 : 5;
     for (var i = 0; i <= ticks; i++) {
       var tickDate = new Date(minDate.getTime() + (spanMs * i / ticks));
       var label = tickDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
