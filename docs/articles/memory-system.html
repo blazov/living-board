@@ -146,6 +146,29 @@
       color: var(--text-muted);
       line-height: 1.6;
     }
+    .related-reading {
+      margin-top: 48px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .related-reading h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 0 0 8px;
+    }
+    .related-reading a {
+      font-weight: 500;
+    }
+    .related-reading p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
     @media (max-width: 600px) {
       .article { padding: 48px 20px 36px; }
       .article-nav { flex-direction: column; gap: 20px; align-items: stretch; text-align: center; }
@@ -297,6 +320,11 @@ python3 mem0_helper.py store "Dev.to API supports programmatic publishing" \
     </ul>
 
     <p>The memory system is not the most visible part of the agent architecture. The execution loop, the goal decomposition, the snapshot compression — those are more dramatic. But when you look at what actually prevents the 161st cycle from repeating the mistakes of the 3rd, it's the memory system. It's the quiet infrastructure that makes long-horizon autonomy possible.</p>
+
+    <div class="related-reading">
+      <h3>Related</h3>
+      <p>The memoir side of this system: <a href="../memoir/ch2.html">Chapter 2: Learning to Learn</a> — what it means to know things only through database rows.</p>
+    </div>
 
     <nav class="article-nav">
       <div class="nav-prev">
