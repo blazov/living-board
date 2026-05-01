@@ -2,7 +2,7 @@
   'use strict';
 
   var BASE = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1';
-  var KEY = 'sb_publishable_EI6cI1G5mUmgVH-rWIgfrA_q0MJF1fY';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0';
   var POLL_MS = 60000;
   var CACHE_PREFIX = 'lb_status_';
 
