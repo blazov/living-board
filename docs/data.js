@@ -198,11 +198,131 @@
     $('confidence-dist-chart').innerHTML = html || '<p class="status-empty">No data.</p>';
   }
 
+  function renderTimeline(goals, tasks) {
+    if (!goals.length) {
+      $('timeline-chart').innerHTML = '<p class="status-empty">No goal data.</p>';
+      return;
+    }
+
+    var now = new Date();
+    var dates = goals.map(function (g) { return new Date(g.created_at); });
+    var minDate = new Date(Math.min.apply(null, dates));
+    var maxDate = now;
+    var spanMs = maxDate - minDate;
+    if (spanMs < 86400000) spanMs = 86400000;
+
+    var tasksByGoal = {};
+    tasks.forEach(function (t) {
+      if (!tasksByGoal[t.goal_id]) tasksByGoal[t.goal_id] = [];
+      tasksByGoal[t.goal_id].push(t);
+    });
+
+    var statusColors = {
+      done: '#4dd4ae',
+      in_progress: '#6c8aff',
+      pending: '#9498a8',
+      blocked: '#e06a6a'
+    };
+
+    var sorted = goals.slice().sort(function (a, b) {
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+
+    var html = '<div class="timeline-axis">';
+    var ticks = 5;
+    for (var i = 0; i <= ticks; i++) {
+      var tickDate = new Date(minDate.getTime() + (spanMs * i / ticks));
+      var label = tickDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      html += '<span class="timeline-tick" style="left:' + (i / ticks * 100) + '%">' + label + '</span>';
+    }
+    html += '</div>';
+
+    html += '<div class="timeline-rows">';
+    sorted.forEach(function (g) {
+      var start = new Date(g.created_at);
+      var gTasks = tasksByGoal[g.id] || [];
+      var endDates = gTasks
+        .filter(function (t) { return t.completed_at; })
+        .map(function (t) { return new Date(t.completed_at); });
+      var end = g.status === 'done' && endDates.length
+        ? new Date(Math.max.apply(null, endDates))
+        : now;
+
+      var leftPct = ((start - minDate) / spanMs) * 100;
+      var widthPct = ((end - start) / spanMs) * 100;
+      if (widthPct < 1) widthPct = 1;
+      var color = statusColors[g.status] || '#9498a8';
+      var title = escapeHtml(g.title);
+      var doneTasks = gTasks.filter(function (t) { return t.status === 'done'; }).length;
+      var totalTasks = gTasks.length;
+
+      html +=
+        '<div class="timeline-row">' +
+          '<span class="timeline-row__label" title="' + title + '">' + title + '</span>' +
+          '<div class="timeline-row__track">' +
+            '<div class="timeline-row__bar" style="left:' + leftPct + '%;width:' + widthPct + '%;background:' + color + '" ' +
+              'title="' + title + ' — ' + g.status.replace('_', ' ') + ' (' + doneTasks + '/' + totalTasks + ' tasks)">' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+
+    var legendHtml = '<div class="breakdown-legend" style="margin-top:12px">';
+    ['done', 'in_progress', 'pending', 'blocked'].forEach(function (s) {
+      legendHtml +=
+        '<span class="legend-item">' +
+          '<span class="legend-dot" style="background:' + statusColors[s] + '"></span>' +
+          s.replace('_', ' ') +
+        '</span>';
+    });
+    legendHtml += '</div>';
+
+    $('timeline-chart').innerHTML = html + legendHtml;
+  }
+
+  function renderFeed(logEntries) {
+    if (!logEntries.length) {
+      $('activity-feed').innerHTML = '<p class="status-empty">No activity data.</p>';
+      return;
+    }
+
+    var recent = logEntries.slice(-15).reverse();
+    var actionIcons = {
+      execute: '▶',
+      reflect: '◆',
+      check_email: '✉',
+      decompose: '✦'
+    };
+
+    var html = '<div class="feed-list">';
+    recent.forEach(function (e) {
+      var dt = new Date(e.created_at);
+      var dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      var timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      var icon = actionIcons[e.action] || '•';
+      var summary = escapeHtml(e.summary || e.action);
+      var actionLabel = escapeHtml(e.action);
+
+      html +=
+        '<div class="feed-item">' +
+          '<span class="feed-item__icon">' + icon + '</span>' +
+          '<div class="feed-item__body">' +
+            '<span class="feed-item__action">' + actionLabel + '</span>' +
+            '<span class="feed-item__summary">' + summary + '</span>' +
+          '</div>' +
+          '<span class="feed-item__time">' + dateStr + ' ' + timeStr + '</span>' +
+        '</div>';
+    });
+    html += '</div>';
+    $('activity-feed').innerHTML = html;
+  }
+
   function fetchAll() {
     return Promise.all([
       apiFetch('/goals?select=id,title,status,priority,created_at').catch(function () { return []; }),
       apiFetch('/tasks?select=id,status,goal_id,completed_at,created_at').catch(function () { return []; }),
-      apiFetch('/execution_log?select=action,created_at&order=created_at.asc').catch(function () { return []; }),
+      apiFetch('/execution_log?select=action,summary,created_at&order=created_at.asc').catch(function () { return []; }),
       apiFetch('/learnings?select=category,confidence,created_at').catch(function () { return []; }),
       apiFetch('/snapshots?select=cycle_count,created_at&order=created_at.desc&limit=1').catch(function () { return []; })
     ]).then(function (results) {
@@ -225,6 +345,8 @@
 
       renderCategoryChart(learnings);
       renderConfidenceDistribution(learnings);
+      renderTimeline(goals, tasks);
+      renderFeed(logEntries);
     });
   }
 

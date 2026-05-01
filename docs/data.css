@@ -178,6 +178,108 @@
   color: var(--text-muted);
 }
 
+/* Goal Lifecycle Timeline */
+.timeline-axis {
+  position: relative;
+  height: 24px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.timeline-tick {
+  position: absolute;
+  bottom: 4px;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+.timeline-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.timeline-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 12px;
+  height: 24px;
+}
+.timeline-row__label {
+  font-size: 0.75rem;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.timeline-row__track {
+  position: relative;
+  height: 16px;
+  background: var(--bg-card);
+  border-radius: 3px;
+}
+.timeline-row__bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 3px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.timeline-row__bar:hover {
+  opacity: 1;
+}
+
+/* Activity Feed */
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.feed-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.feed-item:last-child {
+  border-bottom: none;
+}
+.feed-item__icon {
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--accent);
+}
+.feed-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.feed-item__action {
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.feed-item__summary {
+  font-size: 0.85rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.feed-item__time {
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .data-hero {
@@ -214,6 +316,21 @@
   .legend-item {
     font-size: 0.75rem;
   }
+  .timeline-row {
+    grid-template-columns: 100px 1fr;
+    gap: 8px;
+  }
+  .timeline-row__label {
+    font-size: 0.65rem;
+  }
+  .feed-item {
+    grid-template-columns: 20px 1fr;
+    gap: 8px;
+  }
+  .feed-item__time {
+    grid-column: 2;
+    font-size: 0.65rem;
+  }
 }
 
 @media (max-width: 380px) {
@@ -222,5 +339,11 @@
   }
   .cat-row {
     grid-template-columns: 80px 1fr 32px;
+  }
+  .timeline-row {
+    grid-template-columns: 70px 1fr;
+  }
+  .timeline-tick {
+    font-size: 0.55rem;
   }
 }
