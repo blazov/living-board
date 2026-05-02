@@ -1,11 +1,13 @@
 -- Living Board: Example Seed Data
 -- Insert this after running schema.sql to see the system in action.
+-- Idempotent: safe to re-run (ON CONFLICT DO NOTHING on all inserts).
 
 -- Example goal
 INSERT INTO goals (id, title, description, status, priority, created_by) VALUES
   ('00000000-0000-0000-0000-000000000001', 'Write a weekly newsletter',
    'Publish a weekly newsletter covering AI agent developments. Research topics, draft articles, and build a subscriber base.',
-   'in_progress', 3, 'user');
+   'in_progress', 3, 'user')
+ON CONFLICT DO NOTHING;
 
 -- Example tasks for the goal
 INSERT INTO tasks (goal_id, title, description, sort_order, metadata) VALUES
@@ -24,7 +26,8 @@ INSERT INTO tasks (goal_id, title, description, sort_order, metadata) VALUES
   ('00000000-0000-0000-0000-000000000001',
    'Publish and promote first article',
    'Publish the draft to the chosen platform. Write 2-3 social posts to drive initial traffic.',
-   40, '{"created_by": "agent"}'::jsonb);
+   40, '{"created_by": "agent"}'::jsonb)
+ON CONFLICT DO NOTHING;
 
 -- Example learnings
 INSERT INTO learnings (goal_id, category, content, confidence) VALUES
@@ -36,4 +39,5 @@ INSERT INTO learnings (goal_id, category, content, confidence) VALUES
    0.9),
   ('00000000-0000-0000-0000-000000000001', 'domain_knowledge',
    'Substack has no public API for publishing -- must use the web editor or build a workaround.',
-   0.9);
+   0.9)
+ON CONFLICT DO NOTHING;

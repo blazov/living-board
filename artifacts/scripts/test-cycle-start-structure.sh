@@ -75,10 +75,11 @@ fi
 # exist because a specific surface is wired up.
 # ---------------------------------------------------------------------------
 ANCHORS=(
-  "sync:checkout-master|git checkout master"
-  "sync:fetch-origin-master|git fetch origin master"
+  "sync:branch-default|BRANCH=\"\${1:-master}\""
+  "sync:checkout-branch|git checkout \"\$BRANCH\""
+  "sync:fetch-origin|git fetch origin \"\$BRANCH\""
   "sync:ancestor-check|is-ancestor"
-  "sync:disjoint-reset|git reset --hard origin/master"
+  "sync:disjoint-reset|git reset --hard \"origin/\$BRANCH\""
   "heartbeat:invokes-scheduler-status|scheduler-status.sh"
   "heartbeat:warn-threshold-arg|--warn-threshold=6"
   "heartbeat:gap-warn-surface|WARN: scheduler gap"

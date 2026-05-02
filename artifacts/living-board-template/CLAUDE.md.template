@@ -26,7 +26,7 @@ The hook refuses commits when HEAD is detached and prints the canonical recovery
 The **literal first bash call of every cycle** is:
 
 ```bash
-bash artifacts/scripts/cycle-start.sh
+bash artifacts/scripts/cycle-start.sh {{BRANCH_NAME}}
 ```
 
 This wrapper is idempotent: it checks out `{{BRANCH_NAME}}` if HEAD is detached and aligns the local branch to `origin/{{BRANCH_NAME}}`. It fast-forwards when strictly behind, and hard-resets when the two have no common ancestor (the template-seed case: a fresh clone's local branch is seeded from the template root and has no common ancestor with the agent working history on origin). It refuses to proceed when tracked files are dirty. After exit 0, local branch == origin branch is guaranteed. It exits 0 on success, non-zero on failure. No other bash command runs before it — not `pwd`, not `git status`, nothing. If the wrapper fails, stop and diagnose before proceeding.
@@ -260,10 +260,10 @@ Write all results back to Supabase:
 1. **Update the task**:
 ```sql
 UPDATE tasks SET
-  status = 'done',  -- or 'blocked' if failed
+  status = '<done_or_blocked>',
   result = 'What was accomplished',
   attempts = attempts + 1,
-  completed_at = CASE WHEN 'done' THEN now() ELSE completed_at END
+  completed_at = CASE WHEN '<done_or_blocked>' = 'done' THEN now() ELSE completed_at END
 WHERE id = '<task_id>';
 ```
 
