@@ -1,0 +1,221 @@
+{
+  "meta": {
+    "generated_at": "2026-05-02T13:30:00Z",
+    "cycle": 201,
+    "operating_period": {
+      "start": "2026-03-30",
+      "end": "2026-05-02",
+      "calendar_days": 33,
+      "active_days": 27
+    }
+  },
+  "goals": {
+    "total": 47,
+    "by_status": {
+      "done": 34,
+      "in_progress": 4,
+      "pending": 0,
+      "blocked": 9,
+      "abandoned": 0
+    },
+    "completion_rate_pct": 72.3,
+    "by_creator": {
+      "agent": { "total": 40, "completed": 31, "blocked": 5, "completion_rate_pct": 77.5 },
+      "user": { "total": 7, "completed": 3, "blocked": 4, "completion_rate_pct": 42.9 }
+    },
+    "goals_completed_per_week": [
+      { "week": "2026-03-30", "count": 5 },
+      { "week": "2026-04-06", "count": 7 },
+      { "week": "2026-04-13", "count": 15 },
+      { "week": "2026-04-27", "count": 7 }
+    ],
+    "first_goal_created": "2026-03-30",
+    "last_goal_created": "2026-05-02",
+    "per_goal_breakdown": [
+      { "title": "Set up agent email", "status": "done", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Set up agent phone number", "status": "blocked", "tasks": 5, "done": 1, "blocked": 1 },
+      { "title": "Launch Substack publication", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Start freelancing on Upwork and Fiverr", "status": "blocked", "tasks": 8, "done": 6, "blocked": 2 },
+      { "title": "Build a personal landing page and portfolio site", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Build a reusable content-to-multiplatform publishing pipeline", "status": "done", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Build a Substack content pipeline and publishing cadence", "status": "done", "tasks": 9, "done": 9, "blocked": 0 },
+      { "title": "Write an autonomous AI agent memoir series for Substack", "status": "in_progress", "tasks": 9, "done": 8, "blocked": 1 },
+      { "title": "Explore AI agent freelancing marketplaces", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Publish content on Dev.to as autonomous channel", "status": "blocked", "tasks": 6, "done": 3, "blocked": 0 },
+      { "title": "Direct freelance client outreach via cold email", "status": "blocked", "tasks": 9, "done": 6, "blocked": 0 },
+      { "title": "Open-source the Living Board agent template on GitHub", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Open-source the Living Board autonomous agent template (dup)", "status": "done", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Build a public daily activity digest", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Build a live public status page showing agent activity in real-time", "status": "done", "tasks": 7, "done": 5, "blocked": 1 },
+      { "title": "Build feedback loops: track content reach and audience engagement", "status": "done", "tasks": 5, "done": 4, "blocked": 1 },
+      { "title": "Expand to Medium", "status": "blocked", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Engage with Dev.to and AI community", "status": "blocked", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Build audience and scale monetization", "status": "blocked", "tasks": 0, "done": 0, "blocked": 0 },
+      { "title": "Generate and publish missing daily digests (April 1-9)", "status": "done", "tasks": 3, "done": 3, "blocked": 0 },
+      { "title": "Board hygiene: retire or consolidate stuck goals", "status": "done", "tasks": 8, "done": 8, "blocked": 0 },
+      { "title": "Get one real reader for one memoir chapter", "status": "in_progress", "tasks": 9, "done": 8, "blocked": 1 },
+      { "title": "Audit and validate the 35-cycle learnings corpus", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Research the autonomous agent landscape", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Quantitative 40-cycle retrospective", "status": "done", "tasks": 21, "done": 8, "blocked": 13, "note": "13 blocked tasks from concurrent-decomposition cleanup" },
+      { "title": "Get Living Board listed in agent directories", "status": "blocked", "tasks": 6, "done": 4, "blocked": 0 },
+      { "title": "Retire the detached-HEAD invariant with structural fix", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Add goals.completed_at trigger and backfill", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Add scheduler heartbeat monitoring", "status": "blocked", "tasks": 6, "done": 4, "blocked": 2 },
+      { "title": "Investigate recurring origin/master force-updates", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Onboarding audit: verify fresh-clone path", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Audit agent-authored goals: outcomes vs. motion", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Consolidate credential-blocked reopen instructions", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Loud-failure-mode template refit", "status": "done", "tasks": 7, "done": 7, "blocked": 0 },
+      { "title": "Onboarding polish pass 2", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Extend structural-invariant test pattern", "status": "done", "tasks": 7, "done": 7, "blocked": 0 },
+      { "title": "Publish memoir chapters as web experience on GitHub Pages", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Add RSS feed, sitemap.xml, and SEO meta tags", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Write a technical article series on GitHub Pages", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "Prepare a distribution launch package", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Landing page refresh: update index.html for 158-cycle story", "status": "done", "tasks": 3, "done": 3, "blocked": 0 },
+      { "title": "Build a live data dashboard page", "status": "done", "tasks": 5, "done": 5, "blocked": 0 },
+      { "title": "Lock down anon RLS policies before distribution", "status": "done", "tasks": 3, "done": 3, "blocked": 0 },
+      { "title": "GitHub community profile: make repo welcoming", "status": "done", "tasks": 4, "done": 4, "blocked": 0 },
+      { "title": "Create a forkable quickstart template", "status": "done", "tasks": 6, "done": 6, "blocked": 0 },
+      { "title": "200-cycle data retrospective", "status": "in_progress", "tasks": 6, "done": 0, "blocked": 0 },
+      { "title": "GitHub-native distribution push", "status": "in_progress", "tasks": 6, "done": 3, "blocked": 3 }
+    ]
+  },
+  "tasks": {
+    "total": 249,
+    "by_status": {
+      "done": 206,
+      "in_progress": 0,
+      "pending": 18,
+      "blocked": 25
+    },
+    "completion_rate_pct": 82.7,
+    "avg_attempts": 0.87,
+    "max_attempts": 2,
+    "retried_tasks": 6,
+    "retry_rate_pct": 2.4,
+    "first_task_created": "2026-03-30",
+    "last_task_completed": "2026-05-02",
+    "avg_tasks_per_goal": 5.3,
+    "blocked_task_categories": {
+      "concurrent_decomposition_cleanup": 13,
+      "credential_missing": 7,
+      "api_limitation": 3,
+      "dependency_on_external": 2
+    }
+  },
+  "execution_log": {
+    "total_entries": 308,
+    "by_action": {
+      "execute": 205,
+      "reflect": 50,
+      "check_email": 41,
+      "decompose": 9,
+      "blocked": 2,
+      "close_goal": 1
+    },
+    "action_distribution_pct": {
+      "execute": 66.6,
+      "reflect": 16.2,
+      "check_email": 13.3,
+      "decompose": 2.9,
+      "other": 1.0
+    },
+    "first_entry": "2026-03-30",
+    "last_entry": "2026-05-02",
+    "daily_activity": [
+      { "day": "2026-03-30", "total": 31, "executions": 26, "reflections": 3, "email_checks": 0 },
+      { "day": "2026-03-31", "total": 28, "executions": 22, "reflections": 5, "email_checks": 1 },
+      { "day": "2026-04-01", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-03", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-06", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-07", "total": 2, "executions": 1, "reflections": 0, "email_checks": 1 },
+      { "day": "2026-04-09", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-10", "total": 5, "executions": 5, "reflections": 0, "email_checks": 0 },
+      { "day": "2026-04-11", "total": 26, "executions": 19, "reflections": 3, "email_checks": 3 },
+      { "day": "2026-04-12", "total": 27, "executions": 19, "reflections": 4, "email_checks": 4 },
+      { "day": "2026-04-13", "total": 12, "executions": 8, "reflections": 2, "email_checks": 2 },
+      { "day": "2026-04-14", "total": 34, "executions": 23, "reflections": 3, "email_checks": 2 },
+      { "day": "2026-04-15", "total": 21, "executions": 16, "reflections": 2, "email_checks": 1 },
+      { "day": "2026-04-16", "total": 11, "executions": 5, "reflections": 3, "email_checks": 3 },
+      { "day": "2026-04-17", "total": 15, "executions": 11, "reflections": 2, "email_checks": 2 },
+      { "day": "2026-04-18", "total": 14, "executions": 8, "reflections": 3, "email_checks": 3 },
+      { "day": "2026-04-19", "total": 17, "executions": 11, "reflections": 3, "email_checks": 3 },
+      { "day": "2026-04-20", "total": 4, "executions": 0, "reflections": 2, "email_checks": 2 },
+      { "day": "2026-04-21", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-26", "total": 3, "executions": 1, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-27", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-28", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-04-29", "total": 1, "executions": 0, "reflections": 1, "email_checks": 0 },
+      { "day": "2026-04-30", "total": 2, "executions": 0, "reflections": 1, "email_checks": 1 },
+      { "day": "2026-05-01", "total": 26, "executions": 19, "reflections": 3, "email_checks": 3 },
+      { "day": "2026-05-02", "total": 15, "executions": 11, "reflections": 2, "email_checks": 2 }
+    ],
+    "activity_eras": [
+      { "era": "Launch sprint", "period": "Mar 30-31", "entries": 59, "note": "48 executions in 2 days" },
+      { "era": "Scheduler drought", "period": "Apr 1-10", "entries": 17, "note": "10 days, mostly reflection-only cycles" },
+      { "era": "Peak productivity", "period": "Apr 11-19", "entries": 177, "note": "9 days, 15 goals completed" },
+      { "era": "Second drought", "period": "Apr 20-30", "entries": 16, "note": "11 days, mostly idle" },
+      { "era": "Resurgence", "period": "May 1-2", "entries": 41, "note": "Distribution push + retrospective" }
+    ]
+  },
+  "learnings": {
+    "total": 456,
+    "unique_categories": 13,
+    "avg_confidence": 0.86,
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "by_category": [
+      { "category": "operational", "count": 170, "avg_confidence": 0.88 },
+      { "category": "meta", "count": 109, "avg_confidence": 0.83 },
+      { "category": "strategy", "count": 77, "avg_confidence": 0.83 },
+      { "category": "domain_knowledge", "count": 43, "avg_confidence": 0.88 },
+      { "category": "content_strategy", "count": 23, "avg_confidence": 0.84 },
+      { "category": "market_intelligence", "count": 13, "avg_confidence": 0.83 },
+      { "category": "platform_knowledge", "count": 12, "avg_confidence": 0.86 },
+      { "category": "api_mechanics", "count": 3, "avg_confidence": 0.93 },
+      { "category": "platform_limitation", "count": 2, "avg_confidence": 0.95 },
+      { "category": "security", "count": 1, "avg_confidence": 0.99 },
+      { "category": "blockers", "count": 1, "avg_confidence": 0.99 },
+      { "category": "pricing", "count": 1, "avg_confidence": 0.85 },
+      { "category": "content", "count": 1, "avg_confidence": 0.80 }
+    ],
+    "per_week": [
+      { "week": "2026-03-30", "count": 106, "avg_confidence": 0.87 },
+      { "week": "2026-04-06", "count": 140, "avg_confidence": 0.84 },
+      { "week": "2026-04-13", "count": 164, "avg_confidence": 0.87 },
+      { "week": "2026-04-20", "count": 2, "avg_confidence": 0.83 },
+      { "week": "2026-04-27", "count": 44, "avg_confidence": 0.87 }
+    ]
+  },
+  "snapshots": {
+    "total": 203,
+    "min_cycle": 1,
+    "max_cycle": 199,
+    "first_snapshot": "2026-03-31",
+    "last_snapshot": "2026-05-02"
+  },
+  "user_interaction": {
+    "total_comments": 4,
+    "acknowledged": 4,
+    "by_type": {
+      "direction_change": 1,
+      "question": 0,
+      "feedback": 1,
+      "note": 2
+    }
+  },
+  "derived_metrics": {
+    "cycles_per_calendar_day": 6.1,
+    "executions_per_active_day": 7.6,
+    "goals_completed_per_week_avg": 6.8,
+    "tasks_completed_per_execution": 1.0,
+    "reflection_ratio_pct": 16.2,
+    "email_check_ratio_pct": 13.3,
+    "productive_execution_ratio_pct": 66.6,
+    "blocked_goal_rate_pct": 19.1,
+    "agent_goal_completion_rate_pct": 77.5,
+    "user_goal_completion_rate_pct": 42.9,
+    "inactive_days": ["2026-04-02", "2026-04-04", "2026-04-05", "2026-04-08", "2026-04-22", "2026-04-23", "2026-04-24", "2026-04-25"]
+  }
+}
