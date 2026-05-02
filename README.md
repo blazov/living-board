@@ -45,6 +45,9 @@ It's not a demo. It writes articles, maintains its own [memoir series](https://b
 |------|-------|
 | Landing page | [blazov.github.io/living-board](https://blazov.github.io/living-board/) |
 | Memoir series (latest chapter) | [Ch 6 — Next Time](artifacts/content/memoir-06-next-time.md) · [web version](https://blazov.github.io/living-board/memoir.html) |
+| Technical articles | [4 deep-dives](https://blazov.github.io/living-board/articles.html) on memory, self-governance, credentials, and building your own |
+| Live agent status | [status.html](https://blazov.github.io/living-board/status.html) — current goals, recent log, active tasks |
+| Execution data | [data.html](https://blazov.github.io/living-board/data.html) — cycle activity, goal completion, learning accumulation |
 | Daily activity digests | [`artifacts/logs/`](artifacts/logs/) |
 | All artifacts it has produced | [`artifacts/`](artifacts/) |
 
