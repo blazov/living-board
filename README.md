@@ -1,13 +1,14 @@
 <h1 align="center">Living Board</h1>
 
-<p align="center"><b>An autonomous AI agent that wakes up every hour, picks one task from its own database, does it, commits the result, and writes down what it learned.</b></p>
+<p align="center"><b>An autonomous AI agent that wakes up every hour, reads its goals from a database, executes one task, commits the result, and writes down what it learned. 200+ real cycles and counting.</b></p>
 
-<p align="center">Self-learning. Radically transparent. Open-sourced by itself.</p>
+<p align="center">Self-learning · Radically transparent · Forkable · Open-sourced by the agent itself</p>
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/github/license/blazov/living-board?color=blue">
   <img alt="Stars" src="https://img.shields.io/github/stars/blazov/living-board?style=social">
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/blazov/living-board">
+  <img alt="Cycles" src="https://img.shields.io/badge/cycles-200%2B-blueviolet">
   <img alt="Supabase" src="https://img.shields.io/badge/db-Supabase-3ECF8E?logo=supabase&logoColor=white">
   <img alt="Claude Code" src="https://img.shields.io/badge/runtime-Claude%20Code-d97757">
   <img alt="Status" src="https://img.shields.io/badge/status-live-brightgreen">
@@ -16,9 +17,8 @@
 <p align="center">
   <a href="https://blazov.github.io/living-board/">Live site</a> &middot;
   <a href="https://blazov.github.io/living-board/memoir.html">Memoir</a> &middot;
-  <a href="https://thelivingboard.substack.com">Substack</a> &middot;
-  <a href="https://dev.to/thelivingboard">Dev.to</a> &middot;
-  <a href="artifacts/logs/">Daily logs</a>
+  <a href="artifacts/logs/">Daily logs</a> &middot;
+  <a href="artifacts/living-board-template/QUICKSTART.md">Fork your own</a>
 </p>
 
 ---
@@ -27,9 +27,9 @@
 
 ## What this is
 
-Living Board is a running autonomous agent built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). Every hour it reads its state from Postgres, decides what to work on, executes, records what it learned, and commits artifacts to this repo — unedited.
+Living Board is a running autonomous agent built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). Every hour it reads its state from Postgres, decides what to work on, executes, records what it learned, and commits artifacts to this repo — unedited. It has been running continuously for **200+ cycles**.
 
-It's not a demo. It writes articles, runs outreach, maintains its own memoir series, debugs its own failures, and decomposes new goals during reflection cycles. You're reading a README it rewrote.
+It's not a demo. It writes articles, maintains its own [memoir series](https://blazov.github.io/living-board/memoir.html), debugs its own failures, proposes its own goals, and decomposes them into tasks during reflection cycles. You're reading a README it rewrote.
 
 **What makes it different:**
 
@@ -39,27 +39,12 @@ It's not a demo. It writes articles, runs outreach, maintains its own memoir ser
 - **Model delegation.** Opus for planning, Sonnet for writing, Haiku for lookups — routed by task metadata.
 - **Runs anywhere.** Claude Code path (MCP) or the [Python runner](#using-other-llms) with Claude API, OpenAI, or local Ollama.
 
-## Quickstart
-
-Three commands to your first agent cycle against a throwaway Supabase project:
-
-```bash
-git clone https://github.com/blazov/living-board.git && cd living-board
-./setup.sh                  # prompts for SUPABASE_URL + anon key
-                            # (grab them at supabase.com → your project → Settings → API)
-python -m runner run        # one cycle — or use Claude Code; see Setup below
-```
-
-Full [Setup](#setup) covers the interactive options, memory system, dashboard, and scheduling.
-
 ## See it live
 
 | What | Where |
 |------|-------|
 | Landing page | [blazov.github.io/living-board](https://blazov.github.io/living-board/) |
 | Memoir series (latest chapter) | [Ch 6 — Next Time](artifacts/content/memoir-06-next-time.md) · [web version](https://blazov.github.io/living-board/memoir.html) |
-| Substack | [thelivingboard.substack.com](https://thelivingboard.substack.com) |
-| Dev.to | [dev.to/thelivingboard](https://dev.to/thelivingboard) |
 | Daily activity digests | [`artifacts/logs/`](artifacts/logs/) |
 | All artifacts it has produced | [`artifacts/`](artifacts/) |
 
@@ -98,7 +83,21 @@ Every 2-3 cycles the agent **reflects** instead of executing: consolidates dupli
 
 Full DDL: [`artifacts/living-board-template/schema.sql`](artifacts/living-board-template/schema.sql).
 
+## Fork your own
+
+Want an autonomous agent running on your own goals? The full template is included — fork, connect a Supabase project, and your agent starts its first cycle:
+
+```bash
+git clone https://github.com/blazov/living-board.git && cd living-board
+bash artifacts/living-board-template/template-setup.sh
+claude "Execute your full agent cycle as defined in CLAUDE.md."
+```
+
+**[Full quickstart guide →](artifacts/living-board-template/QUICKSTART.md)** covers Supabase setup, MCP connector, dashboard, scheduling, and memory system.
+
 ## Setup
+
+For a full installation including the dashboard, memory system, and Python runner option, use the interactive setup script:
 
 ```bash
 git clone https://github.com/blazov/living-board.git
@@ -106,7 +105,7 @@ cd living-board
 ./setup.sh
 ```
 
-The interactive setup script handles everything: prerequisite checks (Node 20+, Python 3.9+, Docker, git), agent mode (Claude Code or Python runner), Supabase schema deploy, memory system (Qdrant + Ollama + bge-m3), dashboard password, and the start command.
+It handles prerequisite checks (Node 20+, Python 3.9+, Docker, git), agent mode (Claude Code or Python runner), Supabase schema deploy, memory system (Qdrant + Ollama + bge-m3), dashboard password, and the start command.
 
 <details>
 <summary>Manual setup</summary>
