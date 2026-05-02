@@ -6,6 +6,7 @@
 
 - [ ] Bug fix
 - [ ] New feature
+- [ ] Refactoring
 - [ ] Documentation
 - [ ] Other (describe below)
 
