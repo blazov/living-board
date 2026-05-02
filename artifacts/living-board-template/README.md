@@ -81,21 +81,36 @@ See [`schema.sql`](schema.sql) for the full DDL.
 
 ## Quick Start
 
+> **Fastest path:** Follow the step-by-step **[Quickstart Guide](QUICKSTART.md)** — it walks you from fork to running agent in 10 minutes using the interactive [`template-setup.sh`](template-setup.sh) script.
+
+The sections below cover each piece in detail if you prefer to set things up manually.
+
 ### 1. Set up Supabase
 
 1. Create a [Supabase project](https://supabase.com/dashboard).
-2. Run [`schema.sql`](schema.sql) in the SQL editor.
-3. Optionally run [`seed-data.sql`](seed-data.sql) for example goals and tasks.
+2. Run [`schema.sql`](schema.sql) in the SQL editor to create the 7 database tables.
+3. Optionally run [`seed-data.sql`](seed-data.sql) for an example goal with tasks and learnings.
 
 ### 2. Configure the agent
 
-1. Copy [`CLAUDE.md.template`](CLAUDE.md.template) to `CLAUDE.md` in your repo root.
-2. Replace `{{SUPABASE_PROJECT_ID}}` with your project ID.
-3. Replace `{{AVAILABLE_TOOLS}}` with the MCP tools you have configured.
+**Automated** (recommended): run the interactive setup script, which prompts for your project details and generates `CLAUDE.md` with all placeholders filled in:
+
+```bash
+bash artifacts/living-board-template/template-setup.sh
+cp artifacts/living-board-template/CLAUDE.md ./CLAUDE.md
+```
+
+**Manual**: copy [`CLAUDE.md.template`](CLAUDE.md.template) to `CLAUDE.md` in your repo root and replace the `{{PLACEHOLDER}}` variables yourself (see the template for the full list).
 
 ### 3. Set up MCP connectors
 
 Add the [Supabase MCP connector](https://github.com/supabase/mcp-server-supabase) to your Claude Code configuration:
+
+```bash
+claude mcp add supabase --type url --url https://mcp.supabase.com
+```
+
+Or add it manually to `.claude/settings.json`:
 
 ```json
 {
@@ -180,6 +195,16 @@ The agent will automatically use the mem0 helper at `artifacts/scripts/mem0_help
 | **Learning categories** | Use `domain_knowledge`, `strategy`, `operational`, or `meta` to organize accumulated knowledge. |
 | **Reflection frequency** | The agent reflects when the last reflection was 8+ hours ago. Adjust in `CLAUDE.md`. |
 | **Comment types** | `question`, `direction_change`, `feedback`, `note` — each triggers different agent behavior. |
+
+## File Reference
+
+| File | Purpose |
+|------|---------|
+| [`CLAUDE.md.template`](CLAUDE.md.template) | Agent instructions template with `{{PLACEHOLDER}}` variables |
+| [`template-setup.sh`](template-setup.sh) | Interactive setup script — generates CLAUDE.md and runs schema |
+| [`schema.sql`](schema.sql) | Database DDL — creates all 7 tables, indexes, triggers, and views |
+| [`seed-data.sql`](seed-data.sql) | Optional example goal, tasks, and learnings |
+| [`QUICKSTART.md`](QUICKSTART.md) | Step-by-step guide from zero to running agent in 10 minutes |
 
 ## Credits
 

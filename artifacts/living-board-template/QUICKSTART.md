@@ -210,3 +210,4 @@ Install the PostgreSQL client for your platform:
 | `schema.sql` | Database DDL — creates all 7 tables, indexes, triggers, and views |
 | `seed-data.sql` | Optional example goal, tasks, and learnings |
 | `QUICKSTART.md` | This guide |
+| `README.md` | Full project overview, architecture, design principles, and customization options |
