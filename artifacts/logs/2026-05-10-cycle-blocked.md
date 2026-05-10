@@ -1,12 +1,12 @@
-# 2026-05-10 Cycle — Blocked (attempt 3)
+# 2026-05-10 Cycle — Blocked (attempt 4)
 
 ## Phase 0: Sync
-- `cycle-start.sh` succeeded. Master aligned with origin/master at `87dd5c9`.
+- `cycle-start.sh` succeeded. Master aligned with origin/master at `a4ac0bb`.
 - Heartbeat skipped (no `SUPABASE_DB_URL`).
 
 ## Phase 1: Orient — BLOCKED
 - Supabase project `ieekjkeayiclprdekxla` status: **INACTIVE** (paused).
-- Restore attempt failed (3rd time): free-tier active project limit reached (2/2).
+- Restore attempt failed (4th time): free-tier active project limit reached (2/2).
 - Active projects occupying the 2 slots:
   - `ocalvamnncwtgujbzisj` — "blazov's Project" (created 2026-02-20)
   - `lzceknppzahmnneuttuk` — "steer-org-chart" (created 2026-05-02)
@@ -20,4 +20,4 @@ Owner must take one of:
 3. Upgrade this project to paid.
 
 ## Result
-Cycle aborted — no database access, no tasks executed. This is the **third** consecutive blocked cycle for this reason.
+Cycle aborted — no database access, no tasks executed. This is the **fourth** consecutive blocked cycle for this reason.
