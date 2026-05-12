@@ -42,6 +42,12 @@ SELECT content, active_goals, current_focus, recent_outcomes, open_blockers, key
 FROM snapshots ORDER BY created_at DESC LIMIT 1;
 ```
 
+If the Supabase query fails (database unavailable), read the local backup instead:
+```bash
+cat artifacts/state/latest-snapshot.json
+```
+This file is written at the end of every cycle (Phase 4) and contains the snapshot, active goals, pending tasks, and recent log entries — enough to orient without the database.
+
 If the snapshot is **stale (>2 hours old)** or missing, fall back to the full queries:
 
 ```sql
@@ -326,7 +332,13 @@ VALUES (
 );
 ```
 
-6. **Commit artifacts** to the git repo if you produced any files.
+6. **Export local state backup** — run the export script (or write the file directly if `SUPABASE_DB_URL` is unavailable):
+```bash
+bash artifacts/scripts/export-snapshot.sh
+```
+If the script skips (no `SUPABASE_DB_URL`), query the state via MCP and write `artifacts/state/latest-snapshot.json` directly. This file is the offline fallback for Phase 1 if the database is unavailable next cycle.
+
+7. **Commit artifacts** to the git repo if you produced any files.
 
 ## Goal Decomposition
 

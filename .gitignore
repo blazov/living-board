@@ -13,3 +13,4 @@ __pycache__/
 *.egg-info/
 runner/*.egg-info/
 .last_qdrant_sync
+artifacts/state/snapshot-*.json
