@@ -138,10 +138,50 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
    - Search for strategy memories: `python3 artifacts/scripts/mem0_helper.py search "strategy" --category strategy --limit 20`
    - Review strategy success/failure rates. If a strategy has failed 3+ times, note it and propose an alternative.
    - Cross-goal pattern recognition: search mem0 for patterns that span multiple goals, extract meta-learnings
-5. **Learning validation**: Check recent task outcomes against stored learnings.
-   - If an outcome confirms a learning → `python3 artifacts/scripts/mem0_helper.py update <id> --validate --confidence <current+0.1>`
-   - If an outcome contradicts a learning → `python3 artifacts/scripts/mem0_helper.py update <id> --confidence <current-0.15>`
-   - If confidence drops below 0.2 → `python3 artifacts/scripts/mem0_helper.py delete <id>`
+5. **Learning hygiene sweep** (run every reflection):
+
+   **5a. Stale decay**: Query learnings >30 days old that have never been updated since creation. Decay each by -0.1 confidence:
+   ```sql
+   UPDATE learnings SET confidence = GREATEST(confidence - 0.1, 0.0), updated_at = now()
+   WHERE created_at < now() - interval '30 days'
+     AND (updated_at IS NULL OR updated_at = created_at)
+     AND confidence > 0.0;
+   ```
+
+   **5b. Pruning**: Delete learnings with confidence < 0.3 — they've decayed enough to be unreliable:
+   ```sql
+   DELETE FROM learnings WHERE confidence < 0.3;
+   ```
+
+   **5c. Category normalization**: Fix any non-standard categories to the 4 canonical ones (`domain_knowledge`, `strategy`, `operational`, `meta`):
+   ```sql
+   UPDATE learnings SET category = CASE
+     WHEN category IN ('content_strategy') THEN 'strategy'
+     WHEN category IN ('market_intelligence', 'platform_knowledge', 'api_mechanics', 'platform_limitation', 'content', 'pricing', 'security') THEN 'domain_knowledge'
+     WHEN category IN ('blockers') THEN 'operational'
+     ELSE category
+   END
+   WHERE category NOT IN ('domain_knowledge', 'strategy', 'operational', 'meta');
+   ```
+
+   **5d. Completed-goal sweep**: For goals marked `done` since last reflection, promote generalizable learnings to global (`goal_id = NULL`), cap goal-specific ones at confidence 0.7:
+   ```sql
+   -- Cap goal-specific learnings for completed goals
+   UPDATE learnings SET confidence = LEAST(confidence, 0.7)
+   WHERE goal_id IN (SELECT id FROM goals WHERE status = 'done')
+     AND confidence > 0.7;
+   ```
+   Manually review a sample and promote any generalizable ones to `goal_id = NULL`.
+
+   **5e. Validation quota**: Pick 5 random learnings and check against recent task outcomes:
+   ```sql
+   SELECT id, content, confidence, category, goal_id FROM learnings
+   ORDER BY random() LIMIT 5;
+   ```
+   - If an outcome confirms a learning → confidence += 0.1 (cap 1.0), also `python3 artifacts/scripts/mem0_helper.py update <id> --validate --confidence <new>`
+   - If an outcome contradicts a learning → confidence -= 0.15, also update mem0
+   - If confidence drops below 0.3 → delete from both Supabase and mem0
+
 6. **Log the reflection:**
 ```sql
 INSERT INTO execution_log (action, summary, details)
