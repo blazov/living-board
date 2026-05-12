@@ -98,12 +98,31 @@ This surfaces cross-goal learnings, strategy outcomes, and operational knowledge
 Before deciding on a task, check if it's time to reflect:
 
 ```sql
-SELECT created_at FROM execution_log
-WHERE action = 'reflect'
-ORDER BY created_at DESC LIMIT 1;
+WITH last_reflect AS (
+  SELECT created_at FROM execution_log
+  WHERE action = 'reflect'
+  ORDER BY created_at DESC LIMIT 1
+),
+exec_since AS (
+  SELECT COUNT(*) as cnt FROM execution_log
+  WHERE action = 'execute'
+  AND created_at > (SELECT created_at FROM last_reflect)
+)
+SELECT
+  lr.created_at as last_reflect_at,
+  EXTRACT(EPOCH FROM (now() - lr.created_at)) / 3600 as hours_since,
+  es.cnt as executions_since,
+  CASE
+    WHEN lr.created_at IS NULL THEN true                          -- never reflected
+    WHEN now() - lr.created_at > interval '48 hours' THEN true   -- hard ceiling
+    WHEN now() - lr.created_at > interval '8 hours'
+     AND es.cnt >= 3 THEN true                                    -- normal gate
+    ELSE false
+  END as should_reflect
+FROM last_reflect lr, exec_since es;
 ```
 
-If the last reflection was **8+ hours ago** (or no reflection exists), this cycle is a **reflection cycle**. Skip Phases 2-3 and instead:
+If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate triggers when **all** of: (1) ≥8 hours since last reflection AND (2) ≥3 execution cycles since last reflection. Exception: always reflect if ≥48 hours have passed (safety net for scheduler gaps), or if no reflection exists yet. Skip Phases 2-3 and instead:
 
 1. **Review the full board** -- read all goals (active, pending, done, blocked), recent learnings, and the last 10 execution log entries.
 2. **Think about new goals.** Consider:
