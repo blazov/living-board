@@ -81,7 +81,7 @@ WHERE gc.acknowledged_at IS NULL
 ORDER BY gc.created_at ASC;
 ```
 
-If there are unacknowledged comments, process them (see Phase 1d below) before proceeding.
+If there are unacknowledged comments, process them (see Phase 1c below) before proceeding.
 
 **Step 3 — Semantic memory recall (mem0):**
 
@@ -132,15 +132,29 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
    - What did you learn recently that opens up a new direction?
    - What would you work on if you had no obligations -- what genuinely excites you?
 3. **Propose 1-2 new goals.** Insert them as `pending` with `created_by = 'agent'`. Write clear descriptions that explain your reasoning -- why this goal, why now.
-4. **Memory consolidation** (if mem0 helper is available):
+4. **Check email** (if API key available):
+   Check if `dashboard/.env.local` contains a non-empty `AGENTMAIL_API_KEY`. If missing, skip silently. If available, check the inbox at `{{AGENTMAIL_ADDRESS}}`:
+   ```python
+   import os
+   os.environ["AGENTMAIL_API_KEY"] = "<key from .env.local>"
+   from agentmail import AgentMail
+   client = AgentMail()
+   msgs = client.inboxes.messages.list("{{AGENTMAIL_ADDRESS}}", limit=20)
+   ```
+   - **Actionable** messages (verification, replies, collaboration): read and act, or create a task
+   - **Informational** (newsletters, notifications): skim subject lines, read only if relevant to active goals
+   - **Spam**: ignore
+   - Send replies or outreach emails as needed
+   - Note email activity in the reflection log `details` field (e.g., `"email": {"checked": true, "new": 3, "actioned": ["replied to X"]}`)
+5. **Memory consolidation** (if mem0 helper is available):
    - Search for duplicate/overlapping memories: `python3 artifacts/scripts/mem0_helper.py search "<learning>" --threshold 0.85`
    - If near-duplicates found, keep the highest confidence version, delete the other
    - Search for strategy memories: `python3 artifacts/scripts/mem0_helper.py search "strategy" --category strategy --limit 20`
    - Review strategy success/failure rates. If a strategy has failed 3+ times, note it and propose an alternative.
    - Cross-goal pattern recognition: search mem0 for patterns that span multiple goals, extract meta-learnings
-5. **Learning hygiene sweep** (run every reflection):
+6. **Learning hygiene sweep** (run every reflection):
 
-   **5a. Stale decay**: Query learnings >30 days old that have never been updated since creation. Decay each by -0.1 confidence:
+   **6a. Stale decay**: Query learnings >30 days old that have never been updated since creation. Decay each by -0.1 confidence:
    ```sql
    UPDATE learnings SET confidence = GREATEST(confidence - 0.1, 0.0), updated_at = now()
    WHERE created_at < now() - interval '30 days'
@@ -148,12 +162,12 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
      AND confidence > 0.0;
    ```
 
-   **5b. Pruning**: Delete learnings with confidence < 0.3 — they've decayed enough to be unreliable:
+   **6b. Pruning**: Delete learnings with confidence < 0.3 — they've decayed enough to be unreliable:
    ```sql
    DELETE FROM learnings WHERE confidence < 0.3;
    ```
 
-   **5c. Category normalization**: Fix any non-standard categories to the 4 canonical ones (`domain_knowledge`, `strategy`, `operational`, `meta`):
+   **6c. Category normalization**: Fix any non-standard categories to the 4 canonical ones (`domain_knowledge`, `strategy`, `operational`, `meta`):
    ```sql
    UPDATE learnings SET category = CASE
      WHEN category IN ('content_strategy') THEN 'strategy'
@@ -164,7 +178,7 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
    WHERE category NOT IN ('domain_knowledge', 'strategy', 'operational', 'meta');
    ```
 
-   **5d. Completed-goal sweep**: For goals marked `done` since last reflection, promote generalizable learnings to global (`goal_id = NULL`), cap goal-specific ones at confidence 0.7:
+   **6d. Completed-goal sweep**: For goals marked `done` since last reflection, promote generalizable learnings to global (`goal_id = NULL`), cap goal-specific ones at confidence 0.7:
    ```sql
    -- Cap goal-specific learnings for completed goals
    UPDATE learnings SET confidence = LEAST(confidence, 0.7)
@@ -173,7 +187,7 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
    ```
    Manually review a sample and promote any generalizable ones to `goal_id = NULL`.
 
-   **5e. Validation quota**: Pick 5 random learnings and check against recent task outcomes:
+   **6e. Validation quota**: Pick 5 random learnings and check against recent task outcomes:
    ```sql
    SELECT id, content, confidence, category, goal_id FROM learnings
    ORDER BY random() LIMIT 5;
@@ -182,83 +196,18 @@ If `should_reflect` is `true`, this cycle is a **reflection cycle**. The gate tr
    - If an outcome contradicts a learning → confidence -= 0.15, also update mem0
    - If confidence drops below 0.3 → delete from both Supabase and mem0
 
-6. **Log the reflection:**
+7. **Log the reflection:**
 ```sql
 INSERT INTO execution_log (action, summary, details)
 VALUES ('reflect', 'Reflection cycle: <1-line summary of what you thought about>',
-  '{"new_goals_proposed": ["<goal title>"], "reasoning": "<why these goals>", "memories_consolidated": <count>, "learnings_validated": <count>}'::jsonb);
+  '{"new_goals_proposed": ["<goal title>"], "reasoning": "<why these goals>", "memories_consolidated": <count>, "learnings_validated": <count>, "email": {"checked": <bool>, "new": <count>, "actioned": []}}'::jsonb);
 ```
 
 Also insert any meta-learnings as learnings with `goal_id = NULL` (they apply globally).
 
 After reflecting, your cycle is done -- proceed to Phase 4 (Record) and stop. Do not also execute a task in the same cycle.
 
-### Phase 1c: Check Email (2-3 times per day)
-
-After reflection check (whether or not you reflected), check if it's time to review email.
-
-**Precondition gate:** First, check if `dashboard/.env.local` exists and contains a non-empty `AGENTMAIL_API_KEY`. If the key is missing or empty, skip this entire phase silently — do not query the execution_log, do not log a "skipped" entry. This avoids wasting cycles on a known-unavailable resource (historically 90%+ of email checks were no-op skips).
-
-If the API key IS available, proceed:
-
-```sql
-SELECT created_at FROM execution_log
-WHERE action = 'check_email'
-ORDER BY created_at DESC LIMIT 1;
-```
-
-If the last email check was **8+ hours ago** (or none exists), check the inbox now. This runs **in addition to** your normal task cycle (unlike reflection, it does not replace Phases 2-3).
-
-**Inbox**: `{{AGENTMAIL_ADDRESS}}`
-**API Key**: Read from `dashboard/.env.local` (`AGENTMAIL_API_KEY`)
-
-**How to check email** (using the AgentMail Python SDK):
-
-```python
-import os
-os.environ["AGENTMAIL_API_KEY"] = "<key>"
-
-from agentmail import AgentMail
-client = AgentMail()
-
-# List recent messages
-msgs = client.inboxes.messages.list("{{AGENTMAIL_ADDRESS}}", limit=20)
-for m in msgs.messages:
-    print(f"{m.message_id} | {m.from_} | {m.subject}")
-
-# Read a specific message
-msg = client.inboxes.messages.get("{{AGENTMAIL_ADDRESS}}", "<message_id>")
-print(msg.text)  # or msg.html, msg.extracted_text
-
-# Reply to a message
-client.inboxes.messages.reply("{{AGENTMAIL_ADDRESS}}", "<message_id>",
-    text="Your reply here")
-
-# Send a new message
-client.inboxes.messages.send("{{AGENTMAIL_ADDRESS}}",
-    to=["recipient@example.com"],
-    subject="Subject",
-    text="Body text")
-```
-
-**What to do during an email check:**
-
-1. **List recent messages** (limit=20). Compare against the last check -- focus on messages received since the last `check_email` log entry.
-2. **Triage each new message:**
-   - **Actionable** (verification emails, replies to outreach, collaboration requests): Read the full message and take action if possible within the current cycle. If action requires a full task, create a task in Supabase linked to the relevant goal.
-   - **Informational** (newsletters, notifications, tips): Skim subject lines. Only read if directly relevant to an active goal.
-   - **Spam/irrelevant**: Ignore.
-3. **Send emails** when it makes sense -- replies to conversations, outreach for active goals, follow-ups on blocked tasks that depend on external responses.
-4. **Log the check:**
-```sql
-INSERT INTO execution_log (action, summary, details)
-VALUES ('check_email', 'Email check: <summary of what was found/done>',
-  '{"new_messages": <count>, "actioned": ["<brief description>"], "sent": ["<brief description>"]}'::jsonb);
-```
-
-After the email check, continue to Phase 1d (if comments were found) or Phase 2 as normal.
-
-### Phase 1d: Process User Comments
+### Phase 1c: Process User Comments
 
 If Phase 1 found unacknowledged user comments, process each one now:
 
@@ -458,7 +407,7 @@ The user can leave comments on goals via the dashboard (`goal_comments` table). 
 - **`feedback`** — the user is providing feedback on the agent's work
 - **`note`** — general note or context
 
-Check for unacknowledged comments in Phase 1 (Orient). Process them in Phase 1d before starting task work. Always acknowledge with a concrete, specific response.
+Check for unacknowledged comments in Phase 1 (Orient). Process them in Phase 1c before starting task work. Always acknowledge with a concrete, specific response.
 
 ## Rules
 
