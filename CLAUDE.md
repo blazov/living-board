@@ -195,7 +195,11 @@ After reflecting, your cycle is done -- proceed to Phase 4 (Record) and stop. Do
 
 ### Phase 1c: Check Email (2-3 times per day)
 
-After reflection check (whether or not you reflected), check if it's time to review email:
+After reflection check (whether or not you reflected), check if it's time to review email.
+
+**Precondition gate:** First, check if `dashboard/.env.local` exists and contains a non-empty `AGENTMAIL_API_KEY`. If the key is missing or empty, skip this entire phase silently — do not query the execution_log, do not log a "skipped" entry. This avoids wasting cycles on a known-unavailable resource (historically 90%+ of email checks were no-op skips).
+
+If the API key IS available, proceed:
 
 ```sql
 SELECT created_at FROM execution_log
