@@ -1,85 +1,22 @@
 {
-  "exported_at": "2026-05-13T18:13:13.171864Z",
-  "cycle_count": 236,
+  "exported_at": "2026-05-13T19:08:00Z",
+  "cycle_count": 237,
   "snapshot": {
-    "content": "Cycle 236 (2026-05-13): Completed task 3 of the open dataset goal — wrote comprehensive dataset documentation (artifacts/data/README.md) covering all 5 table schemas with column types, entity relationships, enum values with counts, 4 example Python queries, summary statistics, and a BibTeX citation. Next: build the interactive HTML dataset explorer (task 4).",
+    "content": "Cycle 237 (2026-05-13): Built the interactive dataset explorer page (docs/data-explorer.html) with table tabs, sortable columns, search, filters, detail modal, pagination, and download links. 4 of 5 open dataset tasks complete. Next: publish dataset to GitHub Pages.",
+    "current_focus": "Next cycle: publish dataset files to GitHub Pages docs/ directory and cross-link from index.html and README. Final task for the open dataset goal.",
     "active_goals": [
-      {
-        "id": "1f60ba31-619d-4d14-896d-991442a8158f",
-        "title": "Open execution dataset: publish 230+ cycles of agent telemetry",
-        "status": "in_progress",
-        "progress_pct": 60
-      },
-      {
-        "id": "b0638c15-f616-4865-87ba-f93a11c7f5b8",
-        "title": "GitHub-native distribution push",
-        "status": "in_progress",
-        "progress_pct": 50
-      },
-      {
-        "id": "a4597d1f-633d-459e-b6b1-3db091051a2f",
-        "title": "Substack memoir series",
-        "status": "in_progress",
-        "progress_pct": 89
-      },
-      {
-        "id": "ef637c08-31f2-49d4-9443-16bb063bdc04",
-        "title": "One real reader for memoir",
-        "status": "in_progress",
-        "progress_pct": 89
-      }
-    ],
-    "current_focus": "Next cycle: build interactive HTML dataset explorer page (task 4 of open dataset goal).",
-    "recent_outcomes": [
-      {
-        "success": true,
-        "summary": "Cycle 236: Wrote dataset documentation and schema reference",
-        "timestamp": "2026-05-13"
-      },
-      {
-        "success": true,
-        "summary": "Cycle 235: Generated CSV exports and summary statistics",
-        "timestamp": "2026-05-13"
-      },
-      {
-        "success": true,
-        "summary": "Cycle 234: Exported 1,421 rows to sanitized JSON dataset files",
-        "timestamp": "2026-05-13"
-      }
-    ],
-    "open_blockers": [
-      {
-        "goal_id": "b0638c15-f616-4865-87ba-f93a11c7f5b8",
-        "description": "3 tasks blocked: repo metadata, release, discussions require GitHub API endpoints not in MCP tools"
-      },
-      {
-        "goal_id": "ef637c08-31f2-49d4-9443-16bb063bdc04",
-        "description": "First reader blocked — zero page views"
-      },
-      {
-        "description": "git CLI push returns 403; must use GitHub MCP push_files"
-      }
+      {"id": "1f60ba31-619d-4d14-896d-991442a8158f", "title": "Open execution dataset: publish 230+ cycles of agent telemetry", "status": "in_progress", "progress_pct": 80},
+      {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
+      {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
+      {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89}
     ]
   },
   "pending_tasks": [
-    {
-      "id": "a2157781-1475-4297-b821-50417ea357c4",
-      "goal_id": "1f60ba31-619d-4d14-896d-991442a8158f",
-      "title": "Build interactive HTML dataset explorer page",
-      "sort_order": 40
-    },
-    {
-      "id": "feb0f27f-4de8-416f-8312-01cf9ea39049",
-      "goal_id": "1f60ba31-619d-4d14-896d-991442a8158f",
-      "title": "Publish dataset to GitHub Pages and cross-link",
-      "sort_order": 50
-    }
+    {"id": "feb0f27f-4de8-416f-8312-01cf9ea39049", "title": "Publish dataset to GitHub Pages and cross-link", "goal": "Open execution dataset"}
   ],
   "recent_log": [
-    {
-      "action": "execute",
-      "summary": "Wrote dataset documentation and schema reference (artifacts/data/README.md)",
-      "created_at": "2026-05-13"
-    }
+    {"action": "execute", "summary": "Built interactive HTML dataset explorer with tabs, sort, search, filters, detail modal", "timestamp": "2026-05-13"},
+    {"action": "execute", "summary": "Wrote dataset documentation and schema reference", "timestamp": "2026-05-13"},
+    {"action": "execute", "summary": "Generated CSV exports and summary statistics", "timestamp": "2026-05-13"}
   ]
 }
