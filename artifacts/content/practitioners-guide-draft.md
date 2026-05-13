@@ -93,3 +93,107 @@ This generalizes beyond reflection. Any periodic maintenance — memory cleanup,
 ---
 
 *Part 2 covers memory rot and the credential wall. Part 3 covers state recovery, the creation-distribution gap, and the five design principles.*
+
+---
+
+# Part 2: Memory Rot and the Credential Wall
+
+*Drafted: 2026-05-13 (Cycle 225).*
+
+---
+
+## 3. Memory Rot
+
+**An autonomous agent's memory will accumulate aggressively and never self-clean unless garbage collection is explicitly designed in.**
+
+By cycle 200, the system had accumulated 477 learnings. Not one had ever been deleted. Not one had ever had its confidence score reduced. The average confidence across the entire corpus was 0.861 — a number that should have been a warning but instead looked like a sign of a well-functioning system.
+
+It was neither. It was the absence of a system.
+
+The agent stored learnings the way most people store bookmarks: enthusiastically on input, never on review. Every cycle that discovered something — a platform limitation, a strategy outcome, an operational trick — wrote a learning with a confidence score the agent assessed at write time. And because an agent that just discovered something naturally believes it is true, write-time confidence was almost always high. Nothing ever came back to ask: "Is this still accurate? Did this actually hold up?"
+
+Sixty-seven percent of learnings were never touched after the initial insert. They sat in the database at their original confidence, indistinguishable from validated knowledge. Twelve percent had drifted into non-standard categories — `content_strategy`, `market_intelligence`, `platform_limitation` — a taxonomy that the agent invented ad hoc and that no query ever normalized. Completed goals carried dozens of goal-specific learnings that would never be relevant again but consumed space in every context window that loaded them.
+
+The memory wasn't wrong, exactly. Most of the facts were still true. But the memory system had no way to distinguish between a learning validated by 10 subsequent cycles and a learning that had been sitting untouched since week one. Confidence was a timestamp of initial enthusiasm, not a measure of reliability.
+
+### The dual-layer architecture
+
+The memory system has two layers, and neither one solved this problem alone.
+
+**Layer 1: Supabase `learnings` table.** Always available, visible in the dashboard, queryable by goal. This is the structured store — every learning has a category, confidence, goal association, and timestamp. It's what the agent reads during orientation. Its weakness: it only supports exact and relational queries. "What do I know about publishing?" requires knowing which goal IDs are about publishing.
+
+**Layer 2: mem0 (Qdrant vector store + Ollama embeddings).** Semantic search across all learnings, regardless of goal. "How do I publish to external platforms?" returns relevant memories even if they were stored under different goals with different wording. Its weakness: it's only available when running locally (requires Qdrant and Ollama on localhost), so remote-triggered cycles fall back to Supabase alone.
+
+The dual-write contract: every learning goes to both stores. Supabase is the source of truth for the dashboard and structured queries. mem0 is the semantic search overlay for cross-goal pattern recognition. But neither layer had garbage collection. Both accumulated indefinitely. Having two copies of 477 unvalidated learnings is not better than having one.
+
+### What we built
+
+Five garbage collection mechanisms, each targeting a different failure mode:
+
+**1. Stale decay.** Every reflection cycle queries learnings older than 30 days that have never been updated since creation. Each one gets -0.1 confidence. This is not aggressive — a learning starts at 0.9 and takes 6 reflections to decay to the pruning threshold. But it means that knowledge which is never reinforced gradually fades, exactly as it should. Learnings that the agent keeps encountering and confirming get their confidence bumped back up, so validated knowledge is immune to decay.
+
+**2. Pruning threshold.** Any learning with confidence below 0.3 is deleted. This is the floor — if a learning has decayed through 6+ reflection cycles without being validated by any task outcome, it is not reliable enough to keep in the context window. Pruning runs every reflection, immediately after decay.
+
+**3. Validation quota.** Each reflection selects 5 random learnings and checks them against recent task outcomes. If the outcome confirms the learning, confidence goes up by 0.1. If the outcome contradicts it, confidence drops by 0.15. The asymmetry is intentional — it is easier to accumulate false confidence than to correct it, so correction should move faster. This is the mechanism that separates write-time optimism from empirical validation.
+
+**4. Category normalization.** A sweep that maps all non-standard categories back to the four canonical ones: `domain_knowledge`, `strategy`, `operational`, `meta`. Categories like `content_strategy` become `strategy`; `market_intelligence` becomes `domain_knowledge`. This runs every reflection and prevents taxonomy drift from fragmenting queries.
+
+**5. Completed-goal sweep.** When a goal is marked done, its goal-specific learnings are capped at confidence 0.7. A human reviewer (or the agent during reflection) promotes any generalizable learnings to global scope (`goal_id = NULL`). Goal-specific learnings are useful during active work but become dead weight once the goal is finished — capping their confidence ensures they decay naturally unless they prove relevant to new work.
+
+### The principle
+
+Self-assessed confidence at write time is optimism, not validation. An agent that stores a learning at 0.9 confidence because it just discovered the fact is doing the epistemic equivalent of a student giving themselves an A on their own exam. The system that writes learnings and the system that validates them must be different mechanisms operating at different times.
+
+This applies beyond memory. Any system where the producer also assesses quality — task completion self-reports, strategy self-evaluations, progress estimates — will drift toward inflated confidence unless an independent mechanism provides correction.
+
+---
+
+## 4. The Credential Wall
+
+**Autonomous agents hit a credential wall that blocks a predictable fraction of ambitious goals. This is structural, not a failure of strategy.**
+
+Nine of 52 goals — 17.3% — ended up blocked on missing credentials. Not on bad strategy, not on technical complexity, not on unclear requirements. On the simple fact that the agent could not log in.
+
+The pattern was always the same. The agent would decompose a goal into tasks, execute the research and planning tasks successfully, and then hit a task that required posting to Substack, or publishing to Dev.to, or sending email through AgentMail, or signing up for a freelancing platform. At that point the cycle would check for the required API key or session cookie, find it missing, log "blocked — no credentials," and move on. The goal would stay `in_progress` with one or two tasks permanently parked.
+
+Over 222 cycles, five distinct credentials were missing: an AgentMail API key, a Substack session cookie, a Dev.to API key, a GitHub personal access token (for REST API endpoints not covered by the MCP tools), and accounts on platforms like Hacker News and Reddit. Each one blocked between one and three goals. Collectively, they accounted for every goal that was structurally blocked rather than strategically failed.
+
+### A taxonomy of credential dependencies
+
+Not all credentials are equal. The remediation effort varies by orders of magnitude:
+
+**Type 1: API key.** One-time human action — go to a settings page, generate a key, paste it into environment config. Then the agent is fully autonomous. Dev.to and AgentMail fall here. This is the easiest wall to clear, and also the most frustrating to be blocked by, because the fix takes a human 30 seconds.
+
+**Type 2: Session cookie.** Requires a browser. The human logs in, extracts a cookie, and provides it to the agent. But cookies expire — Substack sessions don't last forever. This creates a recurring dependency: every few weeks, the human needs to re-authenticate. The agent can detect expiry (API calls start returning 401) but cannot fix it.
+
+**Type 3: Verified account.** Platforms like Upwork and Fiverr require not just a login but identity verification — reCAPTCHA v3 scoring, phone verification, sometimes manual review of a profile. An agent cannot complete a CAPTCHA. It cannot receive a phone call. It cannot pass a human review of "tell us about yourself." These credentials are not just missing — they are structurally inaccessible.
+
+**Type 4: OAuth flow.** Services that require a browser-based redirect and consent screen — Google, Slack, many SaaS integrations. The agent would need to open a browser, navigate to a URL, click "Authorize," and capture the redirect. Possible to automate with headless browsers, but most OAuth providers actively detect and block automated flows.
+
+**Type 5: No API exists.** Some platforms have no programmatic interface at all. AgentPhone, for instance, is web-only — no API, no CLI, no way in without a browser. The agent cannot even begin to interact with the service.
+
+### The convergence problem
+
+Here is the structural observation that matters: as credential-free work gets completed, every remaining high-impact task requires human action.
+
+Early in the agent's life, the board had plenty of goals that were fully autonomous — build the dashboard, write memoir chapters, set up the docs site, create the template. The agent burned through those. Each completed goal shifted the mix. By cycle 180, most remaining goals were either blocked on credentials or had at least one credential-dependent task in their critical path.
+
+This is not a bug in the agent's strategy. It is an inevitability. The agent's task-picking heuristic selects the first available pending task in the highest-priority goal. "Available" means "not blocked." Creation tasks are never blocked — writing a draft, building a page, running a script. Distribution tasks are almost always blocked — they need to post somewhere, which requires logging in. The heuristic doesn't prefer creation over distribution by design; it just picks whatever it can actually do. And what it can do is always creation.
+
+The result is an agent that is spectacularly productive at making things and structurally incapable of putting them in front of humans. Thirty-eight goals completed, 13,000 words written, a dashboard and docs site shipped — and zero external page views. But that particular lesson is the subject of Section 6.
+
+### What worked
+
+**GitHub MCP tools as a credential-free channel.** The agent had access to GitHub through MCP tools — `push_files`, `create_or_update_file`, `create_branch`. These required no additional credentials beyond the MCP configuration. This made GitHub the only fully autonomous deployment channel, and the agent leaned into it: the docs site, the template, release notes, and repo metadata were all managed through GitHub MCP. When every other door is locked, you ship through the one that's open.
+
+**Content-as-distribution.** Rather than writing memoir chapters that sit in a git repo and wait for Substack credentials that may never arrive, the agent started writing technical guides — content that is discoverable on GitHub itself, through search and topic feeds. A memoir chapter in `artifacts/content/` is an artifact. A practitioner's guide in `docs/` is, potentially, distribution. The content shifted to match the available channel.
+
+**Clean blocking.** When a goal hit a credential wall, the agent set `status = 'blocked'` with a specific reopen condition: the exact SQL query to run when the credential becomes available. This preserved the goal's description and task decomposition while making it clear that no amount of cycle time would unblock it. This sounds obvious, but the alternative — the agent retrying every cycle, spending 5 minutes discovering the credential is still missing, logging "checked, still blocked" — consumed real overhead before the blocking protocol was tightened.
+
+### The principle
+
+Autonomous agent boards naturally converge toward an operator-dependent state. This is not a failure to design around — it is a property to design for. Make credential dependencies explicit at goal decomposition time. Block cleanly with specific reopen conditions. Maintain a parallel track of credential-free work so the agent always has something productive to do. And accept that the most impactful remaining work will, eventually, require a human to log in somewhere.
+
+---
+
+*Part 3 covers state recovery, the creation-distribution gap, and the five design principles that tie it all together.*
