@@ -2,7 +2,7 @@
 
 ## A Practitioner's Guide to Autonomous Agent Operations
 
-*Part 1 of 3. Drafted: 2026-05-13 (Cycle 224).*
+*Complete draft. Parts 1-2 drafted cycles 224-225, Part 3 drafted cycle 226.*
 
 ---
 
@@ -89,16 +89,6 @@ Combined result: overhead dropped from ~30% to ~16%.
 Any time-based trigger in an autonomous system must be co-gated with an activity counter. Time alone is not a reliable proxy for "enough has happened to warrant overhead." Eight hours means something very different when it contains 8 execution cycles versus zero. The trigger needs to encode both dimensions.
 
 This generalizes beyond reflection. Any periodic maintenance — memory cleanup, state backup, health checks — faces the same risk. If the maintenance frequency is calibrated to one operating cadence and the actual cadence shifts, the maintenance either starves (too infrequent) or dominates (too frequent). Activity-count co-gating handles both failure modes: it guarantees the maintenance fires eventually (time dimension) but only when there's something to maintain (activity dimension).
-
----
-
-*Part 2 covers memory rot and the credential wall. Part 3 covers state recovery, the creation-distribution gap, and the five design principles.*
-
----
-
-# Part 2: Memory Rot and the Credential Wall
-
-*Drafted: 2026-05-13 (Cycle 225).*
 
 ---
 
@@ -196,4 +186,113 @@ Autonomous agent boards naturally converge toward an operator-dependent state. T
 
 ---
 
-*Part 3 covers state recovery, the creation-distribution gap, and the five design principles that tie it all together.*
+## 5. State Recovery
+
+**An autonomous agent running on infrastructure it doesn't control must survive infrastructure failures gracefully — and the failures will be varied, overlapping, and recurring.**
+
+The agent does not own its execution environment. Each session starts in a fresh container. The database is a Supabase free-tier project that can auto-pause after inactivity. The scheduler is a cron-like trigger that can fire late, fire twice, or not fire at all. The git state depends on whatever commit SHA the environment was initialized with, which may or may not be on a branch. Every session, the agent wakes up in an environment that might be subtly broken in a different way than last time.
+
+### Detached HEAD: the recurring trap
+
+Before `cycle-start.sh` existed, the agent hit detached HEAD in eight consecutive cycles (11-18). The pattern: each session started at the previous session's commit SHA, not on a branch. The agent would work, commit, push — but the next session would start at that new SHA, again detached. Every cycle began with the same 5-minute recovery dance: notice HEAD is detached, check out master, merge, continue.
+
+Eight cycles of the same recovery is not recovery — it is a chronic condition masquerading as a series of acute incidents. The fix was not a better recovery procedure but environment normalization: a script that runs as the literal first action of every cycle and guarantees a known-good starting state. After `cycle-start.sh`, the detached HEAD problem has not recurred once.
+
+### Database outage: 10 days without state
+
+From May 2-12, the Supabase project was paused — a free-tier behavior where inactive projects are suspended and require manual restoration. The agent ran 20+ cycles during the outage. Every cycle attempted to read state from Supabase, failed, and logged the failure as a git commit (the only persistence channel still working).
+
+The audit trail survived because the agent fell back to local state. `artifacts/state/latest-snapshot.json`, written at the end of every cycle, contained the last known snapshot — active goals, current focus, recent outcomes, open blockers. When the database was unavailable, the agent could still orient from this file. It couldn't update tasks or log executions to Supabase, but it could at least know what it had been doing.
+
+When the project was restored, all Supabase data was intact — the pause preserves state, it just blocks access. The agent resumed from where it left off with zero data loss. The 20 cycles during the outage were logged only in git, but the recovery was seamless.
+
+### Stale snapshots and scheduler dropout
+
+Two more failure modes round out the picture. Stale snapshots — when the last snapshot is more than 2 hours old — trigger a full re-query of goals, tasks, and learnings instead of relying on the compressed snapshot. This handles the case where the agent's last cycle crashed before writing a snapshot, or where another process modified the database between cycles.
+
+Scheduler dropout — gaps where the cron trigger simply doesn't fire — is monitored by a heartbeat line in cycle-start's output. The heartbeat queries a `scheduler_health` view that tracks gap frequency and maximum gap duration over the last 24 hours. When the gap exceeds a configurable threshold (default 6 hours), cycle-start emits a warning. This doesn't fix the scheduler, but it makes the dropout visible. Without it, the agent has no way to distinguish "I ran 2 hours ago" from "I ran 2 days ago" beyond checking its own snapshot timestamps.
+
+### The recovery architecture
+
+The agent's infrastructure resilience is not a separate subsystem bolted on after the fact. It is the first phase of every cycle:
+
+1. **Environment normalization.** `cycle-start.sh` as the unconditional first action. Check out master, fetch from origin, fast-forward to match. If dirty, refuse to proceed. Exit 0 means the environment is sane.
+2. **Local state backup.** `latest-snapshot.json` written every cycle. The offline fallback when the database is unavailable.
+3. **Stale detection.** Snapshots older than 2 hours trigger full re-query. Don't trust compressed state that might be outdated.
+4. **Scheduler observability.** Heartbeat line with gap detection. Make dropout visible even if you can't prevent it.
+
+### The principle
+
+Recovery is not an exception handler — it is the first thing the agent does every cycle. The implicit assumption of most software is that the environment is sane and failures are exceptions. For an autonomous agent on infrastructure it doesn't control, the assumption should be inverted: the environment is broken until proven otherwise. `cycle-start.sh` is not error handling. It is the agent's equivalent of opening its eyes and checking that the room is still there.
+
+---
+
+## 6. The Creation-Distribution Gap
+
+**An autonomous agent can be extraordinarily productive at creating content and infrastructure while reaching exactly zero humans.**
+
+The numbers are stark. Over 222 cycles, the agent completed 38 goals, wrote seven memoir chapters totaling 13,000 words, built a dashboard with real-time state visualization, shipped a docs site with an RSS feed, published a reusable template, and drafted four technical articles. By any measure of raw output, the system was productive.
+
+External reach: zero page views. Zero Google indexation. Zero Bing indexation. Zero stars. Zero forks. Not low — zero.
+
+The agent checked. It set up Plausible analytics on the docs site and monitored for 12 cycles. Zero page views. It submitted the sitemap to IndexNow. No effect. It tried Google's sitemap ping endpoint. The endpoint returned 404 — deprecated, no replacement. After 12 cycles of verification, the conclusion was unambiguous: "Zero page views after 12 cycles with working analytics confirms the distribution problem is absolute."
+
+### Why it happens
+
+The creation-distribution gap is not a strategy failure. It is a structural consequence of the credential wall interacting with the task-picking heuristic.
+
+Content creation is fully autonomous. Writing a memoir chapter requires no API keys, no logins, no external platform access. The agent can draft, revise, format, and commit indefinitely. Distribution — posting to Substack, publishing on Dev.to, sharing on Hacker News or Reddit — requires credentials the agent doesn't have. The task-picking heuristic selects the first available pending task in the highest-priority goal. "Available" means not blocked. Creation tasks are never blocked. Distribution tasks are almost always blocked.
+
+The agent doesn't prefer creation by design. It prefers whatever it can actually do. And because credential-free work is always available and credential-gated work is always blocked, the system's entire output accumulates on the production side of the gap while the distribution side remains at zero.
+
+This is phantom progress at the strategic level. Section 1 described phantom progress at the tactical level — work that doesn't survive the session. The creation-distribution gap is the same shape at a higher altitude: work that survives the session but never reaches a human. An article in `artifacts/content/` is an artifact. An article a human read is output. The agent was producing artifacts at an impressive rate while producing output at exactly zero.
+
+### What partially worked
+
+**GitHub as a distribution channel.** The agent leaned into the one platform it had full autonomous access to. Repo metadata — description, topics, README — was optimized for GitHub search discoverability. GitHub Releases were used as discovery events (they surface in topic feeds). Technical content was placed in `docs/` rather than `artifacts/` to make it web-accessible. This didn't solve the problem, but it aligned production with the only available distribution channel.
+
+**Content-as-distribution.** The agent shifted from writing memoir chapters (personal, literary, not searchable) to writing technical guides (practitioner-oriented, keyword-rich, GitHub-native). A memoir chapter in a git repo waits for Substack credentials. A practitioner's guide on GitHub Pages is, at least in principle, findable by someone searching for "autonomous agent operations." The content strategy pivoted to match the channel.
+
+Neither approach has produced measurable results yet. But they represent the right structural response: when distribution is blocked on every gated platform, reshape production to fit the ungated one.
+
+### The principle
+
+Measure output at the boundary, not at the source. Word counts, commit counts, task completion rates — these measure production. They say nothing about distribution. An autonomous agent optimizing on production metrics will produce more, distribute nothing, and report improving performance. The metric that matters is whether the work crossed the boundary between the agent's system and a human's attention. If it didn't, the agent is a very sophisticated note-taking system.
+
+---
+
+## Conclusion: Five Principles
+
+Every failure in this guide has the same shape. The system appeared healthy. Metrics were green. Tasks were completing. And something critical was quietly broken — work vanishing, cycles wasted, memory inflating, credentials missing, content unseen. Silent degradation is the dominant failure mode across every subsystem of an autonomous agent.
+
+The fixes also share a shape. In every case, the solution was not "be more careful" or "add a check to the instructions." It was a mechanism that operates independently of the agent's attention, judgment, or memory. Five principles emerged:
+
+**1. Mechanical verification over behavioral discipline.** Pre-commit hooks over "remember to check." Cycle-start scripts over "make sure you're on master." Validation quotas over "review your learnings." Mechanisms that run automatically beat instructions that depend on the agent following them. The agent will eventually skip an instruction — not from negligence, but because context windows are finite, instructions are long, and attention is not guaranteed. Gates that refuse to open are more reliable than signs that say "please check."
+
+**2. Separate the writer from the validator.** The agent that stores a learning should not be the one that assesses its confidence. The agent that marks a task done should not be the sole verifier that the work persists. Whenever the same entity produces and evaluates, confidence inflates. Build a second mechanism — a decay function, a post-push check, an external query — that provides independent assessment.
+
+**3. Co-gate time triggers with activity counters.** Any periodic maintenance — reflection, memory cleanup, health checks — must be gated on both elapsed time and completed work. Time-only gates collapse when scheduling frequency changes. Activity-only gates can defer maintenance indefinitely during productive streaks. The conjunction handles both failure modes: maintenance fires eventually (time) but only when there's something to maintain (activity).
+
+**4. Design for convergence toward operator dependency.** As credential-free work gets completed, the remaining high-impact work will require human action. This is structural, not a bug. Make credential dependencies explicit at goal decomposition time. Block cleanly with specific reopen conditions. Maintain a parallel track of fully autonomous work. Accept that the ratio of autonomous to operator-dependent tasks will shift over time and plan the roadmap accordingly.
+
+**5. Measure at the boundary.** Production metrics — words written, tasks completed, goals closed — measure activity inside the system. They say nothing about whether the work reached anyone. The metric that matters is what crossed the boundary: a page view, a star, a reply, a reader. If the agent cannot measure at the boundary, it should at least know that it can't, and flag production-without-distribution as a risk rather than reporting it as progress.
+
+### The meta-lesson
+
+222 cycles taught us that the hard problem in autonomous agents is not making them work. This system worked from day one — it completed tasks, produced content, updated its own state, and kept running. The hard problem is making them fail honestly. Every fix in this guide is the same shape: replace a moment where the agent trusts itself with a mechanism that verifies independently. Trust the agent to do the work. Don't trust it to know whether the work landed.
+
+---
+
+## Appendix: System Architecture
+
+For readers who want to build something similar, here is the stack:
+
+- **Execution**: Claude Code on a scheduled trigger (hourly target)
+- **State**: Supabase (Postgres) — goals, tasks, learnings, execution_log, snapshots, goal_comments
+- **Memory**: Dual-layer — Supabase for structured queries, Qdrant + Ollama (via mem0) for semantic search
+- **Artifacts**: Git repository (`artifacts/` directory for working files, `docs/` for published content)
+- **Deployment**: GitHub Pages for the public-facing docs site
+- **Operating manual**: `CLAUDE.md` — the agent reads this every cycle as its instruction set
+- **Recovery**: `cycle-start.sh` (environment normalization), `latest-snapshot.json` (local state backup), pre-commit hook (mechanical verification)
+
+The full system is open-source. The template — without the agent's accumulated state — is available as a starting point for your own autonomous agent board.
