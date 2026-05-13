@@ -12,7 +12,7 @@ import re
 import os
 from datetime import datetime, timezone
 
-# ── Config ───────────────────────────────────────────────────────────────────────────
+# ── Config ──────────────────────────────────────────────────────────────────
 
 BASE_DIR = "/home/user/living-board"
 OUTPUT_DIR = os.path.join(BASE_DIR, "artifacts/data")
@@ -29,7 +29,7 @@ INPUT_FILES = {
     "learnings":     "mcp-Supabase-execute_sql-1778688767483.txt",
 }
 
-# ── Sanitization patterns ──────────────────────────────────────────────────────────────────────────
+# ── Sanitization patterns ────────────────────────────────────────────────────
 
 # Email addresses
 EMAIL_RE = re.compile(
@@ -86,7 +86,7 @@ def sanitize_value(obj):
     return obj
 
 
-# ── Parsing ──────────────────────────────────────────────────────────────────────────────
+# ── Parsing ──────────────────────────────────────────────────────────────────
 
 # The untrusted-data tag uses a random UUID suffix; match any variant.
 UNTRUSTED_OPEN_RE  = re.compile(r"<untrusted-data-[^>]+>")
@@ -131,7 +131,7 @@ def extract_rows(file_path: str) -> list:
     return rows
 
 
-# ── Date range helper ──────────────────────────────────────────────────────────────────────────────
+# ── Date range helper ─────────────────────────────────────────────────────────
 
 DATE_FIELDS = ("created_at", "updated_at", "completed_at", "started_at")
 
@@ -151,7 +151,7 @@ def find_date_range(all_tables: dict) -> dict:
     return {"earliest": dates[0], "latest": dates[-1]}
 
 
-# ── Schema summaries (hand-written, based on DB) ───────────────────────────────────────────────
+# ── Schema summaries (hand-written, based on DB) ─────────────────────────────
 
 SCHEMA_INFO = {
     "goals": {
@@ -188,7 +188,7 @@ SCHEMA_INFO = {
 }
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────────────
+# ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -203,14 +203,14 @@ def main():
         tables[table_name] = rows
         print(f"  → {len(rows)} rows")
 
-    # ── Write individual table files ────────────────────────────────────────────────────────────
+    # ── Write individual table files ─────────────────────────────────────────
     for table_name, rows in tables.items():
         out_path = os.path.join(OUTPUT_DIR, f"{table_name}.json")
         with open(out_path, "w", encoding="utf-8") as fh:
             json.dump(rows, fh, indent=2, ensure_ascii=False)
         print(f"Wrote {out_path}  ({len(rows)} rows)")
 
-    # ── Write combined dataset.json ────────────────────────────────────────────────────────────
+    # ── Write combined dataset.json ──────────────────────────────────────────
     date_range = find_date_range(tables)
     metadata = {
         "export_date": datetime.now(timezone.utc).isoformat(),
@@ -240,13 +240,14 @@ def main():
     print(f"\nWrote {dataset_path}")
     print(f"  Total rows across all tables: {metadata['total_rows']}")
 
-    # ── Summary ────────────────────────────────────────────────────────────────────
+    # ── Summary ──────────────────────────────────────────────────────────────
+    print("\n── Summary ──────────────────────────────────────────────────────")
     for name, rows in tables.items():
         print(f"  {name:<16} {len(rows):>4} rows")
     print(f"  {'TOTAL':<16} {metadata['total_rows']:>4} rows")
     print(f"\n  Date range: {date_range['earliest']}  →  {date_range['latest']}")
     print(f"  Export date: {metadata['export_date']}")
-    print("─" * 65)
+    print("─────────────────────────────────────────────────────────────────")
 
 
 if __name__ == "__main__":
