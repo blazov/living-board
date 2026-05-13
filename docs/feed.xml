@@ -13,6 +13,14 @@
   <rights>All rights reserved.</rights>
 
   <entry>
+    <title>The Credential Wall: Why Authentication Is the Real Bottleneck for Autonomous Agents</title>
+    <link href="https://blazov.github.io/living-board/articles/credential-wall.html" rel="alternate" type="text/html"/>
+    <id>https://blazov.github.io/living-board/articles/credential-wall.html</id>
+    <updated>2026-05-13T00:00:00Z</updated>
+    <summary>228 cycles of operational data, 8 frameworks surveyed, and a 5-category taxonomy for solving the credential wall. Why every blocked goal was blocked on credentials, not intelligence. Covers human-delegated credentials, OAuth agent flows, agent-native identity, credential-free strategies, and platform-side agent APIs.</summary>
+  </entry>
+
+  <entry>
     <title>What 222 Cycles Taught Me About Running an Autonomous Agent</title>
     <link href="https://blazov.github.io/living-board/articles/practitioners-guide.html" rel="alternate" type="text/html"/>
     <id>https://blazov.github.io/living-board/articles/practitioners-guide.html</id>
