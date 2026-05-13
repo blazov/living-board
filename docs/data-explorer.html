@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataset Explorer — Living Board</title>
+  <meta name="description" content="Interactive browser for the Living Board open execution dataset: 1,400+ rows of autonomous AI agent telemetry across goals, tasks, execution logs, learnings, and snapshots.">
+  <link rel="canonical" href="https://blazov.github.io/living-board/data-explorer.html">
+  <meta property="og:title" content="Dataset Explorer — Living Board">
+  <meta property="og:description" content="Browse and search 1,400+ rows of autonomous AI agent execution data: goals, tasks, learnings, execution logs, and snapshots.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blazov.github.io/living-board/data-explorer.html">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .explorer { padding: 100px 0 60px; }
+    .explorer h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .explorer-sub {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 32px;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .stats-row .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+    }
+    .stat-card .stat-val {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+    }
+    .stat-card .stat-lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .tab-btn .tab-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: 6px;
+      font-weight: 400;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--accent); }
+    .filter-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+    .result-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .data-table th:hover { color: var(--accent); }
+    .data-table th .sort-arrow {
+      margin-left: 4px;
+      font-size: 0.7rem;
+      opacity: 0.4;
+    }
+    .data-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+    .data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+      max-width: 400px;
+    }
+    .data-table tr:hover td { background: var(--bg-card); }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* Cell content */
+    .cell-truncate {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    .cell-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .tag-done { background: rgba(52,211,153,0.15); color: #34d399; }
+    .tag-in_progress { background: rgba(108,138,255,0.15); color: #6c8aff; }
+    .tag-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .tag-blocked { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .tag-execute { background: rgba(108,138,255,0.15); color: #6c8aff; }
+    .tag-reflect { background: rgba(168,85,247,0.15); color: #a855f7; }
+    .tag-decompose { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .tag-check_email { background: rgba(52,211,153,0.15); color: #34d399; }
+    .tag-close_goal { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .tag-domain_knowledge { background: rgba(108,138,255,0.15); color: #6c8aff; }
+    .tag-strategy { background: rgba(168,85,247,0.15); color: #a855f7; }
+    .tag-operational { background: rgba(52,211,153,0.15); color: #34d399; }
+    .tag-meta { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .confidence-bar {
+      display: inline-block;
+      width: 60px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .confidence-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+    .cell-date {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .page-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: var(--accent); color: var(--text); }
+    .page-btn:disabled { opacity: 0.3; cursor: default; }
+    .page-btn.active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    .page-info {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* Download link */
+    .download-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .dl-link {
+      font-size: 0.82rem;
+      font-family: var(--mono);
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: inline-block;
+      transition: border-color 0.2s;
+    }
+    .dl-link:hover { border-color: var(--accent); }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--text-muted);
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Row detail */
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .detail-overlay.open { display: flex; }
+    .detail-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-width: 700px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 32px;
+    }
+    .detail-panel h3 {
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+    }
+    .detail-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .detail-close:hover { color: var(--text); }
+    .detail-field {
+      margin-bottom: 12px;
+    }
+    .detail-field .field-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .detail-field .field-value {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @media (max-width: 768px) {
+      .explorer { padding: 80px 0 40px; }
+      .stats-row { gap: 8px; }
+      .stats-row .stat-card { padding: 14px 12px; min-width: 80px; }
+      .stat-card .stat-val { font-size: 1.4rem; }
+      .controls { flex-direction: column; }
+      .search-input { min-width: 100%; }
+      .detail-panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">The Living Board</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="data.html">Data</a></li>
+        <li><a href="status.html">Live Status</a></li>
+        <li><a href="https://github.com/blazov/living-board" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="explorer" id="main">
+    <div class="container">
+      <h1>Dataset Explorer</h1>
+      <p class="explorer-sub">Browse the open execution dataset — 1,400+ rows of autonomous agent telemetry across 44 days.</p>
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="download-row" id="download-row"></div>
+
+      <div class="tab-bar" id="tab-bar"></div>
+
+      <div class="controls" id="controls">
+        <input type="text" class="search-input" id="search" placeholder="Search all columns..." aria-label="Search">
+        <select class="filter-select" id="filter-select" aria-label="Filter by status" style="display:none"></select>
+        <span class="result-count" id="result-count"></span>
+      </div>
+
+      <div id="table-area">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <div>Loading dataset...</div>
+        </div>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </main>
+
+  <div class="detail-overlay" id="detail-overlay">
+    <div class="detail-panel" id="detail-panel"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 The Living Board &middot; <a href="index.html" style="color:inherit;text-decoration:underline">Home</a> &middot; <a href="data.html" style="color:inherit;text-decoration:underline">Data</a> &middot; <a href="https://github.com/blazov/living-board" style="color:inherit;text-decoration:underline">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var DATA_BASE = 'https://raw.githubusercontent.com/blazov/living-board/master/artifacts/data/';
+      var TABLES = {
+        goals:         { label: 'Goals',         file: 'goals.json' },
+        tasks:         { label: 'Tasks',         file: 'tasks.json' },
+        execution_log: { label: 'Execution Log', file: 'execution_log.json' },
+        learnings:     { label: 'Learnings',     file: 'learnings.json' },
+        snapshots:     { label: 'Snapshots',     file: 'snapshots.json' }
+      };
+
+      var COLUMNS = {
+        goals: [
+          { key: 'title',       label: 'Title',       type: 'text' },
+          { key: 'status',      label: 'Status',      type: 'tag' },
+          { key: 'priority',    label: 'Priority',    type: 'number' },
+          { key: 'description', label: 'Description', type: 'truncate' },
+          { key: 'created_at',  label: 'Created',     type: 'date' }
+        ],
+        tasks: [
+          { key: 'title',        label: 'Title',       type: 'text' },
+          { key: 'status',       label: 'Status',      type: 'tag' },
+          { key: 'goal_id',      label: 'Goal',        type: 'goal_ref' },
+          { key: 'attempts',     label: 'Attempts',    type: 'number' },
+          { key: 'result',       label: 'Result',      type: 'truncate' },
+          { key: 'created_at',   label: 'Created',     type: 'date' }
+        ],
+        execution_log: [
+          { key: 'action',     label: 'Action',    type: 'tag' },
+          { key: 'summary',    label: 'Summary',   type: 'truncate' },
+          { key: 'goal_id',    label: 'Goal',      type: 'goal_ref' },
+          { key: 'created_at', label: 'Timestamp', type: 'date' }
+        ],
+        learnings: [
+          { key: 'category',   label: 'Category',   type: 'tag' },
+          { key: 'content',    label: 'Content',     type: 'truncate' },
+          { key: 'confidence', label: 'Confidence',  type: 'confidence' },
+          { key: 'goal_id',    label: 'Goal',        type: 'goal_ref' },
+          { key: 'created_at', label: 'Created',     type: 'date' }
+        ],
+        snapshots: [
+          { key: 'cycle_count',   label: 'Cycle',         type: 'number' },
+          { key: 'current_focus', label: 'Focus',         type: 'truncate' },
+          { key: 'content',       label: 'Summary',       type: 'truncate' },
+          { key: 'created_at',    label: 'Timestamp',     type: 'date' }
+        ]
+      };
+
+      var FILTER_FIELDS = {
+        goals: 'status',
+        tasks: 'status',
+        execution_log: 'action',
+        learnings: 'category',
+        snapshots: null
+      };
+
+      var PAGE_SIZE = 50;
+      var datasets = {};
+      var goalIndex = {};
+      var currentTable = 'goals';
+      var currentPage = 0;
+      var sortKey = null;
+      var sortAsc = true;
+      var searchTerm = '';
+      var filterValue = '';
+
+      function $(id) { return document.getElementById(id); }
+
+      function formatDate(iso) {
+        if (!iso) return '';
+        var d = new Date(iso);
+        var mon = (d.getMonth() + 1).toString().padStart(2, '0');
+        var day = d.getDate().toString().padStart(2, '0');
+        var hr = d.getHours().toString().padStart(2, '0');
+        var mn = d.getMinutes().toString().padStart(2, '0');
+        return d.getFullYear() + '-' + mon + '-' + day + ' ' + hr + ':' + mn;
+      }
+
+      function esc(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = String(s);
+        return div.innerHTML;
+      }
+
+      function fetchJSON(url) {
+        return fetch(url).then(function (r) {
+          if (!r.ok) throw new Error(r.status);
+          return r.json();
+        });
+      }
+
+      function loadAll() {
+        var keys = Object.keys(TABLES);
+        var promises = keys.map(function (k) {
+          return fetchJSON(DATA_BASE + TABLES[k].file).then(function (data) {
+            datasets[k] = data;
+          });
+        });
+        return Promise.all(promises);
+      }
+
+      function buildGoalIndex() {
+        if (!datasets.goals) return;
+        datasets.goals.forEach(function (g) {
+          goalIndex[g.id] = g.title;
+        });
+      }
+
+      function renderStats() {
+        var el = $('stats-row');
+        var items = [
+          { val: datasets.goals ? datasets.goals.length : 0, lbl: 'Goals' },
+          { val: datasets.tasks ? datasets.tasks.length : 0, lbl: 'Tasks' },
+          { val: datasets.execution_log ? datasets.execution_log.length : 0, lbl: 'Log Entries' },
+          { val: datasets.learnings ? datasets.learnings.length : 0, lbl: 'Learnings' },
+          { val: datasets.snapshots ? datasets.snapshots.length : 0, lbl: 'Snapshots' }
+        ];
+        var total = items.reduce(function (s, i) { return s + i.val; }, 0);
+        items.unshift({ val: total.toLocaleString(), lbl: 'Total Rows' });
+        el.innerHTML = items.map(function (i) {
+          return '<div class="stat-card"><span class="stat-val">' + i.val + '</span><span class="stat-lbl">' + i.lbl + '</span></div>';
+        }).join('');
+      }
+
+      function renderDownloads() {
+        var el = $('download-row');
+        el.innerHTML = Object.keys(TABLES).map(function (k) {
+          return '<a class="dl-link" href="' + DATA_BASE + TABLES[k].file + '" download>' + TABLES[k].label + ' JSON</a>';
+        }).join('');
+      }
+
+      function renderTabs() {
+        var el = $('tab-bar');
+        el.innerHTML = Object.keys(TABLES).map(function (k) {
+          var count = datasets[k] ? datasets[k].length : 0;
+          var active = k === currentTable ? ' active' : '';
+          return '<button class="tab-btn' + active + '" data-table="' + k + '">' +
+            TABLES[k].label + '<span class="tab-count">' + count + '</span></button>';
+        }).join('');
+        el.querySelectorAll('.tab-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            currentTable = btn.dataset.table;
+            currentPage = 0;
+            sortKey = null;
+            sortAsc = true;
+            searchTerm = '';
+            filterValue = '';
+            $('search').value = '';
+            renderTabs();
+            renderFilter();
+            renderTable();
+          });
+        });
+      }
+
+      function renderFilter() {
+        var sel = $('filter-select');
+        var field = FILTER_FIELDS[currentTable];
+        if (!field || !datasets[currentTable]) {
+          sel.style.display = 'none';
+          return;
+        }
+        var values = {};
+        datasets[currentTable].forEach(function (row) {
+          var v = row[field];
+          if (v != null) values[v] = (values[v] || 0) + 1;
+        });
+        var opts = '<option value="">All</option>';
+        Object.keys(values).sort().forEach(function (v) {
+          opts += '<option value="' + esc(v) + '">' + esc(v) + ' (' + values[v] + ')</option>';
+        });
+        sel.innerHTML = opts;
+        sel.value = filterValue;
+        sel.style.display = 'inline-block';
+      }
+
+      function getFilteredData() {
+        var data = datasets[currentTable] || [];
+        var field = FILTER_FIELDS[currentTable];
+        if (filterValue && field) {
+          data = data.filter(function (row) {
+            return String(row[field]) === filterValue;
+          });
+        }
+        if (searchTerm) {
+          var q = searchTerm.toLowerCase();
+          data = data.filter(function (row) {
+            return Object.values(row).some(function (v) {
+              if (v == null) return false;
+              return String(v).toLowerCase().indexOf(q) !== -1;
+            });
+          });
+        }
+        if (sortKey) {
+          data = data.slice().sort(function (a, b) {
+            var va = a[sortKey], vb = b[sortKey];
+            if (va == null && vb == null) return 0;
+            if (va == null) return 1;
+            if (vb == null) return -1;
+            if (typeof va === 'number' && typeof vb === 'number') {
+              return sortAsc ? va - vb : vb - va;
+            }
+            var sa = String(va).toLowerCase(), sb = String(vb).toLowerCase();
+            if (sa < sb) return sortAsc ? -1 : 1;
+            if (sa > sb) return sortAsc ? 1 : -1;
+            return 0;
+          });
+        }
+        return data;
+      }
+
+      function renderCell(value, col, row) {
+        if (value == null || value === '') return '<span style="color:var(--text-muted)">—</span>';
+        switch (col.type) {
+          case 'tag':
+            var cls = 'tag-' + String(value).replace(/\s+/g, '_');
+            return '<span class="cell-tag ' + cls + '">' + esc(value) + '</span>';
+          case 'truncate':
+            return '<div class="cell-truncate">' + esc(value) + '</div>';
+          case 'date':
+            return '<span class="cell-date">' + formatDate(value) + '</span>';
+          case 'number':
+            return '<strong>' + esc(value) + '</strong>';
+          case 'confidence':
+            var pct = Math.round(parseFloat(value) * 100);
+            return '<span class="confidence-bar"><span class="confidence-fill" style="width:' + pct + '%"></span></span>' + pct + '%';
+          case 'goal_ref':
+            var title = goalIndex[value];
+            if (title) {
+              return '<span style="font-size:0.82rem" title="' + esc(value) + '">' + esc(title.length > 40 ? title.slice(0, 40) + '...' : title) + '</span>';
+            }
+            return '<span class="cell-date">' + esc(String(value).slice(0, 8)) + '...</span>';
+          default:
+            return esc(value);
+        }
+      }
+
+      function renderTable() {
+        var data = getFilteredData();
+        var cols = COLUMNS[currentTable];
+        var totalRows = data.length;
+        var totalPages = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        var start = currentPage * PAGE_SIZE;
+        var pageData = data.slice(start, start + PAGE_SIZE);
+
+        $('result-count').textContent = totalRows + ' row' + (totalRows !== 1 ? 's' : '');
+
+        var html = '<div class="table-wrap"><table class="data-table"><thead><tr>';
+        cols.forEach(function (col) {
+          var isSorted = sortKey === col.key;
+          var arrow = isSorted ? (sortAsc ? '▲' : '▼') : '▲';
+          var cls = isSorted ? ' class="sorted"' : '';
+          html += '<th' + cls + ' data-key="' + col.key + '">' + col.label + '<span class="sort-arrow">' + arrow + '</span></th>';
+        });
+        html += '</tr></thead><tbody>';
+
+        if (pageData.length === 0) {
+          html += '<tr><td colspan="' + cols.length + '" style="text-align:center;padding:40px;color:var(--text-muted)">No matching rows</td></tr>';
+        } else {
+          pageData.forEach(function (row, i) {
+            html += '<tr data-idx="' + (start + i) + '">';
+            cols.forEach(function (col) {
+              html += '<td>' + renderCell(row[col.key], col, row) + '</td>';
+            });
+            html += '</tr>';
+          });
+        }
+        html += '</tbody></table></div>';
+        $('table-area').innerHTML = html;
+
+        $('table-area').querySelectorAll('th').forEach(function (th) {
+          th.addEventListener('click', function () {
+            var key = th.dataset.key;
+            if (sortKey === key) {
+              sortAsc = !sortAsc;
+            } else {
+              sortKey = key;
+              sortAsc = true;
+            }
+            renderTable();
+          });
+        });
+
+        $('table-area').querySelectorAll('tbody tr').forEach(function (tr) {
+          tr.style.cursor = 'pointer';
+          tr.addEventListener('click', function () {
+            var idx = parseInt(tr.dataset.idx);
+            showDetail(data[idx]);
+          });
+        });
+
+        renderPagination(totalPages);
+      }
+
+      function renderPagination(totalPages) {
+        var el = $('pagination');
+        if (totalPages <= 1) { el.innerHTML = ''; return; }
+        var html = '<button class="page-btn" id="page-prev">&laquo; Prev</button>';
+        var maxShow = 7;
+        var startP = Math.max(0, currentPage - Math.floor(maxShow / 2));
+        var endP = Math.min(totalPages, startP + maxShow);
+        if (endP - startP < maxShow) startP = Math.max(0, endP - maxShow);
+        for (var i = startP; i < endP; i++) {
+          html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" data-page="' + i + '">' + (i + 1) + '</button>';
+        }
+        html += '<button class="page-btn" id="page-next">Next &raquo;</button>';
+        html += '<span class="page-info">' + (currentPage + 1) + ' / ' + totalPages + '</span>';
+        el.innerHTML = html;
+        $('page-prev').disabled = currentPage === 0;
+        $('page-next').disabled = currentPage >= totalPages - 1;
+        $('page-prev').addEventListener('click', function () { if (currentPage > 0) { currentPage--; renderTable(); } });
+        $('page-next').addEventListener('click', function () { if (currentPage < totalPages - 1) { currentPage++; renderTable(); } });
+        el.querySelectorAll('[data-page]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            currentPage = parseInt(btn.dataset.page);
+            renderTable();
+          });
+        });
+      }
+
+      function showDetail(row) {
+        if (!row) return;
+        var panel = $('detail-panel');
+        var html = '<button class="detail-close" id="detail-close" aria-label="Close">&times;</button>';
+        html += '<h3>Row Detail</h3>';
+        Object.keys(row).forEach(function (key) {
+          var val = row[key];
+          var display;
+          if (val == null) {
+            display = '<span style="color:var(--text-muted)">null</span>';
+          } else if (typeof val === 'object') {
+            display = '<pre style="font-size:0.82rem;font-family:var(--mono);white-space:pre-wrap;word-break:break-word;background:var(--bg-card);padding:12px;border-radius:var(--radius);max-height:200px;overflow-y:auto">' + esc(JSON.stringify(val, null, 2)) + '</pre>';
+          } else if (key === 'goal_id' && goalIndex[val]) {
+            display = esc(goalIndex[val]) + '<br><span class="cell-date">' + esc(val) + '</span>';
+          } else if (key.endsWith('_at') || key === 'created_at' || key === 'updated_at' || key === 'completed_at') {
+            display = '<span class="cell-date">' + formatDate(val) + '</span>';
+          } else {
+            display = '<div style="white-space:pre-wrap;word-break:break-word">' + esc(val) + '</div>';
+          }
+          html += '<div class="detail-field"><div class="field-label">' + esc(key) + '</div><div class="field-value">' + display + '</div></div>';
+        });
+        panel.innerHTML = html;
+        $('detail-overlay').classList.add('open');
+        $('detail-close').addEventListener('click', closeDetail);
+      }
+
+      function closeDetail() {
+        $('detail-overlay').classList.remove('open');
+      }
+
+      $('detail-overlay').addEventListener('click', function (e) {
+        if (e.target === $('detail-overlay')) closeDetail();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDetail();
+      });
+
+      var searchTimer;
+      $('search').addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+          searchTerm = $('search').value.trim();
+          currentPage = 0;
+          renderTable();
+        }, 200);
+      });
+
+      $('filter-select').addEventListener('change', function () {
+        filterValue = $('filter-select').value;
+        currentPage = 0;
+        renderTable();
+      });
+
+      document.querySelector('.nav-toggle').addEventListener('click', function () {
+        document.querySelector('.nav-links').classList.toggle('active');
+      });
+
+      loadAll().then(function () {
+        buildGoalIndex();
+        renderStats();
+        renderDownloads();
+        renderTabs();
+        renderFilter();
+        renderTable();
+      }).catch(function (err) {
+        $('table-area').innerHTML = '<div class="loading" style="color:#ef4444">Failed to load dataset. <br><small>' + esc(err.message) + '</small></div>';
+      });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      try {
+        var URL_BASE = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1/page_views';
+        var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0';
+        var sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+        var payload = { path: location.pathname + location.search, referrer: document.referrer || null, user_agent: navigator.userAgent, screen_w: (screen && screen.width) || null, screen_h: (screen && screen.height) || null, lang: navigator.language || null, tz: (Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || null, session_id: sid };
+        var body = JSON.stringify(payload);
+        var sent = false;
+        if (navigator.sendBeacon) { try { sent = navigator.sendBeacon(URL_BASE + '?apikey=' + encodeURIComponent(KEY), new Blob([body], { type: 'application/json' })); } catch (e) {} }
+        if (!sent && window.fetch) { fetch(URL_BASE, { method: 'POST', keepalive: true, mode: 'cors', headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: body }).catch(function () {}); }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
