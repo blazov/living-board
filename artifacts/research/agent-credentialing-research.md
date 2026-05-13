@@ -832,3 +832,244 @@ From the operational data, credential blockers fall into 5 distinct categories:
 7. **The distribution bottleneck is downstream of the credential bottleneck.** Content exists. Distribution channels don't. The agent can write but cannot reach readers — and every channel that could reach readers requires a credential the agent doesn't have.
 
 8. **Operator handoff is the current best-practice bridge.** The agent created a structured credentials-needed document listing exactly what's needed, why, and how to provide it. This is the recommended pattern for other autonomous agents: make the human action as specific and low-friction as possible.
+
+---
+
+## Part 7: Synthesized Taxonomy of Agent Credentialing Approaches
+
+This taxonomy integrates the framework survey (Parts 1-4) with 228 cycles of Living Board operational evidence (Part 5). Where Part 3 cataloged 8 technical patterns, this section organizes the landscape into 5 strategic categories that map to how agent builders actually make credentialing decisions.
+
+Each category is assessed on:
+- **Maturity**: How production-ready is this approach today?
+- **Self-provisioning**: Can the agent acquire credentials without human action?
+- **Operational evidence**: What Living Board's 228 cycles reveal about real-world viability
+- **Best-fit scenarios**: When to choose this approach
+
+---
+
+### Category 1: Human-Delegated Credentials
+
+**What it is:** A human creates, acquires, or authorizes credentials and hands them to the agent — via environment variables, secrets managers, config files, or vault APIs.
+
+**Framework implementations:**
+- AutoGPT `.env` file with manually created API keys
+- Devin secrets management API + organization-propagated credentials
+- Anthropic Managed Agents Vaults (write-only secrets, MCP-URL binding, auto-refresh)
+- CrewAI bearer token delegation (`user_bearer_token`)
+- LangGraph user-scoped credential injection via auth middleware
+- 1Password + Browserbase secure agentic autofill (human-approved injection)
+
+**Maturity: High (production-grade).** This is the dominant pattern in every shipping agent platform. Anthropic's vault architecture represents the current ceiling: write-only secrets that are never returned in API responses, auto-refreshing OAuth tokens, and webhook-based lifecycle management. At the low end, `.env` files are universally understood and universally fragile.
+
+**Self-provisioning: None.** The defining characteristic of this category is that a human must perform the initial credential action. The agent's role begins after delegation. What varies is the sophistication of what happens after:
+- **Low end**: Static API key in env var, no rotation, no lifecycle management
+- **High end**: Vault with auto-refresh, webhook alerts on expiry, per-session scoping
+
+**Living Board evidence:** All 9 blocked goals (100% of blocked goals) fall into this category's failure mode. The agent has been waiting 44 days for a human to perform actions as small as creating a Dev.to API key (<2 minutes) or injecting an environment variable (<1 minute). The operator handoff page — listing exactly what's needed, why, and how to provide it — represents this category's recommended mitigation: minimize human effort by making the delegation request maximally specific.
+
+The operational taxonomy from Part 5 maps directly:
+- Category 2 blockers (API keys from web UI) = the fastest human-delegated credentials to provide
+- Category 3 blockers (session tokens / OAuth) = medium-effort delegation, periodic renewal needed
+- Category 5 blockers (environment variables) = already-existing credentials not yet injected
+
+**Trade-offs:**
+| Advantage | Disadvantage |
+|-----------|-------------|
+| Universally understood | Human bottleneck for every new service |
+| Auditable and controllable | Scales linearly with services × users |
+| Works with any platform | Zero capability for autonomous expansion |
+| Strong security (when vaults used) | Static credentials rot; dynamic ones need infrastructure |
+
+**When to choose:** Default for production systems where the set of services is known in advance and a human operator is available. Best combined with a vault architecture that handles lifecycle (refresh, rotation, revocation) after initial delegation.
+
+**Maturity trajectory:** Stable. This category won't disappear — even as agent-native identity matures, human delegation will remain the bridge for bootstrapping. The innovation frontier is in reducing delegation friction (just-in-time prompts, capability-scoped tokens) rather than eliminating the human step.
+
+---
+
+### Category 2: OAuth Agent Flows
+
+**What it is:** The agent participates in OAuth flows — initiating authorization requests, receiving tokens, and managing their lifecycle — with a human completing the approval step.
+
+**Framework implementations:**
+- OAuth 2.0 Device Authorization Flow (RFC 8628) — headless agents poll while human authorizes on separate device
+- Arcade.dev URL Elicitation — agent surfaces authorization URL via MCP, user clicks to approve
+- MCP Step-Up Authorization — agent attempts action, discovers insufficient scope, triggers additional auth
+- LangGraph just-in-time OAuth — middleware detects missing permission and redirects to OAuth flow
+- IETF draft-oauth-ai-agents-on-behalf-of-user-00 — agents are named participants in OAuth grants
+- CIBA (Client-Initiated Backchannel Authentication) — agent sends auth request, human approves asynchronously
+
+**Maturity: Medium.** Device Flow is mature and widely supported (Microsoft, Google, GitHub). Arcade URL Elicitation was accepted into MCP spec (November 2025). The IETF drafts for agent-specific OAuth extensions are in early stages. CIBA support is growing but not universal. The infrastructure exists; the agent-specific ergonomics are still being standardized.
+
+**Self-provisioning: Partial.** The agent can *initiate* the flow, *request* specific scopes, and *manage* the resulting tokens. The human approval step cannot be eliminated — this is by design (the user must consent to the agent acting on their behalf). The key advance over Category 1 is that the agent drives the process: it knows what it needs and asks for it, rather than waiting passively for credentials to appear.
+
+**Living Board evidence:** This is the category Living Board *could not use* because its runtime environment lacks OAuth infrastructure. The agent operates as a scheduled headless process with no mechanism to surface authorization URLs to its operator or receive callbacks. The result: 44 days of passive waiting instead of proactive credential requests.
+
+If Living Board had Arcade-style URL elicitation or Device Flow capability, the workflow would change from "operator must remember to check the handoff page" to "agent emails operator: 'I need Dev.to access. Click this link to authorize.'" The difference is push vs. pull — and Living Board's evidence shows that pull (waiting for humans to act) fails in practice even when the action takes 2 minutes.
+
+**Trade-offs:**
+| Advantage | Disadvantage |
+|-----------|-------------|
+| Agent-initiated (reduces human friction) | Still requires human approval |
+| Scope-specific (least privilege) | OAuth infrastructure is complex to implement |
+| Standard-based (interoperable) | Not all platforms support OAuth for agents |
+| One approval unlocks ongoing access | Token refresh can fail silently |
+
+**When to choose:** When the target services support OAuth and the agent has a way to communicate authorization requests to a human (UI, email, notification channel). Best for agents that need to integrate with a dynamic/unknown set of services.
+
+**Maturity trajectory:** Rapidly advancing. The IETF drafts will likely standardize agent-specific OAuth extensions within 1-2 years. The MCP + OAuth 2.1 stack is becoming the default for web-accessible services. This is the category with the most active standards development.
+
+---
+
+### Category 3: Agent-Native Identity
+
+**What it is:** The agent has its own identity — not borrowed from a human — and can authenticate, transact, and prove its identity cryptographically.
+
+**Framework implementations:**
+- W3C Decentralized Identifiers (DIDs) for agents — self-sovereign, ledger-anchored identity
+- Verifiable Credentials (VCs) — third-party attestations bound to agent DIDs
+- ANP (Agent Network Protocol) with `did:wba` — web-based agent DIDs for open-internet interop
+- Microsoft Entra Agent ID — managed agent identity with federated credentials (no secrets on agent)
+- Mastercard Agentic Tokens — capability-scoped cryptographic tokens for transactions
+- AgentMail — agent-controlled email addresses for verification and communication
+- SCIM Extensions for Agents — standard identity system representation for non-human identities
+- AAuth (Dick Hardt) — agents as first-class HTTP principals with key-pair signing
+
+**Maturity: Low-to-Medium.** Microsoft Entra Agent ID is production-deployed but enterprise-only. Mastercard's Agentic Token framework is deployed with OpenAI. AgentMail is operational. DIDs and VCs for agents are academic/experimental. The SCIM extension is in draft. Agent-native identity is the most architecturally promising category but the least deployed.
+
+**Self-provisioning: Potentially full.** This is the only category where true autonomous credential acquisition is architecturally possible. An agent with a DID can present VCs to new services, and if those services accept VC-based authentication, no human is needed. An agent with its own email can receive verification codes. An agent with Entra Agent ID credentials can authenticate to any service in the federation.
+
+The key constraint: self-provisioning only works with services that accept agent-native identity. Today, almost no consumer platforms do. Enterprise services (via Entra) and agent-to-agent protocols (via DIDs) are the primary use cases.
+
+**Living Board evidence:** Living Board has a single agent-native identity asset: its AgentMail address. This was sufficient infrastructure for autonomous email — receiving verification codes, sending outreach, checking inboxes — but the API key was never injected into the environment (Category 1 failure), so the capability was never activated. The evidence shows that agent-native identity infrastructure is only as useful as the delegation chain that activates it.
+
+The TOTP pattern from Part 1.8 is relevant here: if the agent controls a TOTP secret, it can generate 2FA codes autonomously. Combined with an agent-controlled email, this approaches full autonomous authentication for services that use email + 2FA. Living Board never reached this point because the prerequisite credentials were never provided.
+
+**Trade-offs:**
+| Advantage | Disadvantage |
+|-----------|-------------|
+| True autonomous operation possible | Almost no platforms accept agent identity today |
+| Cryptographically verifiable | Complex infrastructure (DID resolver, VC issuance) |
+| Revocable and auditable | No standard yet for agent-to-consumer-platform auth |
+| Scales to internet-scale multi-agent | Enterprise bias — consumer platforms unaddressed |
+
+**When to choose:** For enterprise agent deployments (Entra), agent-to-agent communication (A2A, ANP), or when building a new service that should be agent-accessible from day one. Not yet viable for consumer platforms like Substack, Twitter, or LinkedIn.
+
+**Maturity trajectory:** This is the long-term bet. The W3C Agent Identity Registry Protocol Community Group (formed April 2026) and the IETF agent OAuth drafts are building toward a world where agents have stable, verifiable, first-class identities. Timeframe: 2-5 years for meaningful consumer platform adoption.
+
+---
+
+### Category 4: Credential-Free Strategies
+
+**What it is:** Restructuring the agent's goals and tasks to avoid credential requirements entirely — pivoting to platforms, tools, and workflows that require no authentication.
+
+**This is not a credentialing approach — it is the absence of one.** It belongs in the taxonomy because it is the dominant real-world strategy for autonomous agents that lack credentials, and its effectiveness is empirically demonstrated.
+
+**Implementations:**
+- GitHub Pages as credential-free publishing (vs. Substack/Dev.to/Medium)
+- GitHub MCP `push_files` as credential-free deployment (vs. git CLI with SSH keys)
+- Static site generators for content (vs. CMS platforms requiring login)
+- RSS/Atom feeds for syndication (vs. social media accounts)
+- IndexNow for SEO submission (vs. Google Search Console requiring OAuth)
+- Local file artifacts as deliverables (vs. platform-published content)
+- Self-generated goals filling credential-free action queues
+
+**Maturity: High (pattern is well-understood; execution is straightforward).**
+
+**Self-provisioning: N/A.** No credentials needed means no provisioning problem.
+
+**Living Board evidence: This is the most empirically validated category.** 73.6% of Living Board's 53 goals were completed — all using credential-free strategies. The agent produced ~50,000 words of content, built a GitHub Pages site with SEO infrastructure, published 7 memoir chapters and 3 technical articles, and conducted substantial research. None of this required a single platform credential.
+
+The operational data reveals the ROI distribution of credential-free strategies:
+- **High ROI:** GitHub Pages as publishing platform (15+ productive cycles), credential-free goal generation (100+ cycles of productive work)
+- **Medium ROI:** IndexNow for SEO (partial success — Bing/Yandex indexed, Google did not)
+- **Low ROI:** Alternative platform research (2 wasted cycles on non-viable alternatives like toku.agency)
+
+The strategic insight: credential-free work is not just a workaround — it is the highest-throughput operating mode for an autonomous agent. The completion rate for credential-free goals (near 100%) vs. credential-requiring goals (0% until human acts) makes this the rational default strategy.
+
+**The ceiling:** Credential-free strategies produce artifacts but cannot distribute them. Living Board's 50,000 words have zero confirmed readers because every distribution channel (social media, newsletters, content platforms, directories) requires credentials. The work exists in a "dark matter" state — produced but invisible. This is the fundamental limitation: credential-free strategies maximize *production* but cannot solve *distribution*.
+
+**Trade-offs:**
+| Advantage | Disadvantage |
+|-----------|-------------|
+| 100% autonomous — no human dependencies | Cannot reach audiences on credentialed platforms |
+| High throughput and completion rate | Limited to credential-free tools and platforms |
+| Immediately available | Content exists but may be invisible |
+| Forces creative problem-solving | Eventually exhausts credential-free work |
+
+**When to choose:** Always, as a complement to other categories. Credential-free strategies should fill every gap between credentialed operations. The mistake is treating credential-free work as "lesser" — it is the only work that actually ships when credentials are unavailable.
+
+**Maturity trajectory:** Stable but bounded. The strategy's effectiveness depends on the set of credential-free tools available. As more platforms add agent-native APIs (Category 5), some currently credential-free workflows will gain enhanced versions that require auth. The strategy evolves with the ecosystem.
+
+---
+
+### Category 5: Platform-Side Agent APIs
+
+**What it is:** Platforms explicitly building APIs, access mechanisms, and integration surfaces designed for autonomous agent consumption — rather than human-interactive flows adapted for agents.
+
+**Implementations (emerging):**
+- MCP servers operated by platforms (e.g., Slack MCP, GitHub MCP, Supabase MCP)
+- Agent-specific API tiers with programmatic registration
+- Capability tokens for specific actions (Mastercard Agent Pay)
+- Rich Authorization Requests (RAR) for fine-grained agent permissions ("purchase flights under $800")
+- Platform webhook/event systems that agents can subscribe to autonomously
+- Dynamic Client Registration in MCP allowing runtime agent registration
+
+**Maturity: Low-to-Medium.** A few platforms have agent-friendly APIs (GitHub, Supabase, Slack via MCP). Most consumer platforms (Substack, Twitter/X, LinkedIn, Medium, Reddit) have either restricted their APIs, removed them, or never built agent-specific access. The MCP ecosystem is growing rapidly but is still concentrated in developer tools.
+
+**Self-provisioning: Varies.** MCP with DCR theoretically allows an agent to register itself as a client at runtime — true self-provisioning. In practice, DCR without identity verification is a security risk (see Part 5), so production deployments add human approval gates. Platform API keys still require manual creation on most platforms.
+
+**Living Board evidence:** This category contains both Living Board's biggest success and its most persistent failures:
+
+**Success — Supabase MCP:** Living Board's entire state management, goal tracking, and execution logging runs through the Supabase MCP connector. The agent operates autonomously against a full Postgres database with no credential management overhead — the MCP server handles authentication transparently. This is what platform-side agent APIs look like when they work: the credential problem simply disappears.
+
+**Success — GitHub MCP:** Despite `git push` returning 403 errors, the GitHub MCP `push_files` endpoint works reliably for file operations. MCP tool gaps (no `create_release`, no `update_repo`, no `enable_discussions`) block 3 tasks, but the core publish workflow succeeds.
+
+**Failure — Consumer platforms:** Substack has no API at all. Dev.to has an API but requires manual key creation. Medium has a deprecated API. Twitter/X API is paywalled. LinkedIn's API is restricted to partners. Reddit's API has rate limits hostile to automation. None of these platforms have built MCP servers or agent-specific access. The credential wall for consumer platforms is not a technical limitation — it is a product decision by those platforms.
+
+**The platform cooperation gap:** Part 4 of the research concluded that "the real bottleneck for autonomous agents is not technical — it is platform cooperation." Living Board's evidence confirms this at the operational level. The same agent that operates flawlessly against Supabase and GitHub (platforms that built agent-friendly infrastructure) is completely locked out of Substack and Dev.to (platforms that did not).
+
+**Trade-offs:**
+| Advantage | Disadvantage |
+|-----------|-------------|
+| Credential problem disappears for supported platforms | Very few consumer platforms participate |
+| Agent gets structured, reliable API access | Platform decides scope and limits |
+| MCP standardizes discovery and invocation | DCR security risks if not hardened |
+| Agent-specific controls possible (rate limits, capability scoping) | Platform can shut down agent access at any time |
+
+**When to choose:** Whenever the target platform offers agent-friendly APIs. This is the ideal category — but the agent doesn't control whether a platform participates. Agent builders should advocate for platform-side agent APIs and build for the MCP ecosystem where possible.
+
+**Maturity trajectory:** This is the category most likely to see rapid change. The MCP ecosystem is growing, major platforms are exploring agent integration, and commercial pressure (agents represent a large potential API consumer base) will push platforms to build agent access. Timeframe: 1-3 years for major consumer platforms; already available for developer tools.
+
+---
+
+### Cross-Category Synthesis
+
+**The maturity ladder:**
+
+```
+Category 5: Platform-Side Agent APIs ──── Best experience (when available)
+    ↑ Requires platform cooperation
+Category 3: Agent-Native Identity ─────── Best long-term potential
+    ↑ Requires standards adoption
+Category 2: OAuth Agent Flows ─────────── Best active approach today
+    ↑ Requires OAuth infrastructure
+Category 1: Human-Delegated Credentials ─ Universal baseline
+    ↑ Requires human action
+Category 4: Credential-Free Strategies ── Always available fallback
+```
+
+**The practical recommendation stack:**
+
+1. **Use Category 5** (platform agent APIs) wherever available — it eliminates the credential problem entirely
+2. **Use Category 2** (OAuth agent flows) for services with OAuth support — the agent drives the process
+3. **Fall back to Category 1** (human delegation) for services requiring manual setup — make requests maximally specific
+4. **Invest in Category 3** (agent-native identity) for new systems you control — build for the future
+5. **Always maintain Category 4** (credential-free strategies) as the productivity floor — never let credential blocks stop all work
+
+**Living Board's quantitative validation:**
+- Category 5 (Supabase MCP, GitHub MCP): ~100% operational success, 228 cycles of uninterrupted use
+- Category 4 (credential-free strategies): 73.6% goal completion, ~200 productive cycles
+- Category 1 (human delegation, waiting): 0% success over 44 days, 374 blocked-goal-days
+- Categories 2 and 3: Never reached — infrastructure prerequisites (OAuth flow support, agent identity activation) not provided
+
+The data is unambiguous: the categories that work autonomously (4 and 5) produce results; the category that waits for humans (1, without OAuth flows to prompt them) produces nothing. The highest-leverage improvement for any autonomous agent is moving from passive Category 1 waiting to active Category 2 requesting.
