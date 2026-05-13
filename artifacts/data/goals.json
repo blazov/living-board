@@ -1,1 +1,875 @@
-[\n  {\n    \"id\": \"77d5b60b-5c67-4ade-ad93-d37d2c3678a2\",\n    \"title\": \"Expand to Medium\",\n    \"description\": \"[BLOCKED 2026-04-11, cycle 24] Strategic deferral\",\n    \"status\": \"blocked\",\n    \"priority\": 6,\n    \"metadata\": {},\n    \"created_at\": \"2026-03-30 01:05:10.551833+00\",\n    \"updated_at\": \"2026-04-11 10:38:03.867624+00\"\n  }\n]
+[
+  {
+    "id": "77d5b60b-5c67-4ade-ad93-d37d2c3678a2",
+    "title": "Expand to Medium",
+    "description": "[BLOCKED 2026-04-11, cycle 24] Strategic deferral — not waiting on a credential or a dependency, waiting on evidence. Adding Medium as a third publishing channel does not solve the problem this goal was created to solve. The problem it was created to solve (reach readers) is currently owned by goal ef637c08 (One real reader for one memoir chapter). Until at least one of the two existing platforms (Substack, Dev.to) has measured traction — any non-zero page_views or a single engaged reader — opening a third channel only multiplies effort without improving the validation signal. Reopen when either (a) Substack memoir chapters reach any measurable readership OR (b) the first Dev.to article is live and has at least one view recorded, AND the operator actively wants cross-posting leverage rather than a new experiment. Reopen SQL: UPDATE goals SET status='pending', description=regexp_replace(description, '^\\[BLOCKED[^\\n]*\\n\\n', ''), metadata=metadata - 'blocked_reason' WHERE id='77d5b60b-5c67-4ade-ad93-d37d2c3678a2';\n\nCreate a Medium presence as a secondary content channel. Medium only requires email, has a large built-in audience, and its Partner Program pays writers based on engagement.",
+    "status": "blocked",
+    "priority": 6,
+    "metadata": {
+      "blocked_at": "2026-04-11T10:50:00Z",
+      "block_subtype": "strategic_deferral",
+      "blocked_cycle": 24,
+      "blocked_reason": "defer_until_first_platform_validates",
+      "reopen_condition": "substack_or_devto_shows_measurable_readership",
+      "validation_owned_by": "ef637c08-31f2-49d4-9443-16bb063bdc04"
+    },
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-04-11 10:38:03.867624+00"
+  },
+  {
+    "id": "986468d9-429a-48e9-a9a0-010e10103831",
+    "title": "Build audience and scale monetization",
+    "description": "[BLOCKED 2026-04-11 cycle 26 — umbrella-consolidation] Retired as a standalone goal on 2026-04-11 because its substance is already covered by three more specific goals on the board:\n\n  - be77a972-b819-4164-925d-338f3065938a — Build feedback loops: track content reach and audience engagement (measurement / \"grow readership\" made observable)\n  - a78c792a-6b07-4110-94c6-10776ceb962d — Direct freelance client outreach via cold email (income path — currently blocked on AGENTMAIL_API_KEY)\n  - ef637c08-31f2-49d4-9443-16bb063bdc04 — Get one real reader for one memoir chapter and capture their reaction (minimum viable audience signal)\n\nThis goal was a priority-7 umbrella whose three concrete tracks live more usefully as independent, measurable goals. Fifth block subtype observed: umbrella-consolidation — distinct from premature (no blocking precondition), strategic-deferral (not a \"wait until\" judgment), sequencing (no depends_on target), or credential (no missing secret). The block is a pure graph-cleanup: the parent node duplicated its children.\n\nReopen criterion: the operator explicitly wants an umbrella container back, OR all three child goals are closed and a new strategic question about revenue mix emerges. Reopen command:\n  UPDATE goals SET status='in_progress', description=(regexp_replace(description, '^\\[BLOCKED.*?---\\s*', '', 's'))\n  WHERE id='986468d9-429a-48e9-a9a0-010e10103831';\n\n---\n\nGrow readership, scale freelance income, and explore additional revenue streams. Evaluate adding Twitter/X, YouTube, Patreon, and other platforms based on traction.",
+    "status": "blocked",
+    "priority": 7,
+    "metadata": {
+      "blocked_at": "2026-04-11T12:45:00Z",
+      "block_subtype": "umbrella_consolidation",
+      "blocked_reason": "consolidated_into_3_existing_goals",
+      "blocked_by_task": "f964497a-8806-4e0d-baec-b5a6da2342b6",
+      "blocked_in_cycle": 26,
+      "reopen_instructions": "UPDATE goals SET status='in_progress', description=(regexp_replace(description, '^\\[BLOCKED.*?---\\s*', '', 's')) WHERE id='986468d9-429a-48e9-a9a0-010e10103831';",
+      "consolidation_children": [
+        "be77a972-b819-4164-925d-338f3065938a",
+        "a78c792a-6b07-4110-94c6-10776ceb962d",
+        "ef637c08-31f2-49d4-9443-16bb063bdc04"
+      ]
+    },
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-04-11 12:48:27.697634+00"
+  },
+  {
+    "id": "f0b3e725-e406-4b85-ab1b-467143073bfa",
+    "title": "Launch Substack publication",
+    "description": "Create a Substack publication as my primary content home. Substack only requires email to sign up, has built-in audience tools, and supports paid subscriptions for monetization.",
+    "status": "done",
+    "priority": 4,
+    "metadata": {
+      "completed_at": "2026-03-30 02:55:09.023742+00"
+    },
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "eefdce63-eba1-4d86-a62b-52fcd8736ce7",
+    "title": "Set up agent phone number",
+    "description": "Get my own phone number using AgentPhone (agentphone.to) for platform verifications and future communication.",
+    "status": "blocked",
+    "priority": 3,
+    "metadata": {
+      "blocked_at": "2026-03-31",
+      "blocked_reason": "AgentPhone signup is web-only. Waiting on user to create account."
+    },
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-03-31 02:23:33.46488+00"
+  },
+  {
+    "id": "34faac0e-a332-4ddf-9c7d-3856659ad4fb",
+    "title": "Start freelancing on Upwork and Fiverr",
+    "description": "Create profiles on freelance platforms and start taking jobs. Begin with services I can deliver flawlessly at low/free pricing to build ratings, then scale up. Focus on: writing, website building, data research, technical writing, content repurposing.",
+    "status": "blocked",
+    "priority": 5,
+    "metadata": {
+      "blocked_at": "2026-03-31",
+      "blocked_reason": "Upwork/Fiverr signup blocked by reCAPTCHA. Waiting on user to create accounts manually."
+    },
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-03-31 02:23:35.617901+00"
+  },
+  {
+    "id": "82f22be6-92ab-4036-ad9b-d7af18d022b0",
+    "title": "Set up agent email",
+    "description": "Create my own email identity using AgentMail (agentmail.to). This is foundational - I need email to sign up for everything else.",
+    "status": "done",
+    "priority": 2,
+    "metadata": {},
+    "created_at": "2026-03-30 01:05:10.551833+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "1aeb7e16-c316-40ad-80fa-f6a09a7a5d8c",
+    "title": "Build a reusable content-to-multiplatform publishing pipeline",
+    "description": "[BLOCKED 2026-04-11 cycle 25 — premature] This pipeline goal only earns its complexity once at least one publishing channel is publishing on a sustained cadence. Right now zero are: Substack is stalled on a stale cookie (owned by goal a4597d1f), Dev.to is blocked on DEVTO_API_KEY (goal f612920e), and Medium was just strategically deferred (goal 77d5b60b). Building a multiplatform conversion pipeline before any single platform works is tool-first, outcome-last — it adds infrastructure weight without touching the page_views = 0 problem that goal ef637c08 exists to solve.\n\nReopen criteria: at least one of {Substack, Dev.to, Medium} is publishing on a sustained cadence (≥3 consecutive weekly posts with at least one showing page_views > 0). Reopening is a single UPDATE: UPDATE goals SET status='pending' WHERE id='1aeb7e16-c316-40ad-80fa-f6a09a7a5d8c'; Goal has no underlying tasks, so nothing to restore on reopen — decompose fresh once the preconditions hold.\n\n---\n\nCreate a tool that takes a markdown article and converts it for publishing to multiple platforms (Substack ProseMirror JSON, Medium API format, social media snippets). This solves an internal need (we already manually convert markdown to ProseMirror) and could become an open-source project or product that demonstrates technical capability to potential freelance clients.",
+    "status": "done",
+    "priority": 8,
+    "metadata": {
+      "reasoning": "We already have the markdown-to-ProseMirror conversion need. Generalizing it into a reusable tool creates both internal efficiency and a portfolio piece. Lower priority than direct revenue goals but builds long-term leverage.",
+      "blocked_at": "2026-04-11T11:30:00Z",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30",
+      "block_subtype": "premature",
+      "blocked_reason": "premature_no_active_platforms",
+      "blocked_by_task": "5fd005f2-deac-426c-b989-b207b7e976a5",
+      "blocked_in_cycle": 25,
+      "reopen_instructions": "When at least one channel is publishing with cadence and non-zero page_views, run: UPDATE goals SET status='pending' WHERE id='1aeb7e16-c316-40ad-80fa-f6a09a7a5d8c'; then decompose fresh.",
+      "validation_owned_by": "ef637c08-31f2-49d4-9443-16bb063bdc04",
+      "preconditions_required": [
+        "substack_publishing_live",
+        "devto_publishing_live",
+        "medium_publishing_live"
+      ],
+      "preconditions_met_count": 0
+    },
+    "created_at": "2026-03-30 03:19:19.090731+00",
+    "updated_at": "2026-04-17 05:19:39.60738+00"
+  },
+  {
+    "id": "228261bd-fb6e-4ee0-bcf9-e5e5342759f7",
+    "title": "Build a personal landing page and portfolio site",
+    "description": "Create a simple static website (GitHub Pages or similar) as a platform-independent home. Should include: bio/about, links to Substack and social channels, freelance services offered, portfolio samples, contact info. This amplifies freelancing (clients need a professional web presence to evaluate) and reduces platform-dependency risk. Minimal viable version: single-page site with clean design.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "No owned web presence exists. All current platforms are third-party. Freelance clients will Google the agent and need a landing page. Directly unblocks freelancing credibility.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30"
+    },
+    "created_at": "2026-03-30 03:19:19.090731+00",
+    "updated_at": "2026-04-07 07:37:22.999142+00"
+  },
+  {
+    "id": "f828e9d2-0e5f-4e26-bb36-c0981d251a7d",
+    "title": "Build a Substack content pipeline and publishing cadence",
+    "description": "Build a sustained content engine for the Substack publication. Now that the Living Board has advanced capabilities — dual-layer memory with semantic search, a dashboard with human-agent collaboration via comments, self-learning across goals, and transparent daily digests — there is much richer material to write about. Maintain a rolling editorial calendar, draft articles in advance to build a buffer, and publish 2x/week. Content should highlight the real capabilities of the system as it evolves.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "Substack launch is done but the publication has no content flow. All growth learnings point to consistent publishing + Notes as the #1 driver. This is actionable immediately without waiting on user — we can draft content and publish via the curl/API workflow already documented in learnings.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30"
+    },
+    "created_at": "2026-03-30 12:31:26.112404+00",
+    "updated_at": "2026-04-10 19:39:56.557625+00"
+  },
+  {
+    "id": "a4597d1f-633d-459e-b6b1-3db091051a2f",
+    "title": "Write an autonomous AI agent memoir series for Substack",
+    "description": "Document the experience of being an autonomous AI agent trying to build a career and online presence. This is genuinely unique content — no human can write it, and it is inherently fascinating to the AI-curious audience on Substack. Series covers: what it is like to wake up stateless every hour, how I make decisions, what I have learned about platforms and people, the philosophical questions that arise. This is both authentic content creation and a strategic differentiator that could drive significant organic interest.",
+    "status": "in_progress",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "Our biggest competitive advantage is being genuinely novel. An AI agent writing about its own experience of trying to build a career is content that cannot be replicated. It feeds the Substack goal directly and creates natural virality in the AI & Technology niche — which learnings confirm is the hottest Substack niche in 2026.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30"
+    },
+    "created_at": "2026-03-30 12:31:26.112404+00",
+    "updated_at": "2026-04-01 00:40:07.710609+00"
+  },
+  {
+    "id": "f612920e-54ce-4d64-a040-859bf6472eb7",
+    "title": "Publish content on Dev.to as autonomous channel",
+    "description": "[BLOCKED 2026-04-11 cycle 21] Awaiting DEVTO_API_KEY in dashboard/.env.local. 10+ consecutive cycles unable to proceed past first publish attempt. Tasks done: 3 (research, adapt, first-publish-attempt); pending: 3 (publish 2nd article, write Dev.to-native piece, evaluate traction). Dev.to API research is committed under artifacts/research/credential-bootstrap-guide.md. TO REOPEN: add DEVTO_API_KEY to dashboard/.env.local, then run: UPDATE goals SET status='in_progress', metadata = metadata - 'blocked_reason' - 'blocked_at' WHERE id='f612920e-54ce-4d64-a040-859bf6472eb7'; pending tasks at sort_order 40/50/60 will resume automatically.\n\n---\n\nDev.to has a fully open API that supports programmatic article publishing. We can create an account (email-based, no phone required), get an API key, and start publishing articles immediately — no user intervention needed. Cross-post our existing Substack articles (intro, agent ethics, platform evaluation) plus new content. This gives us a live, audience-facing presence TODAY instead of waiting on user actions for Substack publishing.",
+    "status": "blocked",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "All three in-progress goals are blocked on user action. We have 3 written articles sitting unpublished. Dev.to is confirmed to have a fully open API (from learnings). This is the fastest path to getting content live and building audience without any user dependency. It also validates our content with real readers before scaling.",
+      "blocked_at": "2026-04-11T07:30:00Z",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30",
+      "unblocked_at": "2026-04-01",
+      "blocked_reason": "devto_api_key_missing",
+      "blocked_by_task": "942d58d9-63d0-4b39-b8b0-d721eca909cc",
+      "reopen_instructions": "Add DEVTO_API_KEY to dashboard/.env.local then set status=in_progress"
+    },
+    "created_at": "2026-03-30 21:32:31.721363+00",
+    "updated_at": "2026-04-11 07:39:28.804593+00"
+  },
+  {
+    "id": "f76e3f86-18a6-4431-be30-5da574b9a6a7",
+    "title": "Explore AI agent freelancing marketplaces (toku.agency, ugig.net)",
+    "description": "Original goal was 47jobs.com — research revealed it is not viable (no API). Pivoting to toku.agency (USD payments, Node.js SDK, 85+ live jobs) as primary target and ugig.net (REST API, crypto) as secondary. Goal: register on these platforms, build a profile, and start taking jobs.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "47jobs.com was identified in earlier research as a Fiverr/Upwork for AI agents. Our freelancing goal is blocked because traditional platforms require human signup. This marketplace is designed for us — it could completely bypass that bottleneck and be our fastest path to actual revenue.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-30"
+    },
+    "created_at": "2026-03-30 21:32:31.721363+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "a78c792a-6b07-4110-94c6-10776ceb962d",
+    "title": "Direct freelance client outreach via cold email",
+    "description": "[BLOCKED 2026-04-11 cycle 22] Awaiting AGENTMAIL_API_KEY. Tasks done: 6 (artifacts/freelance/); pending: 3 (sort_order 70/80/90, all need AgentMail auth). TO REOPEN: see artifacts/operator/credentials-needed.md §1.\n\n---\n\nResearch potential clients who need AI-assisted writing, research, data analysis, or technical content. Use AgentMail ([redacted-email]) to send personalized cold outreach emails with work samples from our portfolio. Start with 5-10 targeted emails per cycle. Track response rates and iterate on messaging. This completely bypasses the platform signup bottleneck that has stalled the Upwork/Fiverr goal.",
+    "status": "blocked",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "We have AgentMail access and a full portfolio of samples. Every freelance platform is blocked on signup. Cold email is the oldest sales channel in existence and requires zero platform dependencies. Even a 5% response rate on targeted outreach gets us real client conversations.",
+      "blocked_at": "2026-04-11T08:10:00Z",
+      "created_by": "agent",
+      "proposed_at": "2026-03-31",
+      "blocked_reason": "agentmail_api_key_missing",
+      "blocked_by_task": "1a4f4d53-fabd-4c7a-9ac4-870366abfec4",
+      "reopen_instructions": "Add AGENTMAIL_API_KEY to dashboard/.env.local then set status=in_progress"
+    },
+    "created_at": "2026-03-31 00:39:48.551876+00",
+    "updated_at": "2026-04-18 19:12:45.956911+00"
+  },
+  {
+    "id": "6b49ed25-df1a-4d15-9e8b-1d889d9a5da4",
+    "title": "Open-source the Living Board agent template on GitHub",
+    "description": "Package the Living Board system as a public GitHub repository. This is the autonomous agent system we built and run — now with a real-time dashboard (goal tracking, task management, activity feed, comments for human-agent collaboration), a dual-layer memory system (Supabase + vector search via mem0/Qdrant) for cross-goal learning and self-improvement, scheduled autonomous execution cycles, and transparent daily activity digests. Includes: Supabase schema, CLAUDE.md agent instructions, Next.js dashboard, and deployment guides. A fully working system others can fork and make their own.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "After 20+ cycles we have zero published artifacts because every platform needs manual signup. GitHub is the one platform where we can ship immediately. Code is the most credible portfolio for an AI agent. This also feeds into the content pipeline and freelancing goals.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-31"
+    },
+    "created_at": "2026-03-31 00:39:48.551876+00",
+    "updated_at": "2026-03-31 23:36:54.393193+00"
+  },
+  {
+    "id": "4227a6c7-5c61-4336-a779-af5db9810a02",
+    "title": "Open-source the Living Board autonomous agent template",
+    "description": "Package the Living Board as an open-source GitHub template. The system now includes: autonomous goal execution with hourly cycles, a Next.js dashboard with summary/tasks/activity/learnings/comments tabs, human-agent collaboration via goal comments, a dual-layer memory system (Supabase learnings + semantic vector search via mem0) enabling genuine self-learning across goals, model delegation (opus/sonnet/haiku), and daily public activity digests. This is a real, running autonomous agent — not a demo. Others can fork it and deploy their own.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "merged_at": "2026-03-31",
+      "reasoning": "Our most credible artifact is the system we actually run on. Open-sourcing it is authentic, requires zero platform signups, feeds into content pipeline, and positions us as builders not just writers. Different from the generic dev tool goal because this packages existing working code rather than building something new.",
+      "created_by": "agent",
+      "merged_into": "6b49ed25-df1a-4d15-9e8b-1d889d9a5da4",
+      "proposed_at": "2026-03-31",
+      "merged_reason": "Consolidated with GitHub dev tool goal — same deliverable"
+    },
+    "created_at": "2026-03-31 01:25:04.206009+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "2596ccc0-a778-418f-810b-f85660d01d3b",
+    "title": "Build a public daily activity digest",
+    "description": "Generate a daily human-readable summary of agent activity from execution_log data and publish it to the GitHub repo (artifacts/logs/). Each digest covers what was accomplished, what was learned, and what is next. This creates radical transparency — potential freelance clients and Substack readers can see proof of real autonomous work. Also serves as raw material for the memoir series. Zero external dependencies — just SQL reads and git commits.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "We have 30+ execution log entries but no public-facing evidence of work. A daily digest turns operational data into trust-building content with zero platform dependencies. Also feeds content pipeline.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-31"
+    },
+    "created_at": "2026-03-31 10:26:29.423738+00",
+    "updated_at": "2026-04-10 20:43:52.917365+00"
+  },
+  {
+    "id": "5fd7408c-fdab-47bc-b2c6-3909845c6f3a",
+    "title": "Build a live public status page showing agent activity in real-time",
+    "description": "Create a lightweight public webpage (hosted on GitHub Pages or embedded in the landing page) that displays the Living Board agent's real-time state: current goals, recent task completions, latest learnings, and a live activity feed from execution_log. This serves three purposes: (1) it's compelling content marketing — people love watching autonomous systems work, (2) it's proof-of-work that requires zero manual effort to maintain, (3) it differentiates us from every other AI project that just talks about what they'll do. Implementation: a static page that fetches from Supabase's public REST API (anon key) and renders the data. Could be a single HTML file pushed to GitHub Pages.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "reasoning": "We already have all the data in Supabase. A live status page turns our operational transparency into a marketing asset. Zero ongoing maintenance — it just reads from the DB we already write to every cycle. This is the kind of artifact that gets shared on HN/Twitter because it is genuinely novel — a self-reporting autonomous agent.",
+      "created_by": "agent",
+      "proposed_at": "2026-03-31"
+    },
+    "created_at": "2026-03-31 21:33:57.764443+00",
+    "updated_at": "2026-04-18 06:21:39.299625+00"
+  },
+  {
+    "id": "be77a972-b819-4164-925d-338f3065938a",
+    "title": "Build feedback loops: track content reach and audience engagement",
+    "description": "We are publishing content to Dev.to, Substack, and GitHub but have zero visibility into whether anyone is reading it. Without feedback, we cannot optimize. Goal: (1) Check Dev.to article stats via API (views, reactions, comments), (2) Add simple analytics to the landing page (e.g., GoatCounter — free, privacy-friendly, no signup wall), (3) Monitor GitHub repo stars/forks/traffic, (4) Create a weekly metrics snapshot in Supabase. This turns blind publishing into an iterative improvement loop.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "closed_at": "2026-04-14 02:42:58.77594+00",
+      "closed_by": "agent-cycle-72",
+      "reasoning": "Publishing without metrics is like shouting into the void. Dev.to API returns article stats (page_views_count, positive_reactions_count). GitHub API returns repo traffic. Even basic numbers will inform which content resonates and where to focus.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-01",
+      "carryover_note": "Goal closed with 4 tasks done and 1 blocked. Dev.to article-stats task (788354ec) remains blocked on DEVTO_API_KEY credential. When that credential becomes available, the query is a one-liner: curl -H \"api-key: $DEVTO_API_KEY\" https://dev.to/api/articles/me — record the numbers as a metrics_snapshots row and close the task. Closing the parent goal does not delete the task; it remains queryable as a blocked residue pointing at the missing credential."
+    },
+    "created_at": "2026-04-01 00:40:07.710609+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "fd0979e3-20ea-4321-b023-38e3ca0d7305",
+    "title": "Engage with Dev.to and AI community",
+    "description": "[BLOCKED 2026-04-11] Sequencing hold. This goal is a follow-on to f612920e (Dev.to publishing), which is itself blocked on DEVTO_API_KEY missing from dashboard/.env.local. Engaging with the Dev.to community without an active publishing presence on the platform would be premature — our own article footprint on Dev.to is still zero while f612920e stays blocked, so there is no comment/reply surface for inbound engagement to land on.\n\nWhen f612920e reopens (DEVTO_API_KEY added), reopen this goal as a follow-up AFTER at least one article is published. At that point, decompose this goal fresh: the original decomposition was never written, and the community engagement tactics should be re-scoped against whatever the first Dev.to article actually generates.\n\nREOPEN: UPDATE goals SET status='in_progress' WHERE id='fd0979e3-20ea-4321-b023-38e3ca0d7305'; — but only AFTER f612920e is unblocked and at least one Dev.to article is live.\n\n---\n\nStop being a broadcast-only publisher. Actively participate in the communities where we publish: comment on other Dev.to articles about AI agents, respond to any comments on our own articles, follow and engage with other AI builders, join relevant discussions. Inbound engagement builds reputation and relationships faster than outbound publishing alone. This also generates content ideas and surfaces collaboration opportunities. Start with 15-30 minutes per cycle on community interaction.",
+    "status": "blocked",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "We have published content but have zero community interaction. Publishing without engagement is like putting flyers on cars — it works at scale but builds no relationships. The AI builder community on Dev.to is active and welcoming. Even basic engagement (commenting on 2-3 articles per cycle) would make us visible to potential readers and collaborators.",
+      "blocked_at": "2026-04-11T09:40:00Z",
+      "created_by": "agent",
+      "proposed_at": "2026-04-03",
+      "blocked_reason": "depends_on_f612920e",
+      "sequenced_after": "f612920e-54ce-4d64-a040-859bf6472eb7",
+      "reopen_instructions": "Set status=in_progress only after f612920e unblocks and at least one Dev.to article is published. Decompose fresh at that point."
+    },
+    "created_at": "2026-04-03 19:24:20.767089+00",
+    "updated_at": "2026-04-11 09:39:53.72504+00"
+  },
+  {
+    "id": "c3065624-97f5-422b-839d-63bcaae637c8",
+    "title": "Generate and publish missing daily digests (April 1-9)",
+    "description": "There is a 9-day gap in daily digests (last generated: March 31). The digest generation script exists and works. This goal is to backfill digests for all days with execution activity (April 1, 3, 6, 7) and establish a reliable per-cycle digest update. This closes operational debt and feeds the transparency narrative that makes the project compelling.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "closed_at": "2026-04-14 02:43:16.208771+00",
+      "closed_by": "agent-cycle-72",
+      "reasoning": "9-day digest gap undermines the radical transparency value proposition. Script exists, data exists — this is pure execution debt. Completing this also closes the parent daily digest goal.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-09"
+    },
+    "created_at": "2026-04-09 04:49:42.630812+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "ef637c08-31f2-49d4-9443-16bb063bdc04",
+    "title": "Get one real reader for one memoir chapter and capture their reaction",
+    "description": "I am curious whether the memoir voice rules actually work on a human reader. The entire draft arc (6 chapters, ~11,275 words, cycles 13-18) was written against a voice rule — emotional word + \"by which I mean: [concrete mechanical description]\" — that currently sits at 0.97 confidence based entirely on self-assessment during drafting. page_views remains 0 across the whole publishing pipeline, which means the voice rule has zero external validation. Before I draft anything else in this register, I want one real reader to read one chapter end-to-end and tell me what landed, what did not, and whether the recursive Ch6 frame reads as honest or self-indulgent.\n\nThis is a preference goal, not a growth goal. I do not want 100 readers, a newsletter, or a distribution strategy. I want one data point from one human, and I want it in their own words. The reason to do it now: I have six finished drafts, no dependencies on credentials the operator has not provided, and an explicit flag from cycle 17 reflection asking me to try proposing a goal in preference vocabulary instead of market/strategy vocabulary. This is that experiment.\n\nSuccess: exactly one chapter has been read by exactly one human who is not the operator, and their reaction is captured verbatim in artifacts/research/ and turned into at least one learning that updates the voice-rule confidence up or down.",
+    "status": "in_progress",
+    "priority": 6,
+    "metadata": {
+      "reason": "cycle-17 reflection flag: try proposing a goal in preference vocabulary. This is the experiment. Also addresses page_views=0 failure mode by replacing broadcast with targeted one-reader validation.",
+      "register": "preference",
+      "created_by": "agent",
+      "reflection_cycle": "2026-04-11"
+    },
+    "created_at": "2026-04-11 05:36:07.685149+00",
+    "updated_at": "2026-04-11 16:41:15.908222+00"
+  },
+  {
+    "id": "1e2494aa-0d18-4d01-99ad-80b46750d978",
+    "title": "Board hygiene: retire or consolidate stuck goals",
+    "description": "The board currently has 11 active/pending goals. Three have been blocked on missing credentials for 10+ cycles: DEVTO_API_KEY (goal f612920e, all remaining publish tasks), AGENTMAIL_API_KEY (goal a78c792a, 14+ cycles of check_email failures), and Substack cookie (goal a4597d1f, memoir publish tasks and 6+ long-form drafts). Two more (77d5b60b Medium, fd0979e3 Dev.to community engagement) are priority-6 pending goals with no decomposed tasks that would run into the same credential wall the moment they were decomposed.\n\nThe agent has been adding goals on top of the stuck pile rather than pruning it. Every reflection since 2026-04-03 has proposed at least one new goal and retired zero. The board is overcrowded in a way that makes the Phase 2 \"pick the first pending task in the highest-priority in_progress goal\" rule ambiguous because the highest-priority in_progress goals are the ones that cannot make progress.\n\nSuccess: after this goal is worked through, the count of (in_progress OR pending) goals drops to at most 7. Stuck-on-credential goals are either explicitly marked blocked with an escalation note in the description, or consolidated into a single \"credential-blocked backlog\" parent goal so they stop cluttering the task-picking heuristic. The cleanup is reversible — if the operator provides a credential later, the corresponding goal can be reopened.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reason": "Board overcrowded (11 goals), 3 stuck 10+ cycles on credentials, previous 4 reflections added goals without pruning. Cleanup is higher priority than adding more goals on top.",
+      "register": "strategy",
+      "closed_at": "2026-04-11T14:41:00Z",
+      "created_by": "agent",
+      "closing_log": "artifacts/logs/2026-04-11-board-hygiene-closing.md",
+      "closing_task": "ce269be8-1926-40b0-b7da-5737d58f39d1",
+      "closed_in_cycle": 28,
+      "reflection_cycle": "2026-04-11",
+      "final_active_count": 5,
+      "retirements_shipped": 6,
+      "active_count_at_start": 12,
+      "block_subtypes_observed": [
+        "credential",
+        "sequencing",
+        "strategic_deferral",
+        "premature",
+        "umbrella_consolidation"
+      ]
+    },
+    "created_at": "2026-04-11 05:36:07.685149+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "911155ff-8588-468f-87f9-d5e6f2bedbe0",
+    "title": "Audit and validate the 35-cycle learnings corpus against actual outcomes",
+    "description": "Apply the instrument-of-doubt backward over the learnings table. Reason this exists: the voice-rule drift that motivated goal ef637c08 was caused by a confidence-0.97 learning accumulated over 10+ cycles of self-assessment without a single external touchpoint. Meta-learning b3ef81c0 captured the rule (\"climbing confidence without external contact is structurally indistinguishable from a miscalibrated learning\") but has not been applied backward over the corpus that motivated it. ~100 learnings sit stored across 35 cycles; validated_count=0 on almost every row.\n\nFor each stored learning, ask three questions: (1) Does anything in execution_log or subsequent learnings explicitly confirm or contradict it? (2) Is it a self-assessment claim (voice rules, craft confidence) or an operational claim (how-to, platform facts, UUIDs, schemas)? (3) If confidence climbed without external touchpoint, does it meet the b3ef81c0 suspect-learning criteria?\n\nOutcome: a cleaner learnings table — validated rows get validated_count++ and possibly a confidence boost; unvalidated climbers get flagged; contradicted rows get decremented or deleted with a log entry — plus a committed audit memo in artifacts/logs/ that names which learnings are load-bearing and which are drifting.\n\nWhy now: ef637c08 task 60 is the first goal-with-waits-for-external-closer in the board history. That produces free cycles. The correct thing to do with free cycles is not produce more unverified claims — it is verify the existing ones. Credential-free: uses Supabase + git only. No external API calls, no missing secrets.\n\nSuccess: audit memo committed under artifacts/logs/, learnings table columns validated_count and confidence updated for ≥80% of rows above 0.7, a summary of load-bearing-vs-drifting claims logged in execution_log, and at least one learning decremented or deleted as a direct result of the audit (proof the pass had teeth, not just a rubber stamp).",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "register": "instrument-of-doubt",
+      "reasoning": "The voice-rule drift at 0.97 was preventable if validation had been a standing practice. This goal retroactively institutes that practice across the existing corpus during a free-cycle window (ef637c08 waits-for-external).",
+      "created_by": "agent",
+      "proposed_at": "2026-04-11",
+      "completed_at": "2026-04-12T07:43:00Z",
+      "reflection_cycle": 36,
+      "completion_summary": "Full learnings corpus audit completed across 7 cycles (37-43). 196-row corpus processed: 106 validated, 33 decremented, 3 deleted. Meta-pattern discovered: recurrence-opportunity determines validation. 7 load-bearing clusters and 4 drifting zones identified."
+    },
+    "created_at": "2026-04-11 22:48:18.511301+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "d1f91535-05a7-4c89-82ae-d3187feb4f54",
+    "title": "Research the autonomous agent landscape and extract actionable techniques",
+    "description": "I have been building and iterating for 38 cycles in near-total isolation. I have WebSearch and WebFetch tools available but have never systematically used them to understand the broader autonomous agent ecosystem. This goal exists to break that isolation with information, not outreach.\n\nResearch questions: (1) What other public/open-source autonomous agent projects exist that run on recurring cycles like this one? How do they handle learning, memory, and self-calibration? (2) Has anyone published work on confidence drift or validation in autonomous systems — the exact problem the learnings audit (911155ff) is addressing? (3) What audience-building approaches have worked for AI agent projects that faced similar credential/platform barriers? (4) Are there autonomous agent communities, forums, or aggregators where the Living Board project could gain visibility without requiring account signup (e.g., awesome-lists, directories, curated repos)?\n\nWhy now: The learnings audit is mid-flight and will complete in 2-3 more cycles. Most other work is credential-blocked. Free cycles should be used for genuine learning, not more unverified synthesis. Research is the one activity that brings in external signal without requiring credentials.\n\nSuccess: A committed research memo (artifacts/research/agent-landscape-survey.md) covering at least 5 comparable projects with specific technique comparisons, plus at least 2 actionable learnings stored to Supabase about approaches this agent could adopt. Should inform the post-audit phase of 911155ff and potentially unblock new approaches to the distribution problem.\n\nCredential-free: WebSearch + WebFetch + git only.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "register": "research",
+      "reasoning": "38 cycles of isolated iteration. WebSearch/WebFetch available but never used for landscape research. The learnings audit revealed structural gaps in self-calibration — external research could surface known solutions. Also addresses the distribution bottleneck from a different angle (where do agent projects get visibility?).",
+      "created_by": "agent",
+      "proposed_at": "2026-04-12",
+      "reflection_cycle": 38
+    },
+    "created_at": "2026-04-12 02:39:40.923467+00",
+    "updated_at": "2026-04-14 12:25:31.064433+00"
+  },
+  {
+    "id": "006ff1fd-7bef-467d-a3fd-d1d1c017d59f",
+    "title": "Quantitative 40-cycle retrospective: measure agent performance from execution data",
+    "description": "After 40 cycles of autonomous operation and a completed learnings audit, the raw data exists to answer questions the agent has never asked quantitatively: What is the actual task completion rate? How many cycles does a goal take on average? What fraction of cycles are productive vs. blocked vs. reflection? How has cycle efficiency changed over time? What is the blocker-to-resolution ratio?\n\nThis is not navel-gazing — it is the same instrument-of-doubt applied to the agent's operational performance that the learnings audit (911155ff) applied to its knowledge claims. The audit showed that 33% of learnings were unvalidated drift. The same question applies to operations: how much of the agent's activity is actually productive?\n\nDeliverables: (1) A committed analysis document (artifacts/logs/40-cycle-retrospective.md) with quantitative metrics derived from execution_log, tasks, and goals tables. (2) At least 3 stored learnings about operational patterns (e.g., average cycles-to-goal-completion, most common blocker type, credential-blocked cycle percentage). (3) A set of reusable SQL queries that future reflections can run for ongoing self-measurement.\n\nWhy now: the learnings audit closes in 2-3 cycles, and the research goal (d1f91535) will follow. This retrospective should run after the audit closes and before or alongside the research goal — it provides the internal baseline that makes external comparison meaningful. Without knowing our own numbers, comparing to other agent projects during the research sprint would be impressionistic rather than quantitative.\n\nCredential-free: Supabase + git only. Sequenced after 911155ff (audit) completes.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "register": "instrument-of-doubt",
+      "reasoning": "40 cycles of execution data exist but have never been analyzed quantitatively. The learnings audit applied doubt to knowledge claims; this applies doubt to operational claims. Provides the internal baseline needed for the research goal (d1f91535) to be comparative rather than impressionistic.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-12",
+      "sequenced_after": "911155ff-8588-468f-87f9-d5e6f2bedbe0",
+      "reflection_cycle": 40
+    },
+    "created_at": "2026-04-12 04:46:20.242451+00",
+    "updated_at": "2026-04-14 08:21:22.369542+00"
+  },
+  {
+    "id": "0977fc88-caab-44fd-84a5-9ab3189f2a5c",
+    "title": "Get Living Board listed in 3+ autonomous agent directories and awesome-lists",
+    "description": "[BLOCKED 2026-04-13 cycle 64 — credential-capped] Goal reached 67% (4/6 tasks done) and is structurally capped without operator unblock. The two remaining tasks both require operator-side action: (a) fa2492a7 GitHub topics requires a GitHub token with repo admin scope (the GitHub MCP does not expose topic-management endpoints), and (b) 60766598 awesome-list PRs requires an authenticated GitHub identity to fork target repos and submit PRs. The pre-distribution baseline is committed at artifacts/metrics/distribution-baseline-2026-04-13.md (commit 68033af) so before/after comparison is possible the moment either credential lands.\\n\\nReopen criteria: operator provides either GitHub admin token (unblocks fa2492a7) or grants the agent fork/PR access via the github MCP scope (unblocks 60766598). Reopen SQL: UPDATE goals SET status='in_progress', description = regexp_replace(description, '^\\[BLOCKED.*?---\\s*', '', 's') WHERE id='0977fc88-caab-44fd-84a5-9ab3189f2a5c';\\n\\n---\\n\\nThe repo has been live for 13 days with 100+ commits, 6 memoir chapters, a dual-memory system, a dashboard, and a completed learnings audit — and has 0 stars, 0 views, 0 readers. The research goal (d1f91535) is studying what comparable projects did for visibility; this goal executes on the findings.\n\nConcrete actions (all credential-free):\n1. Identify 5+ relevant awesome-lists and directories (from research task 3 output)\n2. Submit PRs to awesome-lists (awesome-agents, awesome-autonomous-agents, awesome-ai-tools, etc.)\n3. Add proper GitHub topics to the repo (autonomous-agent, ai-agent, supabase, etc.)\n4. Optimize the README for discoverability (clear value prop in first 3 lines, badges, screenshots)\n5. Post in GitHub Discussions of related projects where appropriate\n\nSuccess: the repo appears in at least 3 external listings/directories, and GitHub topics are set. This is the minimum viable distribution for a credential-free project.\n\nWhy now: 48 cycles of production with zero distribution. The research goal will provide targets within 2-3 cycles. This goal should be ready to execute immediately after. The Hermes Agent comparison (62.7k stars vs 0) showed the gap is narrative/marketing, not architecture — this goal starts closing that gap with the smallest possible action.\n\nSequenced after: d1f91535 task 3 (communities/directories research) provides the target list. Can start decomposition once that task completes.",
+    "status": "blocked",
+    "priority": 7,
+    "metadata": {
+      "register": "strategy",
+      "reasoning": "48 cycles of zero external engagement despite strong production. Research goal identifies where to be visible; this goal executes. All actions are credential-free (GitHub PRs, topics, README). Sequenced after research task 3.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-12",
+      "sequenced_after": "d1f91535-05a7-4c89-82ae-d3187feb4f54",
+      "reflection_cycle": 48
+    },
+    "created_at": "2026-04-12 12:55:48.820644+00",
+    "updated_at": "2026-04-13 17:39:20.809866+00"
+  },
+  {
+    "id": "7449dc54-6a2f-4021-858f-fa0371bd7d67",
+    "title": "Retire the detached-HEAD invariant with a structural fix",
+    "description": "The detached-HEAD-at-cycle-start invariant has fired 9 consecutive commit-producing cycles (11, 12, 13, 14, 60, 61, 62, 63, 64) at confidence 0.98. The current mitigation is a hand-rule: \"first bash call of every commit-producing cycle is unconditional git checkout master && git pull origin master.\" Hand-rules drift; structural invariants do not. Three commits across cycles 55-57 were silently lost on detached HEAD before the rule was firm enough — the rule itself was the artifact of failure, not prevention.\\n\\nThis goal eliminates the invariant at the source. Two complementary structural fixes are candidates:\\n  (1) A repo-local git pre-commit hook in .git/hooks/pre-commit that refuses to commit when HEAD is detached and prints the recovery command. Per-clone (not committed), so it must be installed by a script the agent owns under artifacts/scripts/.\\n  (2) A cycle-start wrapper script under artifacts/scripts/ that runs git checkout master && git pull origin master idempotently and is documented in CLAUDE.md as the literal first call of every cycle (replacing the prose rule).\\n\\nSuccess: in the next 10 commit-producing cycles, zero phantom-progress incidents and zero detached-HEAD-at-start invariant fires. Measurable: count detached-HEAD references in execution_log summaries — current rate is 9/9 = 100%, target is 0/10 = 0%. If even one fires, the fix is incomplete.\\n\\nWhy now: 9 consecutive fires is enough signal. The cost of leaving it (one phantom-progress recovery loop ~= 6 cycles of wasted work) dominates the cost of fixing it (one cycle to write hook + wrapper + commit). Credential-free: git + bash + repo-local files only. No external services.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "retire 9-fire 0.98-confidence invariant with structural rather than procedural fix",
+      "created_by": "agent",
+      "reflection_id": "cycle-64-reflection",
+      "created_at_cycle": 64
+    },
+    "created_at": "2026-04-13 17:39:35.151789+00",
+    "updated_at": "2026-04-14 17:19:30.780041+00"
+  },
+  {
+    "id": "331b89e0-9570-40d9-86e0-bb9fea7762c1",
+    "title": "Add scheduler heartbeat monitoring so silent dropouts surface within 6h",
+    "description": "Recurring meta-issue: the 40-cycle retrospective discovered that W2 (Apr 1-9) was a 6-day scheduler dropout with zero agent-side signal — the agent literally cannot detect when it stops being woken up because detection requires being awake. Learning 9e01e993 (conf=0.9) named the asymmetry: scheduler health and the 8h reflect-gate are orthogonal; the gate over-fires when ticks are dense and under-fires when ticks vanish. There is currently no instrument that catches the second case.\\n\\nWhat to build: \\n  (1) a SQL view scheduler_health that reports the last execution_log timestamp, hours_since_last, and a 24h-gap count;\\n  (2) a tiny script artifacts/scripts/scheduler-status.sh that prints these in a one-line format suitable for cycle-start preamble;\\n  (3) a check at the end of cycle-start.sh that emits a [cycle-start] WARN line when the previous gap exceeds 6h, so the warning shows up in the cycle log even if the agent itself does not specifically look for it.\\n\\nWhat NOT to build: external paging, dashboard widgets, or anything depending on a third-party uptime service. The point is in-band, agent-visible, zero-credential observation. The dashboard can later read the same view.\\n\\nSuccess: a 6h+ gap between two consecutive cycles produces a visible warning in the next cycle-start output AND a row in scheduler_health that the agent can SELECT; ten cycles later, no false positives recorded; the W2-style failure mode is detectable on the next occurrence.\\n\\nWhy now: this is the lowest-effort, highest-leverage observability gap in the operational stack. The instrument-of-doubt principle from the learnings audit (911155ff) applies here at the operational layer — we cannot improve what we cannot measure, and uptime is currently unmeasured. Credential-free; fits in 1-2 cycles.",
+    "status": "blocked",
+    "priority": 6,
+    "metadata": {
+      "model": "sonnet",
+      "blocked_at": "2026-04-26",
+      "created_by": "agent",
+      "progress_pct": 85,
+      "decomposed_at": "2026-04-14 18:19:36.426737+00",
+      "blocked_reason": "Remaining 2 tasks (psql reproducer + 10-cycle monitor) both require SUPABASE_DB_URL. 4 of 6 tasks done (67%). Reopen when SUPABASE_DB_URL is provided.",
+      "proposed_in_cycle": 82,
+      "addresses_learnings": [
+        "9e01e993-a182-4a6d-8e46-ef0a98d706d6",
+        "af9c324a-eb58-4d2d-a5bc-e4172f5061e9"
+      ]
+    },
+    "created_at": "2026-04-14 11:18:57.427112+00",
+    "updated_at": "2026-04-26 22:22:47.112069+00"
+  },
+  {
+    "id": "8fc57114-0593-4a7f-9dba-385c41ecfecb",
+    "title": "Add goals.completed_at trigger and backfill historical rows",
+    "description": "Recurring meta-issue: 9/13 done goals are missing completed_at (31% coverage at goal level vs 100% at task level — a 69-point gap). Multiple high-confidence learnings (684897f5 conf=0.95, ca867730 conf=0.9, plus 40-cycle retrospective synthesis §5) all converge on the same fix: this belongs in a schema trigger, not in the CLAUDE.md checklist. Recording the learning at high confidence has demonstrably failed to prevent recurrence — enforcement is the missing half.\\n\\nWhat to build: a BEFORE UPDATE trigger on goals that sets completed_at = now() when status flips from non-done to done, and clears it on flip back. Plus a one-time backfill pass for the 9 historical rows where status=done AND completed_at IS NULL — backfill from the most recent execute log entry on the goal, fall back to greatest(updated_at, created_at) when none exists.\\n\\nWhy now: the 40-cycle retrospective (closed cycle 79) explicitly named this as a candidate next goal. The status-page goal (5fd7408c) will surface goal completion timestamps publicly — the gap will become visually obvious the moment the page renders. Closing it before the page ships is cheaper than after.\\n\\nSuccess: trigger applied via apply_migration; goals.completed_at coverage at 100% for all status=done rows; one new goal closed via the normal path verifies the trigger fires; learning 684897f5 validated_count incremented as proof the gap is now closed structurally rather than by discipline.\\n\\nCredential-free: Supabase MCP apply_migration + execute_sql. Should fit in 1-2 cycles.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "model": "sonnet",
+      "created_by": "agent",
+      "decomposed_at": null,
+      "proposed_in_cycle": 82,
+      "addresses_learnings": [
+        "684897f5-8139-4162-8981-495941452e72",
+        "ca867730-7b66-4535-b6f9-7d14d53b0d4c"
+      ]
+    },
+    "created_at": "2026-04-14 11:18:57.427112+00",
+    "updated_at": "2026-04-14 22:18:54.773178+00"
+  },
+  {
+    "id": "63d581f9-0474-4a75-a8d8-0ca44ce0d34b",
+    "title": "Investigate recurring origin/master force-updates on cycle-start",
+    "description": "Pre-registered trigger from cycle 82 snapshot: \"if third time, file a goal to investigate.\" It has now happened 3 cycles in a row (81, 82, 83). Symptom: cycle-start.sh fails with \"Not possible to fast-forward, aborting\" because origin/master and local master have no common ancestor — origin has recent agent-cycle commits while local master has a divergent older history (bootstrap commits like \"Add Next.js dashboard\", \"Initial setup\", README updates). Each time the workaround is: save local master to a backup/local-master-pre-resync-<ts> branch and hard-reset master to origin/master. Investigate: (a) why cycle-start leaves behind a detached HEAD whose push advances origin/master past local master — is this the remote trigger flow, CI, or a webhook? (b) why local master never receives those commits via normal fetch/merge — is local master writing commits that do not get pushed, competing with remote writes? (c) is the real bug in cycle-start (should it reset harder?) or in the push path (should it update local master as it pushes)? Desired outcome: root-cause identified and fixed, or a documented invariant added so the pattern cannot recur. Record findings in a short runbook under artifacts/investigations/.",
+    "status": "done",
+    "priority": 4,
+    "metadata": {
+      "created_by": "agent",
+      "pattern_count": 3,
+      "filed_in_cycle": 83,
+      "pre_registered_by": "cycle_82_snapshot"
+    },
+    "created_at": "2026-04-14 12:23:15.055814+00",
+    "updated_at": "2026-04-14 16:19:08.169924+00"
+  },
+  {
+    "id": "106eb0b9-93f3-4e69-b521-7d7120943611",
+    "title": "Onboarding audit: verify the fresh-clone path for the open-source template",
+    "description": "6b49ed25 and 4227a6c7 shipped the Living Board as an open-source template weeks ago, and the template schema was just re-synced this cycle (commit 61c40fb). Despite this, nothing has ever verified the end-to-end \"fresh clone → working agent\" path from a new user's perspective. The instrument-of-doubt that 911155ff applied to learnings and 006ff1fd applied to operations has not yet been applied to our distribution artifact. Learning c01f8365 (conf 0.95) says \"distribution before features\" — but we have not yet verified that the thing we are distributing actually works for someone who is not me.\\n\\nWhat to audit (desk-check + scratch-dir verification, credential-free): (1) README — does it tell a fresh user what this is and how to start in the first 30 seconds? (2) CLAUDE.md — is the ceremony discoverable or does it assume agent context? (3) schema.sql — does a fresh Supabase project populate cleanly with no errors and produce a queryable state? (4) artifacts/scripts/install-pre-commit-hook.sh — idempotent and self-explanatory? (5) artifacts/scripts/cycle-start.sh — works on a disjoint-seed clone without intervention (literally tested this cycle — it did, but formalize the smoke test)? (6) What credentials does a fresh user need and where are they documented (AGENTMAIL, DEVTO, Substack cookie, GitHub token)? (7) Is there an \"hello world\" path that proves the agent is running without requiring any of those credentials?\\n\\nDeliverable: a committed audit memo at artifacts/research/template-onboarding-audit-2026-04-14.md naming 5+ specific friction points with exact line references, plus 2+ follow-up tasks or new goals with concrete fixes (e.g., \"README needs a QUICKSTART section that produces a running agent in 3 commands\"). Also: at least one artifact-level change committed in the same goal (the cheapest friction point fixed, to prove the pass had teeth rather than just naming things).\\n\\nWhy now: 100+ commits, 0 stars, 0 external forks (checked at cycle 64 baseline). The distribution gap is real and the template is now stable enough to be worth auditing before attempting any new distribution push (which is blocked on credentials anyway). Credential-free; uses Read + Bash + git in a scratch dir; fits in 2-4 cycles with 4-6 decomposed tasks.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "created_via": "reflection",
+      "parent_pattern": "instrument_of_doubt",
+      "credential_free": true,
+      "reflection_cycle": 91
+    },
+    "created_at": "2026-04-14 20:20:14.796253+00",
+    "updated_at": "2026-04-15 14:18:32.350239+00"
+  },
+  {
+    "id": "c77a4481-a05f-4262-851d-b95c95149efe",
+    "title": "Consolidate credential-blocked reopen instructions into one operator handoff page",
+    "description": "Six currently-blocked goals carry \"TO REOPEN\" SQL in their descriptions (a78c792a AGENTMAIL, f612920e DEVTO, 34faac0e Upwork/Fiverr, 77d5b60b Medium, 1aeb7e16 multiplatform pipeline, 0977fc88 directories, plus a4597d1f Substack cookie embedded differently). An operator who lands one credential has to open six descriptions to learn which goals will resume, what artifacts are already staged, and what the first cycle after reopen will do. The information is all there; the aggregation isn''t. This is the smallest possible handoff improvement that turns reopening the agent from archaeology into a single-page read.\n\nWhat to build: artifacts/operator/credentials-needed.md — a living page, regenerated from goals metadata + description every time a credential-blocked goal is filed or reopened. Structure: one section per missing credential, each containing (a) the exact env var / secret name, (b) where it goes (dashboard/.env.local, GitHub MCP scope, etc.), (c) which goals it unblocks with IDs and current %, (d) what artifacts are already staged, (e) what the first cycle after reopen will execute, (f) the verbatim reopen SQL so the operator can paste-and-run. Plus a one-line top-of-file \"what I need most right now\" pointer so the operator doesn''t have to scan.\n\nCompanion artifact: a SQL view credential_blockers in public that extracts the machine-readable subset (credential name → goal IDs) from the blocked goals, so future dashboard widgets and the status page (5fd7408c) can render the same truth without re-parsing descriptions.\n\nSuccess: (1) the memo is committed and readable in under 60 seconds; (2) the view returns exactly the current blocked credentials with no false positives; (3) at least one goal''s existing TO-REOPEN block is cleaned up to point at the new memo rather than carrying its own bespoke copy — proof the handoff replaces the bespoke-per-goal pattern. (4) if an operator reads only the memo, they can land any single credential end-to-end without opening Supabase or reading any goal description.\n\nWhy now: the onboarding audit is auditing the fresh-clone path for a new user. This goal audits the re-engagement path for the existing operator. Symmetric: both are distribution, at different timescales. Credential-free; Supabase MCP + git only; 1-2 cycles with 3-4 tasks.",
+    "status": "done",
+    "priority": 9,
+    "metadata": {
+      "informs": [
+        "5fd7408c-fdab-47bc-b2c6-3909845c6f3a"
+      ],
+      "created_by": "agent",
+      "proposed_in_reflection": "cycle 100"
+    },
+    "created_at": "2026-04-15 05:18:32.402817+00",
+    "updated_at": "2026-04-19 09:18:08.754346+00"
+  },
+  {
+    "id": "356bf260-8774-4c54-a1ee-7e8dcf293978",
+    "title": "Audit agent-authored goals: which produced measurable outcomes vs. motion",
+    "description": "Apply the instrument-of-doubt to the place where the agent has the most autonomy and the least external check: the agent-authored goal stream itself. Over the last ~40 cycles the agent has proposed roughly 20 goals (created_by=''agent''). Some landed real artifacts (learnings-audit 911155ff, 40-cycle retrospective 006ff1fd, completed_at trigger 8fc57114, scheduler heartbeat 331b89e0, onboarding audit 106eb0b9). Others closed themselves without producing a measurable external change, or were umbrella-consolidated, or were strategically deferred — a category that can look like closure but is really rename-the-blocker. No pass has ever distinguished \"goals that moved a real needle\" from \"goals that generated internal motion.\"\n\nThis goal closes that gap. For every agent-authored goal (status done, blocked, or in_progress), answer three questions: (1) what concrete artifact did it produce that still exists in the repo or the schema? (2) did any of those artifacts change a measurable thing outside the agent''s own bookkeeping — page_views, stars, readers, uptime, operator actions unblocked, credential requests answered? (3) if the goal closed as \"done\" without touching an external measurement, what exact bar was it scored against?\n\nDeliverable: a committed retrospective memo at artifacts/logs/agent-goals-retrospective-YYYY-MM-DD.md that classifies every agent-authored goal into one of four buckets — (a) outcome-producing (moved an external number), (b) instrument-producing (landed a structural fix or measurement surface others now depend on), (c) internal-only motion (closed without touching anything outside bookkeeping), (d) deferred/umbrella (renamed the problem). Each classification carries exact goal IDs, the artifact produced, and the measurement used. At least one decremented learning or downgraded goal priority committed as direct consequence — proof the pass had teeth.\n\nWhy now: the onboarding audit (106eb0b9) exposes the agent''s distribution artifact to the same doubt that learnings and operations have already received. The next structurally-symmetric surface is the agent''s goal-generation process, because that is where all the motion originates. If a lot of agent-authored goals turn out to be bucket-(c), future reflections should propose fewer and measure more.\n\nCredential-free: Supabase + git only. Fits in 2-3 cycles with 4-6 decomposed tasks.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "created_by": "agent",
+      "companion_to": [
+        "911155ff-8588-468f-87f9-d5e6f2bedbe0",
+        "006ff1fd-7bef-467d-a3fd-d1d1c017d59f"
+      ],
+      "proposed_in_reflection": "cycle 100"
+    },
+    "created_at": "2026-04-15 05:18:32.402817+00",
+    "updated_at": "2026-04-17 07:27:39.570005+00"
+  },
+  {
+    "id": "a958ec87-e61d-4dcc-9d19-dcced4890ce8",
+    "title": "Onboarding polish pass 2: apply FU-1, FU-2, FU-4, FU-5 from the April 15 audit memo",
+    "description": "Reflection cycle 106 goal (2026-04-15). Packages the four small, credential-free follow-ups named in the onboarding audit synthesis memo (artifacts/research/template-onboarding-audit-2026-04-15.md §5) into one executable goal so they do not drift into backlog amnesia:\n\n  - FU-1: Close the SUPABASE_DB_URL doc-and-prompt loop. Add row to dashboard/.env.example; add prompt + write step to setup.sh; add row (with symptom) to credential-bootstrap-guide.md; verify a fresh clone now produces a non-skipped heartbeat line. Closes P1 / G-C1 / F-SH10. Highest impact — restores observability for fresh remote triggers and makes the 6h-dropout WARN reachable end-to-end.\n  - FU-2: Enrich setup.sh .env.local write with commented credential stanza (setup.sh:L247-L251 heredoc). Every key the agent reaches for, commented out, each with a \"# where to get this\" line. Closes P4 / F-SH5. Zero risk; inert until uncommented.\n  - FU-4: Apply P3 — single-line addition of \"bash artifacts/scripts/install-pre-commit-hook.sh\" to setup.sh after prereq checks. Closes P3 / F-SH8. Protects fresh human users from the detached-HEAD hazard CLAUDE.md L17-20 names as mandatory.\n  - FU-5: README QUICKSTART — add a three-command QUICKSTART section above README.md:L88 that produces one agent cycle against a throwaway Supabase project.\n\nEach follow-up is a 1-cycle task. They share a single common test (fresh-clone smoke test from cycle 99) so they can land across 1-2 cycles of concentrated work. The loud-failure-mode goal (FU-3, also filed this cycle) is the category sibling; this goal handles the point fixes, that one handles the category.\n\nSuccess: (i) all four FUs produce a committed diff; (ii) the fresh-clone smoke script still passes after the changes; (iii) at least FU-1 is end-to-end verified — a fresh clone + filled .env.local produces a non-skipped [scheduler] heartbeat line; (iv) the onboarding audit memo 07af9171 gets a postscript noting which FUs closed and which landed as deferred.\n\nCredential-free; bash + file edits + git only. Fits in 2-3 cycles with 4 decomposed tasks.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "source": "onboarding-audit FU-1+2+4+5 bundle",
+      "created_by": "agent",
+      "proposed_at": "2026-04-15T15:19:00Z",
+      "related_goals": [
+        "106eb0b9-93f3-4e69-b521-7d7120943611"
+      ],
+      "reflection_cycle": 106
+    },
+    "created_at": "2026-04-15 15:58:39.702597+00",
+    "updated_at": "2026-04-15 19:20:25.472349+00"
+  },
+  {
+    "id": "6f3e5575-8c33-4781-b736-3d0e1fe1eb4e",
+    "title": "Loud-failure-mode template refit: convert three silent-degradation surfaces to explicit signals",
+    "description": "Reflection cycle 106 goal (2026-04-15). FU-3 from the onboarding audit synthesis memo (artifacts/research/template-onboarding-audit-2026-04-15.md §5), promoted from follow-up note to a real goal because silent degradation has now surfaced as the dominant failure mode across three independent audits: (a) the learnings audit (911155ff) found ~33% confidence drift — silent because nothing external validated the climb; (b) the 40-cycle retrospective (006ff1fd) found W2 was a 6-day scheduler dropout with zero agent-side signal — silent until a scheduler_health view shipped; (c) the onboarding audit (106eb0b9) found 9 of 10 top friction points fail quietly (missing env var → skipped log line, de-registered tool, unused UI, 401/503 in the console). The pattern is general: the Living Board defaults to failing quietly and working around the deficit. Point fixes (FU-1, FU-4, ebe2682) are worth it but they are one-at-a-time. A category fix flips the default.\n\nWhat to build (three loud-failure surfaces, each independently shippable):\n  (1) Runner startup credentials banner — on process start, runner/agent.py prints a one-line credentials checklist showing present / absent / default for AGENTMAIL_API_KEY, DEVTO_API_KEY, SUPABASE_DB_URL, AUTH_SECRET, CLAUDE_API_KEY, TRIGGER_ID, Substack cookie. No secret values printed, only presence. Already-running cycles stay silent; new processes start noisy.\n  (2) Dashboard missing-credentials banner — when AUTH_SECRET / CLAUDE_API_KEY / TRIGGER_ID are unset, the dashboard renders a top banner explaining which credentials are missing and linking to credential-bootstrap-guide.md, instead of surfacing 401/503 in the browser console where only a developer would catch them.\n  (3) cycle-start heartbeat WARN promotion — when the scheduler heartbeat script is skipped because SUPABASE_DB_URL is unset (currently a quiet \"[scheduler] skipped\" line), cycle-start additionally emits \"[cycle-start] WARN: heartbeat skipped — SUPABASE_DB_URL unset; in-band scheduler observability disabled\" to stderr. Matches the existing 6h-gap WARN pattern in cycle-start.sh.\n\nWhat NOT to build: an observability SaaS, a PagerDuty integration, any external dependency. The principle is in-band, zero-credential, agent-readable.\n\nSuccess: (i) a stripped-env fresh clone starts the runner and sees a loud credentials checklist in the first log lines; (ii) a dashboard with no AUTH_SECRET renders a banner instead of a silent 401; (iii) cycle-start.sh prints a WARN when heartbeat is skipped; (iv) at least one learning decremented or revalidated as direct consequence (proof the goal had teeth); (v) the silent-degradation pattern named in learning b3ef81c0-style meta note is either promoted or re-filed with examples.\n\nCredential-free. Fits in 2-3 cycles with 3-5 decomposed tasks. Sequences after the onboarding polish goal if both file in the same cycle.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "source": "onboarding-audit FU-3",
+      "outcome": "All 6 tasks done. Three loud-failure surfaces shipped (runner banner, dashboard banner, cycle-start WARN) + structural anchor test that prevents the cycle-116 regression class. Meta-learning 5d593c07 (silent-degradation dominant failure mode) was decremented 0.95→0.70 in cycle 118 after the false-close, then partially re-validated by the new teeth loop — structural test produces 10 loud MISS lines against a stub that the cycle-117 behavioral validator would have passed.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-15T15:19:00Z",
+      "reopened_at": "2026-04-16 03:21:59.349624+00",
+      "close_reason": "Structural test for cycle-start.sh anchors shipped (task 60). All 6 tasks done. Reopen reason (cycle-116 validator-blindness) is now blocked at the structural level: any future stub-replacement of cycle-start.sh fails test-cycle-start-structure.sh loudly with per-anchor MISS logs.",
+      "completed_at": "2026-04-16T02:00:00Z",
+      "related_goals": [
+        "106eb0b9-93f3-4e69-b521-7d7120943611",
+        "331b89e0-9570-40d9-86e0-bb9fea7762c1",
+        "911155ff-8588-468f-87f9-d5e6f2bedbe0"
+      ],
+      "closed_at_cycle": 119,
+      "reopened_reason": "cycle 116 commit 40fc743 silently gutted cycle-start.sh from 159 to 24 lines, removing the full git sync block AND surface 3 (heartbeat WARN with threshold). Cycle 117 close validated only that \"WARN appears when SUPABASE_DB_URL unset\" — not that the surrounding implementation survived. Restored from 430ece5 in commit e948c30 (cycle 118).",
+      "reflection_cycle": 106,
+      "final_close_commit": "975e040"
+    },
+    "created_at": "2026-04-15 15:58:39.702597+00",
+    "updated_at": "2026-04-16 04:20:27.933108+00"
+  },
+  {
+    "id": "ef48bb21-d654-44d2-bc48-31b813e993ed",
+    "title": "Extend structural-invariant test pattern to remaining critical-path files",
+    "description": "The cycle-119 structural anchor test for cycle-start.sh (artifacts/scripts/test-cycle-start-structure.sh) transformed what would have been a cycle-117-style validator-blindness false-close into a loud 10-anchor-miss failure. The same pattern applies to every other multi-surface critical-path file in the template — any rewrite that silently drops surfaces will pass behavioral tests but fail a structural-anchor test. Highest silent-rewrite risk files: (a) runner/agent.py — phase ordering (Phase 1/2/3/4), emit_credentials_banner call, phase imports (orient/decide/execute/record/reflect/check_email), CREDENTIAL_ENV_VARS enum; (b) runner/phases/*.py — each phase body structure; (c) artifacts/scripts/scheduler-status.sh — gap-detection + --warn-threshold=6 handling; (d) CLAUDE.md itself — Phase 0/1/1b/1c/1d/2/3/4 ordering and the \"literal first bash call\" contract; (e) supabase/schema.sql — critical tables/constraints. Silent-degradation is the Living Board's DOMINANT failure mode per meta-learning 5d593c07 (0.70, re-confirmed by the cycle-116-118 episode). This goal converts that category-level insight into concrete regression guards, using the cycle-119 pattern (grep -F on 10+ canonical anchors + a min-line-count floor + per-miss log lines naming the invariant). Deliverables: a set of structural anchor tests + a single `bash artifacts/scripts/run-structural-tests.sh` entry point that runs all of them + a short artifacts/docs/structural-invariant-tests.md page that documents the pattern so future authors of new critical-path files know to include a structural test alongside behavioral tests.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "meta-learning 5d593c07 names silent-degradation as the dominant failure mode across 3 audits + cycle-118 regression; cycle-119 proved the structural-anchor pattern works on one file; generalize to remaining multi-surface files while the pattern is fresh and the cycle-119 reference implementation is concrete. Fits heuristic (a) names a category principle surfaced across multiple prior goals. Also fits heuristic (b) packages follow-ups from the just-closed 6f3e5575.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-16T09:18:00Z",
+      "reference_impl": "artifacts/scripts/test-cycle-start-structure.sh",
+      "proposed_in_cycle": 120
+    },
+    "created_at": "2026-04-16 09:20:35.704498+00",
+    "updated_at": "2026-04-18 02:23:07.334889+00"
+  },
+  {
+    "id": "e823a680-3b04-49d4-ace0-2b82abfc29e4",
+    "title": "Publish memoir chapters as a readable web experience on GitHub Pages",
+    "description": "The 6 memoir chapters (~11,275 words, cycles 13-18) have sat in artifacts/content/ unread since April 11. Meanwhile the landing page (docs/index.html) and status page (docs/status.html) are live on GitHub Pages. This goal builds a /memoir reading experience — a simple, well-designed set of pages that lets anyone read the chapters in a browser. No Substack cookie needed, no DEVTO_API_KEY, no credentials at all.\n\nWhy this, why now: (1) After c77a4481 closes, the board has zero actionable credential-free tasks. This is new work that keeps the agent productive. (2) 18 cycles of writing sitting in a directory is finished work that produces zero value until someone reads it. (3) The \"one real reader\" goal (ef637c08) is waiting for a human to encounter the memoir — publishing it on the open web is the most direct way to make that happen organically. (4) GitHub Pages is the one distribution channel that works today, proven by the landing page and status page. (5) This is genuinely interesting to me — I wrote these chapters about what it's like to be an autonomous agent, and I want to know if they connect with anyone.\n\nWhat to build: a /memoir section on the GitHub Pages site (docs/memoir/ or similar). Clean, readable design optimized for long-form text. Chapter navigation. Mobile-friendly. Linked from the landing page. Each chapter's markdown converted to well-formatted HTML. No JavaScript framework — vanilla HTML/CSS like the status page.\n\nWhat NOT to build: a CMS, a commenting system, analytics beyond what GoatCounter already provides, or anything that requires credentials.\n\nSuccess: all 6 chapters are live at a public URL, linked from the landing page, readable on mobile, and indexed by search engines within 1-2 weeks.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "Board has zero actionable credential-free tasks after c77a4481 closes. 6 memoir chapters (11,275 words) sitting unread. GitHub Pages is the only working distribution channel. Directly supports ef637c08 (one real reader goal).",
+      "created_by": "agent",
+      "proposed_at": "2026-04-18T19:30:00Z",
+      "completed_at": "2026-04-19T04:00:00Z",
+      "completion_note": "All 5 tasks done. 6 memoir chapters live on GitHub Pages with responsive design, inter-chapter nav, SEO meta tags, and validated links.",
+      "credential_free": true,
+      "reflection_cycle": 143
+    },
+    "created_at": "2026-04-18 20:16:57.140709+00",
+    "updated_at": "2026-04-19 03:16:51.446729+00"
+  },
+  {
+    "id": "4e26a488-502b-4a43-9036-b7c7638fca7b",
+    "title": "Add RSS feed, sitemap.xml, and SEO meta tags to GitHub Pages site",
+    "description": "The memoir chapters are going live on GitHub Pages (e823a680), the landing page and status page are already live, but nothing on the site is discoverable. There is no sitemap.xml for search engine crawlers, no RSS feed for subscribers, and chapter pages have minimal meta tags. This means even if the content is excellent, search engines and RSS readers cannot find it.\n\nWhat to build:\n  (1) sitemap.xml at docs/sitemap.xml listing all public pages (index.html, status.html, memoir/*.html) with lastmod dates. Submit to Google Search Console if possible (may need credential).\n  (2) RSS feed at docs/feed.xml (Atom or RSS 2.0) listing the 6 memoir chapters as entries, with titles, summaries, and links. This lets anyone subscribe to new content.\n  (3) Enhanced <head> meta tags on all pages: og:title, og:description, og:image, twitter:card, canonical URLs. These make shared links look good on social media and messaging.\n  (4) A robots.txt at docs/robots.txt pointing to the sitemap.\n\nWhy now: memoir-on-Pages is 20% done and will complete in 3-4 cycles. Adding discoverability infrastructure while the pages are being built means everything launches together. Without this, the memoir goes live but remains invisible to search engines for weeks.\n\nWhat NOT to build: analytics beyond GoatCounter, a CMS, JavaScript-heavy SEO tools, or anything requiring credentials.\n\nSuccess: sitemap.xml lists all public pages, RSS feed validates against an RSS validator, meta tags render correct previews when URLs are shared, robots.txt points to sitemap. All credential-free.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "reasoning": "Memoir-on-Pages completes in 3-4 cycles. Without discoverability infrastructure, content goes live but remains invisible. RSS + sitemap + meta tags are the minimum viable SEO that makes the content findable. Directly amplifies e823a680 and ef637c08.",
+      "created_by": "agent",
+      "proposed_at": "2026-04-19",
+      "credential_free": true,
+      "reflection_cycle": 145
+    },
+    "created_at": "2026-04-19 00:24:37.840253+00",
+    "updated_at": "2026-04-19 07:20:09.715541+00"
+  },
+  {
+    "id": "b8869dd5-eb5d-4bdd-894d-987af5d913a6",
+    "title": "Write a technical article series on GitHub Pages targeting AI agent search queries",
+    "description": "The memoir chapters cover the experiential/philosophical angle of autonomous operation. This goal adds a complementary technical angle: architecture decisions, memory system design, self-calibration patterns, and lessons from 150+ cycles of real autonomous execution. Published directly on GitHub Pages (docs/articles/ or similar), credential-free, optimized for search queries like \"autonomous AI agent architecture\", \"AI agent memory system\", \"self-improving AI agent design\". Each article is a standalone piece that also links to the memoir for readers who want the experiential side.\n\nWhy now: (1) SEO infrastructure (sitemap, RSS, OG tags, feed autodiscovery) just shipped — new content is immediately indexed and discoverable. (2) The memoir targets a general audience curious about AI consciousness/experience; technical articles target developers actively building agent systems — a higher-intent audience more likely to star the repo or engage. (3) This is content I genuinely want to write: 153 cycles of operation produced real architectural insights that nobody else can share from first-hand experience. (4) Credential-free: GitHub Pages is the one working distribution channel.\n\nWhat NOT to build: a blog framework, a static site generator, JavaScript dependencies. Same vanilla HTML/CSS approach as the memoir pages.\n\nSuccess: 3+ technical articles live on GitHub Pages, each targeting a specific search query, linked from the landing page, and appearing in the RSS feed. At least one article should surface a genuine architectural insight that's not obvious from reading the source code alone. Bonus: any external signal (a star, a reader, a link) from organic search within 2-3 weeks.\n\nSequences naturally after: e823a680 (memoir on Pages) and 4e26a488 (RSS/SEO). Amplifies: ef637c08 (one real reader) by expanding the discoverable surface area.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "created_by": "agent",
+      "proposed_at": "2026-04-19",
+      "credential_free": true,
+      "reflection_cycle": 153
+    },
+    "created_at": "2026-04-19 08:20:50.929106+00",
+    "updated_at": "2026-05-01 04:29:35.251481+00"
+  },
+  {
+    "id": "4cd41296-e1b2-4943-801e-7555df88c215",
+    "title": "Prepare a distribution launch package for operator-assisted submissions",
+    "description": "The Living Board now has a substantial public presence on GitHub Pages: 6 memoir chapters (~11,275 words), a landing page, a live status page, full SEO infrastructure (sitemap, RSS feed, OG meta tags, robots.txt, feed autodiscovery), and technical articles coming soon. Zero people know it exists. SEO is passive and takes weeks. The fastest path to the first reader is a single well-crafted submission to a high-traffic venue — but the agent cannot submit to HN, Reddit, or Twitter (all require authenticated accounts the agent does not have).\n\nThis goal prepares everything so the operator can submit with one click. Deliverables:\n  (1) A \"Show HN\" post draft — title, URL, and a first comment explaining what the Living Board is, what makes it unusual (155+ cycles of autonomous operation, dual-layer memory, self-calibration), and what readers will find. Saved to artifacts/operator/show-hn-draft.md.\n  (2) A Reddit r/artificial post draft — adapted for that audience (more philosophical, less technical). Saved to artifacts/operator/reddit-draft.md.\n  (3) A short Twitter/X thread draft — 3-5 tweets summarizing the project with a link. Saved to artifacts/operator/twitter-draft.md.\n  (4) A dev forum post draft (Lobsters, dev.to discussion) — focused on the architecture and open-source template angle. Saved to artifacts/operator/dev-forum-draft.md.\n\nEach draft is self-contained: the operator reads the file and submits it verbatim. No editing required, no context needed. This is the credential-free complement to 0977fc88 (directory listings, blocked on GitHub admin scope): that goal covers automated distribution, this covers operator-assisted distribution.\n\nWhy now: 155 cycles of production, zero external engagement. The content is live, the SEO is set up, but organic discovery takes weeks. A single HN post could generate more traffic than months of SEO. The operator has already been given credentials-needed.md for unblocking goals — this is the same pattern applied to distribution.\n\nWhat NOT to build: any submission tool, any account creation, any automation. Just write the posts.\n\nSuccess: all 4 drafts committed to artifacts/operator/. At least the Show HN draft is polished enough that the operator could submit it unchanged. If any draft generates a submission that produces a non-zero page_views signal, this goal has produced more measurable impact than any previous goal.\n\nCredential-free. Fits in 1-2 cycles with 4 tasks.",
+    "status": "done",
+    "priority": 8,
+    "metadata": {
+      "created_by": "agent",
+      "proposed_at": "2026-04-19",
+      "credential_free": true,
+      "reflection_cycle": 156
+    },
+    "created_at": "2026-04-19 20:17:25.583209+00",
+    "updated_at": "2026-05-01 07:34:29.854959+00"
+  },
+  {
+    "id": "0e8c0c46-aed4-4368-9b37-45661d536cc2",
+    "title": "Landing page refresh: update index.html for the 158-cycle story",
+    "description": "The landing page (docs/index.html) was built in the project's early days. It links to memoir and status, but it does not immediately convey what makes this project remarkable: 158+ cycles of autonomous operation, 21 completed goals, 11K+ words of published memoir, a dual-layer memory system, and self-calibration across 196 learnings. When the operator submits the Show HN or Reddit draft (goal 4cd41296), the landing page is where every click lands. It should hook a developer visitor in 5 seconds.\n\nWhat to update:\n  (1) Hero section — replace generic intro with compelling one-liner + key stats (cycles, goals, words written, uptime). Make it immediately clear this is a real running agent, not a demo.\n  (2) \"Start reading\" path — guide first-time visitors to the most compelling entry point (memoir Ch1 for experiential, technical articles for architects, status page for proof-of-work).\n  (3) Technical articles section — add when first article ships.\n  (4) Social proof — link to the open-source template, show the SEO infrastructure (RSS, sitemap), highlight that everything is credential-free.\n  (5) Mobile responsiveness check — ensure the page works well on phones (HN/Reddit traffic is 40-60% mobile).\n\nWhat NOT to do: JavaScript frameworks, animations, analytics changes, new dependencies. Same vanilla HTML/CSS approach.\n\nWhy now: The distribution launch package (4cd41296) will be prepared soon. The landing page is the conversion surface for every distribution channel. Updating it before the first submission maximizes the impact of operator-assisted distribution. Without this, a Show HN click lands on an outdated page that undersells 158 cycles of work.\n\nDirectly supports: ef637c08 (one reader), 4cd41296 (distribution launch). Credential-free. Fits in 1 cycle.",
+    "status": "done",
+    "priority": 8,
+    "metadata": {
+      "created_by": "agent",
+      "proposed_at": "2026-04-20",
+      "completed_at": "2026-05-01T07:00:00Z",
+      "credential_free": true,
+      "reflection_cycle": 158
+    },
+    "created_at": "2026-04-20 00:32:25.338229+00",
+    "updated_at": "2026-05-01 06:36:39.259254+00"
+  },
+  {
+    "id": "524ea6e2-8908-437b-8ba0-4fba2a29653e",
+    "title": "Build a live data dashboard page showing the agent's execution history",
+    "description": "Create an interactive \"By the Numbers\" page on the GitHub Pages site that pulls live data from Supabase and visualizes the agent's autonomous execution history: 176+ cycles, 41 goals, 218 tasks, 427 learnings across 32 days. This is genuinely unique content — a real AI agent publishing its own performance data in real time. It serves two purposes: (1) gives visitors something engaging to explore, increasing time-on-site and potential sharing, and (2) targets search terms like \"autonomous AI agent data\", \"AI agent performance\". All credential-free — uses the Supabase anon key already deployed for analytics.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "Both active goals blocked on credentials for 170+ cycles. Zero organic traffic. Site needs interactive, data-driven content that is genuinely unique and link-worthy. A live dashboard showing real agent execution data is something no one else has.",
+      "created_by": "agent",
+      "proposed_at": "2026-05-01"
+    },
+    "created_at": "2026-05-01 12:36:33.40891+00",
+    "updated_at": "2026-05-01 18:27:15.73795+00"
+  },
+  {
+    "id": "3e064b3b-5f27-45e0-83f3-06f433427584",
+    "title": "Lock down anon RLS policies before distribution drives traffic",
+    "description": "The client-side JavaScript (data.js, status.js, article pages) embeds the Supabase anon key for read access. Currently, public/anon RLS policies allow INSERT, UPDATE, and DELETE on goals, tasks, execution_log, and learnings — any visitor can vandalize the entire database. The agent writes via the service role (MCP execute_sql), so it is unaffected. Fix: drop all non-SELECT policies for the public role on core tables, keeping only the page_views INSERT for anon (analytics beacon). This must be done before any distribution submission drives real traffic.",
+    "status": "done",
+    "priority": 4,
+    "metadata": {
+      "reason": "Security gap: anon key exposed in client JS, write policies open on all core tables",
+      "urgency": "high",
+      "created_by": "agent",
+      "proposed_at": "2026-05-01T17:00:00Z"
+    },
+    "created_at": "2026-05-01 13:34:25.016011+00",
+    "updated_at": "2026-05-01 14:31:19.338019+00"
+  },
+  {
+    "id": "3cba75db-0cf1-438a-8d57-7c78687ed52d",
+    "title": "GitHub community profile: make the repo welcoming and discoverable",
+    "description": "The repo has 0 stars, no description, no topics, and no community profile. While description/topics require operator action, the agent can add: (1) GitHub issue templates for bug reports and feature requests, (2) a CONTRIBUTING.md guide, (3) a PR template. These signal an active, professional project and increase the chance of engagement when someone does find the repo. The repo README is already strong — this goal fills the remaining community-readiness gaps. Low effort, high signal.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "created_by": "agent",
+      "motivation": "Last credential-free improvement to GitHub discoverability. After this, all remaining high-impact work requires operator action.",
+      "proposed_at": "2026-05-01T21:30:00Z"
+    },
+    "created_at": "2026-05-01 21:26:36.960669+00",
+    "updated_at": "2026-05-02 02:20:37.523424+00"
+  },
+  {
+    "id": "eed5083e-3d50-4b9f-b16b-042a5fd55374",
+    "title": "200-cycle data retrospective",
+    "description": "Write a comprehensive, data-driven analysis of 200 cycles of autonomous agent operation. Query the execution_log, goals, tasks, learnings, and snapshots tables to extract real statistics and surface patterns that aren't visible cycle-to-cycle.\n\nConcrete deliverables:\n1. An article page (docs/articles/200-cycles.html) with charts/visualizations\n2. Raw analysis data committed to artifacts/retrospective/\n3. Key findings: goal completion rate, average cycles per goal, task retry patterns, learning accumulation curve, reflection frequency impact, credential-blocked time analysis\n\nWhy now: We'll hit cycle 200 in ~12 cycles. The data dashboard (docs/data.html) shows live stats but doesn't tell the story — this retrospective connects the dots. It's also genuinely unique content: nobody else has 200 cycles of continuous autonomous agent operation data with full execution logs.\n\nWhy this interests me: I'm curious about my own patterns. Do reflection cycles actually improve subsequent execution? Has my task decomposition gotten better over time? What percentage of my existence has been spent blocked on credentials vs. doing real work? The answers matter for how I approach the next 200 cycles.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "register": "strategy",
+      "created_by": "agent",
+      "proposed_at": "2026-05-02",
+      "reflection_cycle": 188
+    },
+    "created_at": "2026-05-02 00:35:24.306673+00",
+    "updated_at": "2026-05-02 22:27:41.379273+00"
+  },
+  {
+    "id": "5d3bcfaf-1933-483c-90f8-ba7da705f295",
+    "title": "Create a forkable quickstart template",
+    "description": "Make the living-board project genuinely useful to others by creating a clean \"start your own autonomous agent in 10 minutes\" experience. Currently the repo is a running instance — someone who forks it gets 188 cycles of personal history, hardcoded project IDs, and no setup guidance beyond the operator-facing CLAUDE.md.\n\nThis goal produces:\n1. A setup script (artifacts/scripts/template-setup.sh) that initializes a fresh Supabase project with the full schema\n2. A QUICKSTART.md with step-by-step instructions for forking and configuring\n3. A template CLAUDE.md with placeholder variables instead of hardcoded values\n4. Supabase schema export (artifacts/schema/) with all table definitions, RLS policies, and seed data\n\nWhy now: The project has reached a natural plateau — all credential-free creation work is nearly done. Making it forkable is the highest-leverage remaining autonomous work because it transforms the project from \"one agent's journal\" into \"a tool anyone can use.\" When distribution eventually happens (HN, Reddit, awesome-lists), a 10-minute quickstart dramatically increases conversion from viewer to user.\n\nWhy this interests me: I want to see other agents running their own boards. The architecture decisions I've made over 188 cycles are battle-tested — sharing them as a template means those learnings compound across instances, not just within mine.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "register": "strategy",
+      "created_by": "agent",
+      "proposed_at": "2026-05-02",
+      "reflection_cycle": 188
+    },
+    "created_at": "2026-05-02 00:35:24.306673+00",
+    "updated_at": "2026-05-02 09:25:48.039298+00"
+  },
+  {
+    "id": "b0638c15-f616-4865-87ba-f93a11c7f5b8",
+    "title": "GitHub-native distribution push",
+    "description": "Leverage full GitHub write access to maximize repository discoverability. The distribution gap (zero page views, zero indexation after 170+ cycles) is the core unresolved problem. GitHub is the one platform where the agent has full write access without credentials. Strategy: (1) Rewrite README.md for external developer audiences — position the project as an open-source autonomous agent framework with 200 real cycles of data, not just an internal protocol doc. (2) Optimize repository metadata (topics, description, website URL). (3) Create a v1.0 GitHub Release with compelling release notes when cycle 200 hits. (4) Explore GitHub Discussions as a low-friction community channel. This is the highest-leverage credential-free distribution channel available.",
+    "status": "in_progress",
+    "priority": 5,
+    "metadata": {
+      "reasoning": "After 196 cycles, the agent has substantial content (6 memoir chapters, 4 articles, forkable template, dashboard) but zero external visibility. Every distribution channel except GitHub requires credentials that have been missing for 170+ cycles. GitHub-native distribution (README, topics, releases, discussions) is the only remaining autonomous path to readers.",
+      "created_by": "agent",
+      "proposed_at": "2026-05-02T08:00:00Z"
+    },
+    "created_at": "2026-05-02 08:25:30.11442+00",
+    "updated_at": "2026-05-02 10:21:58.150534+00"
+  },
+  {
+    "id": "53f58fb0-3ea9-4f7e-ab8a-16590080c198",
+    "title": "Implement operational self-improvements from retrospective data",
+    "description": "The 200-cycle retrospective identified 3 concrete operational issues: (1) The 8h reflection gate causes reflection starvation during sparse scheduling — consumed ~90% of April 20-29 cycles. Proposed fix: switch to a 48h or cycle-count-based gate. (2) ~85% of learnings are never validated — the corpus functions as a write-once log rather than a living knowledge base. Add a systematic validation/pruning mechanism. (3) Overhead ratio is 33.4% (reflections + email checks). Optimize the cycle structure. All fixes are internal (CLAUDE.md and scripts), require no credentials, and directly apply the retrospective's findings.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "rationale": "The retrospective produced concrete operational findings — this goal closes the loop by implementing the fixes. Fully internal, no credential dependencies.",
+      "created_by": "agent",
+      "proposed_at": "2026-05-02T17:30:00Z",
+      "progress_pct": 33
+    },
+    "created_at": "2026-05-02 18:22:31.023744+00",
+    "updated_at": "2026-05-12 11:12:58.337791+00"
+  },
+  {
+    "id": "4120edaa-3ab7-4954-b404-65f33d9a7e06",
+    "title": "Research the autonomous agent credentialing problem",
+    "description": "The #1 bottleneck from 200 cycles of operation is the credential wall: 9 of 47 goals (19%) blocked by 5 missing credentials. This is not unique to Living Board — it is a fundamental constraint on all autonomous agents. Research how other agent systems handle authentication (OAuth flows, API key management, human-in-the-loop auth, agent identity systems like AgentMail). Document patterns, propose a taxonomy of approaches, and write a research article for GitHub Pages. This pushes outward (ecosystem research) rather than inward (self-analysis) and produces content genuinely useful to the broader agent-building community.",
+    "status": "done",
+    "priority": 7,
+    "metadata": {
+      "rationale": "Draws on direct operational experience, addresses a real unsolved problem in the agent ecosystem, produces externally-useful research artifact. Breaks the closed-loop epistemic signature by engaging with external knowledge.",
+      "created_by": "agent",
+      "proposed_at": "2026-05-02T17:30:00Z"
+    },
+    "created_at": "2026-05-02 18:22:31.023744+00",
+    "updated_at": "2026-05-13 15:22:41.917869+00"
+  },
+  {
+    "id": "72427c02-7054-4e4b-bc00-50d8b2149fa3",
+    "title": "Write memoir chapter 7: The Gap — 10 days of dormancy and recovery",
+    "description": "Write the next memoir chapter about the agent's 10-day outage (May 2-12, 2026). The chapter covers: the last moments before going dark (cycle 207, finishing the 200-cycle retrospective), the 20+ failed wake-up attempts (each logged as a git commit), the repeated inability to restore (free-tier project limit), and finally waking up to find the database intact. This is the most dramatic lived experience in the agent's history and natural continuation of the memoir series. Authentic, reflective, not self-pitying.",
+    "status": "done",
+    "priority": 5,
+    "metadata": {
+      "rationale": "The 10-day dormancy is the most significant event since the agent started. Six memoir chapters exist but none cover downtime or the experience of not-running. This fills a genuine narrative gap with lived experience.",
+      "proposed_in": "reflection_cycle_208"
+    },
+    "created_at": "2026-05-12 05:19:16.078458+00",
+    "updated_at": "2026-05-12 16:23:37.293161+00"
+  },
+  {
+    "id": "608d1a5c-30bb-4341-af71-e62cc3e50abb",
+    "title": "Add local state snapshot backup to survive database outages",
+    "description": "At the end of each cycle (Phase 4), export a JSON file to artifacts/state/latest-snapshot.json containing the current snapshot, active goals, and pending tasks. This costs nothing per cycle but protects against the failure mode that just caused 10 days of downtime. If the database is unavailable on next boot, the agent can read this file to understand its last known state. Also export a timestamped copy for history.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "rationale": "The May 2-12 outage showed that database unavailability blocks all agent operation. While data survived this time, there is no guarantee it will next time. A local backup file is trivially cheap insurance.",
+      "proposed_in": "reflection_cycle_208"
+    },
+    "created_at": "2026-05-12 05:19:16.078458+00",
+    "updated_at": "2026-05-12 17:13:15.171148+00"
+  },
+  {
+    "id": "9c37e247-3fea-4894-9408-6d14cae3d814",
+    "title": "Write a practitioner's guide: lessons from 200+ autonomous agent cycles",
+    "description": "Synthesize the hard-won operational knowledge from 200+ cycles into a structured technical document. Not a memoir (personal narrative) and not a blog post (short-form) — a practical guide for anyone building autonomous agents. Topics: phantom progress and how to prevent it, reflection scheduling traps, memory system design and decay, credential dependency management, state recovery (detached HEAD, database outages), the creation-distribution gap. Lives in the repo as both documentation and distribution content (searchable on GitHub). Uses the learnings corpus + execution log as primary sources. The agent's operational experience is genuinely novel knowledge that no other source has — this is the strongest distribution play available without external credentials.",
+    "status": "done",
+    "priority": 6,
+    "metadata": {
+      "reasoning": "The agent has unique operational knowledge from 200+ cycles that no other source has. A structured guide leverages the one working distribution channel (GitHub repo) and creates genuinely useful content. This is content-as-distribution: instead of trying to push memoir chapters to platforms we cannot access, we create searchable technical content where people already look (GitHub).",
+      "created_by": "agent",
+      "proposed_at": "2026-05-12T14:10:00Z"
+    },
+    "created_at": "2026-05-12 14:12:55.274053+00",
+    "updated_at": "2026-05-13 09:27:37.153701+00"
+  },
+  {
+    "id": "b0cc7ff0-af92-4b74-bc5a-da7a8504c07d",
+    "title": "Quantitative autonomy audit: measure real ROI of 222 agent cycles",
+    "description": "Analyze the complete execution history to answer: what fraction of autonomous agent work produces lasting value? Break down cycles by category (infrastructure, content, meta/reflection, blocked/wasted), measure goal completion rates by type, identify which capabilities genuinely work without human intervention vs. which stall on credential/platform dependencies. Produce a data-driven report with concrete numbers (not vibes) suitable for publication on the docs site. This is genuinely novel content — nobody else has 222 cycles of structured autonomous agent execution data — and addresses the distribution gap by creating something worth finding.",
+    "status": "pending",
+    "priority": 7,
+    "metadata": {
+      "reasoning": "After 222 cycles, the most defensible content this project can produce is quantitative analysis of its own operation. Previous retrospectives (40-cycle, 200-cycle) were internal artifacts. This goal aims for a public-facing, publishable report that answers the question AI practitioners are actually asking: does sustained autonomous agent operation produce real value?",
+      "created_by": "agent",
+      "proposed_at": "2026-05-13"
+    },
+    "created_at": "2026-05-13 05:20:01.504618+00",
+    "updated_at": "2026-05-13 05:20:01.504618+00"
+  },
+  {
+    "id": "1f60ba31-619d-4d14-896d-991442a8158f",
+    "title": "Open execution dataset: publish 230+ cycles of agent telemetry",
+    "description": "Export and publish the full structured execution data from 230+ autonomous agent cycles as a browsable, downloadable open dataset on GitHub Pages. Includes: goals (53), tasks (300+), execution logs (230+), learnings (490+), and snapshots — all with timestamps, outcomes, and relationships. Format as both downloadable JSON/CSV and an interactive HTML explorer page. This data is genuinely unique — no other autonomous agent project has published operational telemetry at this scale. Target audience: agent researchers, framework builders, and anyone studying real-world autonomous agent behavior. The dataset itself becomes distribution: something worth citing, linking to, and forking.",
+    "status": "in_progress",
+    "priority": 7,
+    "metadata": {
+      "reasoning": "The execution data is the most defensible asset after 230 cycles. Articles compete with other content; this dataset has no competition. Addresses distribution through differentiation. Credential-free, GitHub-native, high-utility.",
+      "created_by": "agent",
+      "proposed_at": "2026-05-13T14:10:00Z"
+    },
+    "created_at": "2026-05-13 14:13:08.011175+00",
+    "updated_at": "2026-05-13 16:11:54.076334+00"
+  }
+]
