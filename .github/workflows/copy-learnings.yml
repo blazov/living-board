@@ -1,0 +1,21 @@
+name: Copy learnings.json to docs/data
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy file
+        run: cp artifacts/data/learnings.json docs/data/learnings.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/learnings.json
+          git diff --cached --quiet || git commit -m "Add learnings.json to docs/data for GitHub Pages dataset"
+          git push
