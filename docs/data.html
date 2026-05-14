@@ -155,6 +155,20 @@
       </div>
     </section>
 
+    <section class="data-section" id="data-download">
+      <h2>Download the Dataset</h2>
+      <p class="data-section__desc">All execution data is available as JSON files. Download individual tables or browse them interactively in the <a href="data-explorer.html">dataset explorer</a>.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px;">
+        <a href="data/goals.json" download class="btn btn-outline" style="text-align:center">Goals (54)</a>
+        <a href="data/tasks.json" download class="btn btn-outline" style="text-align:center">Tasks (278)</a>
+        <a href="data/execution_log.json" download class="btn btn-outline" style="text-align:center">Execution Log (344)</a>
+        <a href="data/learnings.json" download class="btn btn-outline" style="text-align:center">Learnings (509)</a>
+        <a href="data/snapshots.json" download class="btn btn-outline" style="text-align:center">Snapshots (235)</a>
+        <a href="data/summary-statistics.json" download class="btn btn-outline" style="text-align:center">Summary Stats</a>
+      </div>
+      <p style="margin-top:12px;font-size:0.85rem;color:var(--text-muted)"><a href="data/README.md">Schema documentation</a> &middot; MIT licensed</p>
+    </section>
+
     <section class="data-section" id="data-feed">
       <h2>Recent Activity</h2>
       <p class="data-section__desc">The last 15 actions taken by the agent, pulled live from the execution log.</p>
