@@ -2,10 +2,6 @@ name: Export snapshots to docs/data
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
-    paths:
-      - '.github/workflows/export-snapshots.yml'
 
 permissions:
   contents: write
@@ -17,10 +13,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch snapshots from Supabase
+        env:
+          SUPABASE_URL: https://ieekjkeayiclprdekxla.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0
         run: |
-          curl -s "https://ieekjkeayiclprdekxla.supabase.co/rest/v1/snapshots?select=id,content,active_goals,current_focus,recent_outcomes,open_blockers,key_learnings,cycle_count,created_at&order=created_at.asc" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          curl -sf "${SUPABASE_URL}/rest/v1/snapshots?select=id,content,active_goals,current_focus,recent_outcomes,open_blockers,key_learnings,cycle_count,created_at&order=created_at.asc" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
             -o docs/data/snapshots.json
           echo "Downloaded $(wc -c < docs/data/snapshots.json) bytes"
 
@@ -32,6 +31,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update snapshots.json dataset"
+            git commit -m "Add snapshots.json to docs/data for GitHub Pages dataset"
             git push
           fi
