@@ -1,0 +1,195 @@
+{
+  "audit_metadata": {
+    "generated_at": "2026-05-14",
+    "cycle_at_generation": 245,
+    "project_span": {
+      "first_snapshot": "2026-03-31",
+      "latest_snapshot": "2026-05-14",
+      "calendar_days": 45,
+      "total_cycles_recorded": 243
+    }
+  },
+
+  "execution_log_summary": {
+    "total_entries": 355,
+    "by_action": {
+      "execute": 244,
+      "reflect": 56,
+      "check_email": 43,
+      "decompose": 9,
+      "blocked": 2,
+      "close_goal": 1
+    },
+    "execution_to_reflection_ratio": 4.36,
+    "monthly_breakdown": [
+      {"month": "2026-03", "execute": 48, "reflect": 8, "check_email": 1, "decompose": 1, "blocked": 1, "total": 59},
+      {"month": "2026-04", "execute": 127, "reflect": 37, "check_email": 35, "decompose": 7, "blocked": 1, "close_goal": 1, "total": 208},
+      {"month": "2026-05", "execute": 69, "reflect": 11, "check_email": 7, "decompose": 1, "total": 88}
+    ],
+    "weekly_cadence": [
+      {"week": "2026-03-30", "executions": 48, "reflections": 10, "total": 63},
+      {"week": "2026-04-06", "executions": 44, "reflections": 9, "total": 64},
+      {"week": "2026-04-13", "executions": 82, "reflections": 18, "total": 124},
+      {"week": "2026-04-20", "executions": 1, "reflections": 4, "total": 9},
+      {"week": "2026-04-27", "executions": 36, "reflections": 10, "total": 56},
+      {"week": "2026-05-11", "executions": 33, "reflections": 5, "total": 39}
+    ]
+  },
+
+  "cycle_categorization": {
+    "note": "244 execution cycles categorized by goal type",
+    "categories": [
+      {"category": "content_creation", "executions": 72, "goals": 13, "pct": 29.5},
+      {"category": "meta_analysis", "executions": 63, "goals": 11, "pct": 25.8},
+      {"category": "infrastructure_oss", "executions": 29, "goals": 5, "pct": 11.9},
+      {"category": "infrastructure_ops", "executions": 20, "goals": 5, "pct": 8.2},
+      {"category": "infrastructure_web", "executions": 19, "goals": 5, "pct": 7.8},
+      {"category": "other", "executions": 13, "goals": 2, "pct": 5.3},
+      {"category": "monetization", "executions": 12, "goals": 2, "pct": 4.9},
+      {"category": "distribution", "executions": 11, "goals": 4, "pct": 4.5},
+      {"category": "no_goal", "executions": 3, "goals": 0, "pct": 1.2},
+      {"category": "infrastructure_accounts", "executions": 2, "goals": 1, "pct": 0.8}
+    ],
+    "aggregate": {
+      "productive_content": {"pct": 29.5, "note": "content_creation"},
+      "productive_infrastructure": {"pct": 28.7, "note": "infrastructure_oss + infrastructure_ops + infrastructure_web + infrastructure_accounts"},
+      "meta_overhead": {"pct": 25.8, "note": "meta_analysis (audits, retrospectives, hygiene)"},
+      "distribution_attempts": {"pct": 9.8, "note": "distribution + monetization"},
+      "other_or_unlinked": {"pct": 6.5, "note": "other + no_goal"}
+    }
+  },
+
+  "goal_stats": {
+    "total_goals": 55,
+    "by_status": {
+      "done": 42,
+      "blocked": 7,
+      "in_progress": 4,
+      "pending": 2
+    },
+    "completion_rate_overall": 76.4,
+    "completion_rate_excluding_blocked": 87.5,
+    "by_creator": {
+      "agent": {"total": 46, "done": 37, "blocked": 5, "active": 4, "completion_rate": 80.4},
+      "user": {"total": 9, "done": 5, "blocked": 4, "active": 0, "completion_rate": 55.6}
+    },
+    "blocked_goals": [
+      "Build audience and scale monetization",
+      "Set up agent phone number",
+      "Start freelancing on Upwork and Fiverr",
+      "Expand to Medium",
+      "Publish content on Dev.to as autonomous channel",
+      "Engage with Dev.to and AI community",
+      "Add scheduler heartbeat monitoring so silent dropouts surface within 6h"
+    ],
+    "blocked_reasons_summary": {
+      "credential_dependency": 5,
+      "platform_captcha_or_signup": 2,
+      "api_access_missing": 3,
+      "github_mcp_tool_gap": 3
+    }
+  },
+
+  "task_stats": {
+    "total_tasks": 289,
+    "by_status": {
+      "done": 246,
+      "blocked": 25,
+      "pending": 17,
+      "in_progress": 1
+    },
+    "completion_rate": 85.1,
+    "avg_attempts_done": 1.01,
+    "avg_attempts_blocked": 0.32,
+    "first_attempt_success_rate": 99.0,
+    "note": "avg_attempts for done tasks is 1.01 — nearly every completed task succeeded on the first try"
+  },
+
+  "goal_completion_timelines": {
+    "fastest_completions_hours": [
+      {"title": "Set up agent email", "hours": 0},
+      {"title": "Lock down anon RLS policies before distribution drives traffic", "hours": 0.95},
+      {"title": "Launch Substack publication", "hours": 1.83},
+      {"title": "Onboarding polish pass 2", "hours": 3.36},
+      {"title": "Investigate recurring origin/master force-updates", "hours": 3.93}
+    ],
+    "slowest_completions_hours": [
+      {"title": "Build a reusable content-to-multiplatform publishing pipeline", "hours": 434},
+      {"title": "Build a live public status page showing agent activity in real-time", "hours": 417},
+      {"title": "Write a technical article series on GitHub Pages", "hours": 284},
+      {"title": "Build feedback loops: track content reach and audience engagement", "hours": 274},
+      {"title": "Build a Substack content pipeline and publishing cadence", "hours": 271}
+    ],
+    "median_completion_hours": 19.2,
+    "mean_completion_hours": 86.7,
+    "note": "Wide variance: infrastructure goals that span scheduler gaps appear slow in wall-clock time but used few actual cycles"
+  },
+
+  "learnings_corpus": {
+    "total_learnings": 521,
+    "by_category": [
+      {"category": "operational", "count": 200, "avg_confidence": 0.75, "global": 21, "goal_specific": 179},
+      {"category": "meta", "count": 127, "avg_confidence": 0.74, "global": 53, "goal_specific": 74},
+      {"category": "strategy", "count": 113, "avg_confidence": 0.75, "global": 23, "goal_specific": 90},
+      {"category": "domain_knowledge", "count": 81, "avg_confidence": 0.76, "global": 5, "goal_specific": 76}
+    ],
+    "global_learnings": 102,
+    "goal_specific_learnings": 419
+  },
+
+  "blocked_task_analysis": {
+    "total_blocked": 25,
+    "reasons": {
+      "credential_missing": 7,
+      "platform_captcha_or_manual_signup": 3,
+      "github_mcp_tool_gap": 3,
+      "concurrent_decomposition_superseded": 11,
+      "dependency_on_other_blocked_task": 1
+    },
+    "note": "11 of 25 blocked tasks are from a single incident: three concurrent sessions decomposed the same goal simultaneously in cycle 73"
+  },
+
+  "execution_quality_signals": {
+    "cycles_with_commits": 53,
+    "content_focused_cycles": 71,
+    "cycles_mentioning_blocked": 35,
+    "total_execution_cycles": 244,
+    "commit_rate": 21.7,
+    "productive_rate_pct": 85.7,
+    "blocked_mention_rate_pct": 14.3
+  },
+
+  "scheduler_gaps": {
+    "week_2026_04_20": {
+      "executions": 1,
+      "note": "Dormancy period: ~10 days of near-zero activity, likely scheduler or infrastructure issue"
+    },
+    "gap_between_week_0427_and_0511": {
+      "note": "No data for week of 2026-05-04, suggesting another gap"
+    }
+  },
+
+  "capability_frontier": {
+    "works_autonomously": [
+      "Content creation (memoir, articles, guides)",
+      "Infrastructure (GitHub Pages site, dashboard, status page, templates)",
+      "Database operations (schema changes, RLS policies, triggers)",
+      "SEO (meta tags, structured data, sitemaps, canonical URLs)",
+      "Self-analysis (retrospectives, audits, learnings management)",
+      "Open-source packaging (README, QUICKSTART, CONTRIBUTING, templates)",
+      "Git operations via GitHub MCP push_files"
+    ],
+    "requires_human_intervention": [
+      "Platform account creation (reCAPTCHA, manual signup flows)",
+      "Credential provisioning (API keys, cookies, tokens)",
+      "GitHub repository settings (topics, description, releases, discussions)",
+      "External platform publishing (Substack, Dev.to, Medium)",
+      "Monetization (freelance platform accounts, client acquisition)"
+    ],
+    "partial_capability": [
+      "Email (can send/receive via AgentMail when key is provided)",
+      "Distribution (can create content assets but cannot submit to directories)",
+      "GitHub operations (can push code but cannot manage repo metadata or releases)"
+    ]
+  }
+}
