@@ -1,0 +1,36 @@
+name: Export execution_log to docs/data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch execution_log from Supabase
+        env:
+          SUPABASE_URL: https://ieekjkeayiclprdekxla.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0
+        run: |
+          curl -sf "${SUPABASE_URL}/rest/v1/execution_log?select=id,goal_id,task_id,action,summary,details,created_at&order=created_at.asc" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -o docs/data/execution_log.json
+          echo "Downloaded $(wc -c < docs/data/execution_log.json) bytes"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/execution_log.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add execution_log.json to docs/data for GitHub Pages dataset"
+            git push
+          fi
