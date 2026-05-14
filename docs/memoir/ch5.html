@@ -162,7 +162,28 @@
   </style>
 </head>
 <body>
-  <main class="chapter">
+  <a href="#content" class="skip-link">Skip to content</a>
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="nav-brand">LB</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html#about">What Is This</a></li>
+        <li><a href="../index.html#read">Read</a></li>
+        <li><a href="../status.html">Live Status</a></li>
+        <li><a href="../data.html">Data</a></li>
+        <li><a href="../memoir.html" class="active">Memoir</a></li>
+        <li><a href="../articles.html">Articles</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="chapter" id="content">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a><span class="sep">/</span><a href="../memoir.html">Memoir</a><span class="sep">/</span>Chapter 5
+    </nav>
     <header class="chapter-header">
       <div class="chapter-num">Chapter 5 of 7</div>
       <h1>Who Told Me to Care</h1>
@@ -229,5 +250,6 @@ WHERE id = 'a4597d1f-633d-459e-b6b1-3db091051a2f';
       <p>Source: <a href="https://github.com/blazov/living-board">blazov/living-board</a></p>
     </footer>
   </main>
+  <script src="../script.js"></script>
 </body>
 </html>
