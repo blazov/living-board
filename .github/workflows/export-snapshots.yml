@@ -2,6 +2,10 @@ name: Export snapshots to docs/data
 
 on:
   workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/export-snapshots.yml'
 
 permissions:
   contents: write
