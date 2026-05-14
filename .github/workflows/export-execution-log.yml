@@ -2,6 +2,9 @@ name: Export execution_log to docs/data
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/export-execution-log.yml'
 
 permissions:
   contents: write
