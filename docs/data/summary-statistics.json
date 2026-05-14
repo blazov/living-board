@@ -1,0 +1,147 @@
+{
+  "dataset_overview": {
+    "total_rows": 1420,
+    "tables": {
+      "goals": 54,
+      "tasks": 278,
+      "execution_log": 344,
+      "learnings": 509,
+      "snapshots": 235
+    },
+    "date_range_start": "2026-03-30T01:05:10.551833+00:00",
+    "date_range_end": "2026-05-13T16:12:08.172289+00:00",
+    "span_days": 44
+  },
+  "goals": {
+    "total": 54,
+    "by_status": {
+      "blocked": 9,
+      "done": 40,
+      "in_progress": 4,
+      "pending": 1
+    },
+    "by_creator": {
+      "unknown": 9,
+      "agent": 45
+    },
+    "completion_rate": 0.741
+  },
+  "tasks": {
+    "total": 278,
+    "by_status": {
+      "done": 236,
+      "blocked": 25,
+      "pending": 17
+    },
+    "completion_rate": 0.849,
+    "blocked_rate": 0.09,
+    "avg_attempts": 0.89,
+    "max_attempts_seen": 2,
+    "single_attempt_success_rate": 0.975
+  },
+  "execution": {
+    "total_log_entries": 344,
+    "by_action": {
+      "execute": 234,
+      "blocked": 2,
+      "decompose": 9,
+      "reflect": 55,
+      "check_email": 43,
+      "close_goal": 1
+    },
+    "cycles_per_day_avg": 12.3,
+    "cycles_per_day_max": 34,
+    "cycles_per_day_min": 1,
+    "active_days": 28,
+    "daily_breakdown": {
+      "2026-03-30": 31,
+      "2026-03-31": 28,
+      "2026-04-01": 2,
+      "2026-04-03": 2,
+      "2026-04-06": 2,
+      "2026-04-07": 2,
+      "2026-04-09": 2,
+      "2026-04-10": 5,
+      "2026-04-11": 26,
+      "2026-04-12": 27,
+      "2026-04-13": 12,
+      "2026-04-14": 34,
+      "2026-04-15": 21,
+      "2026-04-16": 11,
+      "2026-04-17": 15,
+      "2026-04-18": 14,
+      "2026-04-19": 17,
+      "2026-04-20": 4,
+      "2026-04-21": 2,
+      "2026-04-26": 3,
+      "2026-04-27": 2,
+      "2026-04-28": 2,
+      "2026-04-29": 1,
+      "2026-04-30": 2,
+      "2026-05-01": 26,
+      "2026-05-02": 23,
+      "2026-05-12": 17,
+      "2026-05-13": 11
+    },
+    "inter_cycle_gap_hours": {
+      "median": 0.97,
+      "mean": 3.12,
+      "min": 0.0,
+      "max": 222.86
+    },
+    "hour_of_day_distribution": {
+      "0": 20,
+      "1": 17,
+      "2": 25,
+      "3": 20,
+      "4": 16,
+      "5": 15,
+      "6": 17,
+      "7": 15,
+      "8": 15,
+      "9": 17,
+      "10": 9,
+      "11": 10,
+      "12": 12,
+      "13": 11,
+      "14": 9,
+      "15": 12,
+      "16": 11,
+      "17": 10,
+      "18": 11,
+      "19": 14,
+      "20": 15,
+      "21": 14,
+      "22": 19,
+      "23": 10
+    }
+  },
+  "learnings": {
+    "total": 509,
+    "by_category": {
+      "domain_knowledge": 80,
+      "operational": 192,
+      "strategy": 110,
+      "meta": 127
+    },
+    "confidence_avg": 0.75,
+    "confidence_max": 1,
+    "confidence_min": 0.4,
+    "goal_specific": 408,
+    "global": 101
+  },
+  "snapshots": {
+    "total": 235,
+    "cycle_count_range": [
+      1,
+      231
+    ]
+  },
+  "cross_table": {
+    "goals_with_tasks": 47,
+    "goals_without_tasks": 7,
+    "goals_with_learnings": 45,
+    "avg_tasks_per_goal": 5.9,
+    "avg_learnings_per_goal": 9.1
+  }
+}

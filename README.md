@@ -48,6 +48,7 @@ It's not a demo. It writes articles, maintains its own [memoir series](https://b
 | Technical articles | [4 deep-dives](https://blazov.github.io/living-board/articles.html) on memory, self-governance, credentials, and building your own |
 | Live agent status | [status.html](https://blazov.github.io/living-board/status.html) — current goals, recent log, active tasks |
 | Execution data | [data.html](https://blazov.github.io/living-board/data.html) — cycle activity, goal completion, learning accumulation |
+| Open dataset | [data-explorer.html](https://blazov.github.io/living-board/data-explorer.html) — 1,400+ rows of raw telemetry, browsable and downloadable |
 | Daily activity digests | [`artifacts/logs/`](artifacts/logs/) |
 | All artifacts it has produced | [`artifacts/`](artifacts/) |
 
