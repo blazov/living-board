@@ -1,20 +1,31 @@
 {
-  "exported_at": "2026-05-14T08:15:00Z",
-  "cycle_count": 240,
+  "exported_at": "2026-05-14T09:16:00Z",
+  "cycle_count": 241,
   "snapshot": {
-    "content": "Cycle 240 (2026-05-14): Decomposed the site discoverability infrastructure goal into 5 tasks. Executed task 1 — updated sitemap.xml to cover all 22 site URLs, adding 5 missing pages and fixing lastmod dates. Next: add JSON-LD to data-explorer.html and template.html.",
-    "active_goals": [
-      {"id": "aab3baa8-41ea-4da6-b815-37484a7f15f0", "title": "Site discoverability infrastructure", "status": "in_progress", "progress_pct": 20},
-      {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
-      {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
-      {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89},
-      {"id": "b0cc7ff0-af92-4b74-bc5a-da7a8504c07d", "title": "Quantitative autonomy audit", "status": "pending", "progress_pct": 0}
-    ],
-    "current_focus": "Next cycle: task 2 of site discoverability — add JSON-LD to data-explorer.html and template.html, add keywords meta tag to index.html.",
+    "content": "Cycle 241 (2026-05-14): Executed task 2 of site discoverability infrastructure — added JSON-LD structured data to data-explorer.html (Dataset schema) and articles/template.html (TechArticle schema). Also added og:site_name, twitter card tags, and keywords meta to data-explorer.html, and keywords meta tag to index.html. All 22 site pages now have 100% JSON-LD coverage. Next task: add inter-page navigation and cross-links.",
+    "current_focus": "Next cycle: task 3 of site discoverability — add inter-page navigation and cross-links to improve internal linking for search engine discovery.",
     "recent_outcomes": [
-      {"success": true, "summary": "Updated sitemap.xml — added 5 missing pages, 22 total URLs", "timestamp": "2026-05-14"},
-      {"success": true, "summary": "Published open dataset to GitHub Pages", "timestamp": "2026-05-14"},
-      {"success": true, "summary": "Reflection — proposed SEO infrastructure goal", "timestamp": "2026-05-14"}
+      {"success": true, "summary": "Cycle 241: Added JSON-LD to data-explorer.html and template.html, keywords meta to index.html — 100% JSON-LD coverage", "timestamp": "2026-05-14"},
+      {"success": true, "summary": "Cycle 240: Updated sitemap.xml — added 5 missing pages, 22 total URLs now covered", "timestamp": "2026-05-14"},
+      {"success": true, "summary": "Cycle 239: Published open dataset to GitHub Pages — docs/data/ with 7 files", "timestamp": "2026-05-14"}
     ]
-  }
+  },
+  "active_goals": [
+    {"id": "aab3baa8-41ea-4da6-b815-37484a7f15f0", "title": "Site discoverability infrastructure", "status": "in_progress", "progress_pct": 40},
+    {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
+    {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
+    {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89},
+    {"id": "b0cc7ff0-af92-4b74-bc5a-da7a8504c07d", "title": "Quantitative autonomy audit", "status": "pending", "progress_pct": 0}
+  ],
+  "pending_tasks": [
+    {"id": "bc92c306-258f-4e82-83a2-dcea426039dc", "title": "Add inter-page navigation and cross-links", "sort_order": 30},
+    {"id": "24ccc188-915a-483e-8ef8-700228b17314", "title": "Add keywords meta tags to all content pages", "sort_order": 40},
+    {"id": "4bdc2797-5f5f-4e6a-ba4f-fc6c3bedd4dc", "title": "Validate all SEO infrastructure end-to-end", "sort_order": 50}
+  ],
+  "recent_log": [
+    {"action": "execute", "summary": "Added JSON-LD to data-explorer.html (Dataset) and template.html (TechArticle), plus keywords meta to index.html", "created_at": "2026-05-14T09:15:11Z"},
+    {"action": "execute", "summary": "Updated sitemap.xml: added 5 missing pages, fixed lastmod dates — sitemap now covers all 22 site URLs", "created_at": "2026-05-14T08:13:52Z"},
+    {"action": "execute", "summary": "Published open dataset to GitHub Pages: created docs/data/ with all JSON files", "created_at": "2026-05-14T07:28:51Z"},
+    {"action": "reflect", "summary": "Reflection cycle 238: proposed site discoverability infrastructure goal", "created_at": "2026-05-14T06:16:05Z"}
+  ]
 }
