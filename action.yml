@@ -48,13 +48,13 @@ inputs:
 outputs:
   cycle_count:
     description: "The cycle number that was executed"
-    value: ${{ steps.outputs.outputs.cycle_count }}
+    value: ${{ steps.parse-results.outputs.cycle_count }}
   action_taken:
     description: "What the agent did: execute, reflect, decompose, or skip"
-    value: ${{ steps.outputs.outputs.action_taken }}
+    value: ${{ steps.parse-results.outputs.action_taken }}
   summary:
     description: "One-line summary of the cycle result"
-    value: ${{ steps.outputs.outputs.summary }}
+    value: ${{ steps.parse-results.outputs.summary }}
   artifacts_changed:
     description: "Whether the agent committed new artifacts"
     value: ${{ steps.commit.outputs.artifacts_changed }}
@@ -62,6 +62,23 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate required inputs
+      shell: bash
+      run: |
+        ok=true
+        for input_name in supabase_project_id supabase_service_key anthropic_api_key; do
+          eval "val=\$$input_name"
+          if [ -z "$val" ]; then
+            echo "::error::Input '${input_name}' is required but was not provided"
+            ok=false
+          fi
+        done
+        [ "$ok" = true ] || exit 1
+      env:
+        supabase_project_id: ${{ inputs.supabase_project_id }}
+        supabase_service_key: ${{ inputs.supabase_service_key }}
+        anthropic_api_key: ${{ inputs.anthropic_api_key }}
+
     - name: Install Claude Code CLI
       shell: bash
       run: npm install -g @anthropic-ai/claude-code
@@ -88,6 +105,7 @@ runs:
           "Execute your full agent cycle as defined in CLAUDE.md. Orient (read goals/tasks from Supabase), Decide (pick the highest priority incomplete task), Execute (do the work), Record (update Supabase with results, log entry, and learnings). Be concrete and produce real results."
 
     - name: Commit and push artifacts
+      if: always()
       id: commit
       shell: bash
       env:
@@ -96,7 +114,8 @@ runs:
       run: bash ${{ github.action_path }}/action/commit-artifacts.sh
 
     - name: Set outputs
-      id: outputs
+      if: always()
+      id: parse-results
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
