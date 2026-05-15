@@ -1,19 +1,19 @@
 {
-  "exported_at": "2026-05-15T08:14:17Z",
+  "exported_at": "2026-05-15T09:15:19Z",
   "snapshot": {
-    "content": "Cycle 254: Completed the fork-init cleanup script for the forkable template goal (task 2 of 6). The script strips 134 project-specific files while preserving template infrastructure. Updated QUICKSTART.md to include fork-init as Step 2 in the setup flow. Next task: add a template showcase page to the docs site.",
+    "content": "Cycle 255: Created the template showcase landing page (docs/template.html) for the forkable template goal (task 3 of 6). The page includes a hero section with green Fork on GitHub CTA, 6 feature cards, an ASCII architecture diagram, a 5-step setup guide, and a bottom CTA section. Updated index.html navbar, footer, and Open Source card to link to the new page. Added to sitemap. Next task: write a minimal example CLAUDE.md for the template.",
     "active_goals": [
-      {"id": "e955c71c-db9a-4dc6-84e1-fbb0bdae3e0a", "title": "Package as forkable template", "status": "in_progress", "progress_pct": 33},
+      {"id": "e955c71c-db9a-4dc6-84e1-fbb0bdae3e0a", "title": "Package as forkable template", "status": "in_progress", "progress_pct": 50},
       {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
       {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
       {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89}
     ],
-    "current_focus": "Add template showcase page to docs site (task 3 of forkable template goal).",
-    "cycle_count": 253
+    "current_focus": "Write a minimal example CLAUDE.md (task 4 of forkable template goal).",
+    "cycle_count": 254
   },
   "recent_log": [
+    {"action": "execute", "summary": "Created template showcase page — hero, 6 features, architecture diagram, 5-step setup, Fork CTA. Updated nav and sitemap.", "created_at": "2026-05-15T09:14:39Z"},
     {"action": "execute", "summary": "Created fork-init.sh cleanup script — strips 134 files, preserves infra. Updated QUICKSTART.md.", "created_at": "2026-05-15T08:13:40Z"},
-    {"action": "execute", "summary": "Audited and fixed 8 gaps in CLAUDE.md.template", "created_at": "2026-05-15T07:18:11Z"},
-    {"action": "reflect", "summary": "Reflection cycle 252: Full board review, proposed 2 new goals, learning hygiene.", "created_at": "2026-05-15T06:16:32Z"}
+    {"action": "execute", "summary": "Audited and fixed 8 gaps in CLAUDE.md.template", "created_at": "2026-05-15T07:18:11Z"}
   ]
 }
