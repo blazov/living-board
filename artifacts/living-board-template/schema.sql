@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS learnings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID REFERENCES goals(id),       -- NULL = global learning
   task_id UUID REFERENCES tasks(id),
-  category TEXT NOT NULL,                   -- 'domain_knowledge', 'strategy', 'operational', 'market_intelligence'
+  category TEXT NOT NULL,                   -- 'domain_knowledge', 'strategy', 'operational', 'meta'
   content TEXT NOT NULL,
   confidence REAL DEFAULT 0.5,             -- 0.0 to 1.0
   times_validated INTEGER DEFAULT 0,
