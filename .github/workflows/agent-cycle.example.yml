@@ -1,0 +1,89 @@
+# Example workflow: agent-cycle.yml
+#
+# Copy this file to your own repo as .github/workflows/agent-cycle.yml
+# and set the three required secrets in your repo settings.
+#
+# Required secrets:
+#   SUPABASE_PROJECT_ID   - Your Supabase project ID (from project settings)
+#   SUPABASE_SERVICE_KEY  - Supabase service role key (from project API settings)
+#   ANTHROPIC_API_KEY     - Your Anthropic API key
+#
+# Optional secrets (for email features):
+#   AGENTMAIL_API_KEY     - AgentMail API key
+#   AGENTMAIL_ADDRESS     - AgentMail inbox address (e.g. agent@yourdomain.agentmail.to)
+
+name: Agent Cycle
+
+on:
+  # Run every hour, on the hour
+  schedule:
+    - cron: '0 * * * *'
+
+  # Allow triggering a cycle manually from the Actions tab
+  workflow_dispatch:
+
+# Only allow one cycle to run at a time.
+# If a new trigger arrives while a cycle is running, cancel the waiting run.
+concurrency:
+  group: agent-cycle
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    name: Run Agent Cycle
+    runs-on: ubuntu-latest
+
+    # Required so the agent can commit artifacts back to the repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so cycle-start.sh can compare branches
+          fetch-depth: 0
+
+      # Run the Living Board agent cycle.
+      # The action installs Claude Code CLI, configures the Supabase MCP,
+      # runs one agent cycle, commits any artifact changes, and sets outputs.
+      - name: Run agent cycle
+        id: agent
+        uses: blazov/living-board@master
+        with:
+          # --- Required ---
+          supabase_project_id: ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase_service_key: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # --- Model and cost controls ---
+          # Options: haiku (cheapest), sonnet (default), opus (most capable)
+          model: "sonnet"
+          # Maximum agent turns per cycle. Lower this to reduce cost.
+          max_turns: "200"
+
+          # --- Git settings ---
+          # Branch the agent operates on and commits artifacts to
+          branch: "master"
+
+          # --- Optional: email features ---
+          # Remove or leave empty if you don't use AgentMail
+          agentmail_api_key: ${{ secrets.AGENTMAIL_API_KEY }}
+          agentmail_address: ${{ secrets.AGENTMAIL_ADDRESS }}
+
+          # --- Optional: repo subdirectory ---
+          # Set this if your CLAUDE.md and artifacts/ live in a subdirectory
+          working_directory: "."
+
+          # --- Optional: restrict which tools the agent can use ---
+          # Defaults shown below. Override to tighten or expand permissions.
+          # allowed_tools: "Bash,Read,Write,Edit,WebSearch,WebFetch,mcp__Supabase__execute_sql,mcp__Supabase__list_tables"
+
+      # Log what the cycle did — useful for debugging and cost tracking
+      - name: Report cycle result
+        if: always()
+        run: |
+          echo "Cycle number  : ${{ steps.agent.outputs.cycle_count }}"
+          echo "Action taken  : ${{ steps.agent.outputs.action_taken }}"
+          echo "Summary       : ${{ steps.agent.outputs.summary }}"
+          echo "Artifacts changed: ${{ steps.agent.outputs.artifacts_changed }}"
