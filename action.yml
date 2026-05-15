@@ -1,0 +1,134 @@
+name: "Living Board Agent Cycle"
+description: "Run a stateful, self-improving AI agent cycle with Supabase-backed goals, tasks, and learnings"
+author: "blazov"
+
+branding:
+  icon: cpu
+  color: purple
+
+inputs:
+  supabase_project_id:
+    description: "Supabase project ID for state storage"
+    required: true
+  supabase_service_key:
+    description: "Supabase service role key"
+    required: true
+  anthropic_api_key:
+    description: "Anthropic API key for Claude"
+    required: true
+  model:
+    description: "Claude model to use: haiku, sonnet, or opus"
+    required: false
+    default: "sonnet"
+  max_turns:
+    description: "Maximum agent turns per cycle (controls cost)"
+    required: false
+    default: "200"
+  branch:
+    description: "Git branch the agent operates on"
+    required: false
+    default: "master"
+  agentmail_api_key:
+    description: "AgentMail API key (enables email features)"
+    required: false
+    default: ""
+  agentmail_address:
+    description: "AgentMail inbox address"
+    required: false
+    default: ""
+  working_directory:
+    description: "Repo subdirectory to operate in"
+    required: false
+    default: "."
+  allowed_tools:
+    description: "Comma-separated tools to allow"
+    required: false
+    default: "Bash,Read,Write,Edit,WebSearch,WebFetch,mcp__Supabase__execute_sql,mcp__Supabase__list_tables"
+
+outputs:
+  cycle_count:
+    description: "The cycle number that was executed"
+    value: ${{ steps.outputs.outputs.cycle_count }}
+  action_taken:
+    description: "What the agent did: execute, reflect, decompose, or skip"
+    value: ${{ steps.outputs.outputs.action_taken }}
+  summary:
+    description: "One-line summary of the cycle result"
+    value: ${{ steps.outputs.outputs.summary }}
+  artifacts_changed:
+    description: "Whether the agent committed new artifacts"
+    value: ${{ steps.commit.outputs.artifacts_changed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Claude Code CLI
+      shell: bash
+      run: npm install -g @anthropic-ai/claude-code
+
+    - name: Configure agent environment
+      shell: bash
+      env:
+        SUPABASE_PROJECT_ID: ${{ inputs.supabase_project_id }}
+        SUPABASE_SERVICE_KEY: ${{ inputs.supabase_service_key }}
+        ALLOWED_TOOLS: ${{ inputs.allowed_tools }}
+      run: bash ${{ github.action_path }}/action/configure-mcp.sh
+
+    - name: Run agent cycle
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key }}
+        AGENTMAIL_API_KEY: ${{ inputs.agentmail_api_key }}
+        AGENTMAIL_ADDRESS: ${{ inputs.agentmail_address }}
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        claude --model "${{ inputs.model }}" \
+          --max-turns "${{ inputs.max_turns }}" \
+          --print \
+          "Execute your full agent cycle as defined in CLAUDE.md. Orient (read goals/tasks from Supabase), Decide (pick the highest priority incomplete task), Execute (do the work), Record (update Supabase with results, log entry, and learnings). Be concrete and produce real results."
+
+    - name: Commit and push artifacts
+      id: commit
+      shell: bash
+      env:
+        BRANCH: ${{ inputs.branch }}
+        WORKING_DIR: ${{ inputs.working_directory }}
+      run: bash ${{ github.action_path }}/action/commit-artifacts.sh
+
+    - name: Set outputs
+      id: outputs
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        if [ -f artifacts/state/latest-snapshot.json ]; then
+          CYCLE=$(python3 -c "import json; d=json.load(open('artifacts/state/latest-snapshot.json')); print(d.get('snapshot',{}).get('cycle_count','unknown'))" 2>/dev/null || echo "unknown")
+          echo "cycle_count=${CYCLE}" >> "$GITHUB_OUTPUT"
+        else
+          echo "cycle_count=unknown" >> "$GITHUB_OUTPUT"
+        fi
+
+        LAST_LOG=$(python3 -c "
+        import json
+        try:
+          d = json.load(open('artifacts/state/latest-snapshot.json'))
+          logs = d.get('recent_logs', [])
+          if logs:
+            print(logs[0].get('action', 'unknown'))
+          else:
+            print('unknown')
+        except: print('unknown')
+        " 2>/dev/null || echo "unknown")
+        echo "action_taken=${LAST_LOG}" >> "$GITHUB_OUTPUT"
+
+        SUMMARY=$(python3 -c "
+        import json
+        try:
+          d = json.load(open('artifacts/state/latest-snapshot.json'))
+          logs = d.get('recent_logs', [])
+          if logs:
+            print(logs[0].get('summary', 'No summary available'))
+          else:
+            print('No log entries found')
+        except: print('Could not parse snapshot')
+        " 2>/dev/null || echo "Cycle completed")
+        echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
