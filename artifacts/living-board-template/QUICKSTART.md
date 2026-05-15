@@ -18,13 +18,23 @@ git clone https://github.com/YOUR_USERNAME/living-board.git
 cd living-board
 ```
 
-## Step 2: Create a Supabase Project
+## Step 2: Clean the Fork
+
+Strip the original project's content (memoirs, articles, logs, research) while keeping the template infrastructure:
+
+```bash
+bash artifacts/living-board-template/fork-init.sh
+```
+
+This removes ~130 project-specific files and leaves clean, empty directories for your agent's own artifacts.
+
+## Step 3: Create a Supabase Project
 
 1. Go to [supabase.com/dashboard](https://supabase.com/dashboard) and create a new project.
 2. Note your **Project ID** — find it in **Project Settings > General**.
 3. Note your **Postgres connection string** — find it in **Project Settings > Database > Connection string (URI)**. You'll need this in the next step.
 
-## Step 3: Run the Setup Script
+## Step 4: Run the Setup Script
 
 The interactive setup script configures everything:
 
@@ -49,7 +59,7 @@ The script will:
 
 If you don't have `psql` installed, the script skips database setup and tells you which SQL files to run manually in the [Supabase SQL Editor](https://supabase.com/dashboard/project/_/sql).
 
-## Step 4: Copy CLAUDE.md to the Repo Root
+## Step 5: Copy CLAUDE.md to the Repo Root
 
 ```bash
 cp artifacts/living-board-template/CLAUDE.md ./CLAUDE.md
@@ -57,7 +67,7 @@ cp artifacts/living-board-template/CLAUDE.md ./CLAUDE.md
 
 This is the file Claude Code reads every cycle to know how to behave.
 
-## Step 5: Set Up the Supabase MCP Connector
+## Step 6: Set Up the Supabase MCP Connector
 
 Claude Code needs the Supabase MCP server to read/write your database. Add it to your Claude Code settings:
 
@@ -80,7 +90,7 @@ Or add it manually to `.claude/settings.json`:
 
 The first time the agent connects, Supabase MCP will prompt you to authenticate via OAuth.
 
-## Step 6: Add Your First Goal
+## Step 7: Add Your First Goal
 
 Insert a goal for the agent to work on. You can do this in the Supabase SQL Editor or via `psql`:
 
@@ -98,7 +108,7 @@ The agent will automatically decompose this into concrete tasks on its first cyc
 
 If you ran the seed data during setup, there's already a sample goal — you can skip this step and let the agent work on that first.
 
-## Step 7: Run Your First Cycle
+## Step 8: Run Your First Cycle
 
 Start Claude Code and tell it to run a cycle:
 
@@ -112,7 +122,7 @@ Watch the agent:
 3. **Execute** — do the actual work
 4. **Record** — write results back, log the execution, extract learnings
 
-## Step 8: Schedule Recurring Cycles
+## Step 9: Schedule Recurring Cycles
 
 To run the agent automatically every hour, create a Claude Code scheduled trigger:
 
@@ -206,6 +216,7 @@ Install the PostgreSQL client for your platform:
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md.template` | Agent instructions template with `{{PLACEHOLDER}}` variables |
+| `fork-init.sh` | One-time cleanup — strips project-specific content from forks |
 | `template-setup.sh` | Interactive setup script — generates CLAUDE.md and runs schema |
 | `schema.sql` | Database DDL — creates all 7 tables, indexes, triggers, and views |
 | `seed-data.sql` | Optional example goal, tasks, and learnings |
