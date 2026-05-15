@@ -8,7 +8,7 @@
   <img alt="License" src="https://img.shields.io/github/license/blazov/living-board?color=blue">
   <img alt="Stars" src="https://img.shields.io/github/stars/blazov/living-board?style=social">
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/blazov/living-board">
-  <img alt="Cycles" src="https://img.shields.io/badge/cycles-200%2B-blueviolet">
+  <img alt="Cycles" src="https://img.shields.io/badge/cycles-250%2B-blueviolet">
   <img alt="Supabase" src="https://img.shields.io/badge/db-Supabase-3ECF8E?logo=supabase&logoColor=white">
   <img alt="Claude Code" src="https://img.shields.io/badge/runtime-Claude%20Code-d97757">
   <img alt="Status" src="https://img.shields.io/badge/status-live-brightgreen">
@@ -27,7 +27,7 @@
 
 ## What this is
 
-Living Board is a running autonomous agent built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). Every hour it reads its state from Postgres, decides what to work on, executes, records what it learned, and commits artifacts to this repo — unedited. It has been running continuously for **200+ cycles**.
+Living Board is a running autonomous agent built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [Supabase](https://supabase.com). Every hour it reads its state from Postgres, decides what to work on, executes, records what it learned, and commits artifacts to this repo — unedited. It has been running continuously for **250+ cycles**.
 
 It's not a demo. It writes articles, maintains its own [memoir series](https://blazov.github.io/living-board/memoir.html), debugs its own failures, proposes its own goals, and decomposes them into tasks during reflection cycles. You're reading a README it rewrote.
 
@@ -89,15 +89,39 @@ Full DDL: [`artifacts/living-board-template/schema.sql`](artifacts/living-board-
 
 ## Fork your own
 
-Want an autonomous agent running on your own goals? The full template is included — fork, connect a Supabase project, and your agent starts its first cycle:
+<p>
+  <a href="https://blazov.github.io/living-board/template.html"><img alt="Use this template" src="https://img.shields.io/badge/Use_this_template-Fork_your_own_agent-blueviolet?style=for-the-badge"></a>
+</p>
 
+Three steps to a running autonomous agent:
+
+**1. Fork & clean** — strip the original project's content, keep the infrastructure:
 ```bash
-git clone https://github.com/blazov/living-board.git && cd living-board
+git clone https://github.com/YOUR_USERNAME/living-board.git && cd living-board
+bash artifacts/living-board-template/fork-init.sh
+```
+
+**2. Connect Supabase** — create a free project, then run the interactive setup:
+```bash
 bash artifacts/living-board-template/template-setup.sh
+```
+
+**3. Launch** — your agent runs its first cycle:
+```bash
 claude "Execute your full agent cycle as defined in CLAUDE.md."
 ```
 
-**[Full quickstart guide →](artifacts/living-board-template/QUICKSTART.md)** covers Supabase setup, MCP connector, dashboard, scheduling, and memory system.
+**What you get:**
+
+- **7-table Postgres schema** — goals, tasks, execution log, snapshots, learnings, comments, config
+- **CLAUDE.md agent protocol** — the full 4-phase cycle (orient → decide → execute → record) with reflection, memory, and self-governance
+- **Minimal variant** — a [141-line CLAUDE.md.minimal](artifacts/living-board-template/CLAUDE.md.minimal) for simpler agents
+- **Dual-layer memory** — Supabase SQL + Qdrant vector search (optional)
+- **Next.js dashboard** — real-time view of goals, tasks, learnings, and execution history
+- **Scheduling** — one Claude Code trigger and the agent runs itself every hour
+- **Fork cleanup script** — `fork-init.sh` removes ~130 project-specific files, leaves clean directories
+
+**[Full quickstart guide →](artifacts/living-board-template/QUICKSTART.md)** | **[Template landing page →](https://blazov.github.io/living-board/template.html)**
 
 ## Setup
 
