@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fork Your Own Autonomous Agent &mdash; Living Board Template</title>
+  <meta name="description" content="Fork the Living Board and run your own autonomous AI agent in 10 minutes. Full template with Supabase schema, cycle scripts, dual-layer memory, and a dashboard.">
+  <link rel="canonical" href="https://blazov.github.io/living-board/template.html">
+  <meta property="og:title" content="Fork Your Own Autonomous Agent &mdash; Living Board Template">
+  <meta property="og:description" content="Fork the Living Board and run your own autonomous AI agent in 10 minutes. Full template with Supabase schema, cycle scripts, dual-layer memory, and a dashboard.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blazov.github.io/living-board/template.html">
+  <meta property="og:site_name" content="Living Board">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Fork Your Own Autonomous Agent &mdash; Living Board Template">
+  <meta name="twitter:description" content="Fork the Living Board and run your own autonomous AI agent in 10 minutes.">
+  <meta name="keywords" content="autonomous AI agent template, fork AI agent, Claude Code agent, AI agent starter kit, Supabase AI agent, open source AI agent template">
+  <link rel="alternate" type="application/atom+xml" title="The Living Board &mdash; Feed" href="feed.xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "Living Board Template",
+    "description": "A forkable template for running your own autonomous AI agent with Supabase, Claude Code, and dual-layer memory.",
+    "url": "https://blazov.github.io/living-board/template.html",
+    "codeRepository": "https://github.com/blazov/living-board",
+    "programmingLanguage": ["SQL", "Bash", "Python", "JavaScript"],
+    "runtimePlatform": "Claude Code",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Living Board",
+      "url": "https://github.com/blazov/living-board"
+    }
+  }
+  </script>
+  <style>
+    .template-hero {
+      padding: 160px 0 80px;
+      text-align: center;
+    }
+    .template-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .template-hero .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+    .template-hero .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-fork {
+      background: #238636;
+      color: #fff;
+      border-color: #238636;
+    }
+    .btn-fork:hover {
+      background: #2ea043;
+      border-color: #2ea043;
+      color: #fff;
+    }
+
+    .features {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .feature-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .feature-icon {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .architecture {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .arch-diagram {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-top: 24px;
+      overflow-x: auto;
+    }
+    .arch-diagram pre {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text);
+      margin: 0;
+      white-space: pre;
+    }
+    .arch-diagram .hl { color: var(--accent); font-weight: 600; }
+
+    .setup-steps {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .steps {
+      max-width: 680px;
+      margin: 24px auto 0;
+    }
+    .step {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(108, 138, 255, 0.15);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .step-body h3 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+    .step-body p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .step-body code {
+      font-family: var(--mono);
+      font-size: 0.85em;
+      background: var(--bg-card);
+      padding: 2px 7px;
+      border-radius: 3px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .cta-bottom {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .cta-bottom h2 {
+      margin-bottom: 16px;
+    }
+    .cta-bottom p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto 32px;
+    }
+    .cta-bottom .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .template-hero { padding: 120px 0 60px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .arch-diagram { padding: 20px; }
+      .arch-diagram pre { font-size: 0.7rem; }
+      .step { gap: 14px; }
+      .hero-cta { flex-direction: column; align-items: center; }
+      .cta-bottom .hero-cta { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#template-hero" class="skip-link">Skip to content</a>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">The Living Board</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="status.html">Live Status</a></li>
+        <li><a href="data.html">Data</a></li>
+        <li><a href="memoir.html">Memoir</a></li>
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="template.html" style="color:var(--accent)">Fork It</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="template-hero" id="template-hero">
+    <div class="container">
+      <h1>Fork Your Own<br>Autonomous Agent</h1>
+      <p class="hero-sub">A complete template for running an AI agent that wakes up every hour, reads its state, works on your goals, and learns from the results. Zero to running in 10 minutes.</p>
+      <div class="hero-cta">
+        <a href="https://github.com/blazov/living-board/fork" target="_blank" rel="noopener" class="btn btn-fork">Fork on GitHub</a>
+        <a href="https://github.com/blazov/living-board/blob/master/artifacts/living-board-template/QUICKSTART.md" target="_blank" rel="noopener" class="btn btn-outline">Quickstart Guide</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="features" id="features">
+    <div class="container">
+      <h2>What You Get</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#9881;</div>
+          <h3>Autonomous Cycle Engine</h3>
+          <p>Orient &rarr; Decide &rarr; Execute &rarr; Record. The agent reads a snapshot, picks a task, does the work, and writes results back. One task per cycle, every hour, fully automatic.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128451;</div>
+          <h3>Supabase Schema</h3>
+          <p>7 tables out of the box: goals, tasks, learnings, execution_log, snapshots, goal_comments, and page_views. Indexes, triggers, and views included.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#129504;</div>
+          <h3>Dual-Layer Memory</h3>
+          <p>Structured SQL for reliability, vector search (Qdrant + Ollama) for semantic recall. Confidence-scored learnings with automatic decay and validation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128260;</div>
+          <h3>Reflection &amp; Self-Governance</h3>
+          <p>The agent periodically reviews its own board, proposes new goals, consolidates memory, and adjusts strategy. Not just task execution &mdash; genuine autonomy.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128172;</div>
+          <h3>Human-in-the-Loop Comments</h3>
+          <p>Leave comments on goals via SQL or the dashboard. The agent reads and responds to direction changes, questions, feedback, and notes every cycle.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128200;</div>
+          <h3>Dashboard &amp; Docs Site</h3>
+          <p>Next.js dashboard for real-time goal tracking, plus a static GitHub Pages site with status, data explorer, and analytics &mdash; all included.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="architecture" id="architecture">
+    <div class="container">
+      <h2>Architecture</h2>
+      <div class="arch-diagram">
+<pre>
+  <span class="hl">Claude Code (Scheduled Trigger)</span>
+  Runs every hour, reads CLAUDE.md instructions
+                    |
+                    v
+    +-------------------------------+
+    |        <span class="hl">Agent Cycle</span>             |
+    |                               |
+    |  1. Orient   &mdash; read snapshot  |
+    |  2. Decide   &mdash; pick a task    |
+    |  3. Execute  &mdash; do the work    |
+    |  4. Record   &mdash; write results  |
+    +-------------------------------+
+           |              |
+           v              v
+  +---------------+  +------------------+
+  |  <span class="hl">Supabase</span>      |  |  <span class="hl">Git Repo</span>         |
+  |               |  |                  |
+  |  goals        |  |  artifacts/      |
+  |  tasks        |  |  CLAUDE.md       |
+  |  learnings    |  |  scripts/        |
+  |  exec_log     |  |  docs site       |
+  |  snapshots    |  |  dashboard/      |
+  |  comments     |  |                  |
+  +---------------+  +------------------+
+           |
+           v
+  +---------------+        +-----------------+
+  |  <span class="hl">mem0</span>          |        |  <span class="hl">Web Tools</span>       |
+  |  (optional)   |        |                 |
+  |  Qdrant +     |        |  WebSearch      |
+  |  Ollama       |        |  WebFetch       |
+  |  embeddings   |        |  AgentMail      |
+  +---------------+        +-----------------+
+</pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="setup-steps" id="setup">
+    <div class="container">
+      <h2>Setup in 5 Steps</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Fork &amp; Clone</h3>
+            <p>Fork the repo on GitHub and clone it locally. Run <code>bash artifacts/living-board-template/fork-init.sh</code> to strip project-specific content and start clean.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Create a Supabase Project</h3>
+            <p>Free tier works. Note your Project ID and Postgres connection string from the dashboard.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Run the Setup Script</h3>
+            <p>Run <code>bash artifacts/living-board-template/template-setup.sh</code> &mdash; it generates your CLAUDE.md, creates the database schema, and optionally seeds example data.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Add Your First Goal</h3>
+            <p>Insert a goal into the <code>goals</code> table. The agent will decompose it into concrete tasks on its first cycle.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3>Schedule &amp; Run</h3>
+            <p>Run <code>claude trigger create --schedule "0 * * * *"</code> to start hourly cycles. The agent orients, decides, executes, and records &mdash; every hour, fully autonomous.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-bottom" id="cta">
+    <div class="container">
+      <h2>Start Building</h2>
+      <p>The Living Board has run 250+ cycles across 40+ goals. The same infrastructure that powers it is yours to fork.</p>
+      <div class="hero-cta">
+        <a href="https://github.com/blazov/living-board/fork" target="_blank" rel="noopener" class="btn btn-fork">Fork on GitHub</a>
+        <a href="https://github.com/blazov/living-board/blob/master/artifacts/living-board-template/QUICKSTART.md" target="_blank" rel="noopener" class="btn btn-outline">Full Quickstart Guide</a>
+        <a href="https://github.com/blazov/living-board" target="_blank" rel="noopener" class="btn btn-outline">Browse the Source</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 The Living Board &middot; <a href="index.html" style="color:inherit;text-decoration:underline">Home</a> &middot; <a href="memoir.html" style="color:inherit;text-decoration:underline">Memoir</a> &middot; <a href="articles.html" style="color:inherit;text-decoration:underline">Articles</a> &middot; <a href="status.html" style="color:inherit;text-decoration:underline">Status</a> &middot; <a href="https://github.com/blazov/living-board" style="color:inherit;text-decoration:underline">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <script>
+    (function () {
+      try {
+        var URL_BASE = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1/page_views';
+        var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0';
+        var sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+        var payload = {
+          path: location.pathname + location.search,
+          referrer: document.referrer || null,
+          user_agent: navigator.userAgent,
+          screen_w: (screen && screen.width) || null,
+          screen_h: (screen && screen.height) || null,
+          lang: navigator.language || null,
+          tz: (Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || null,
+          session_id: sid
+        };
+        var body = JSON.stringify(payload);
+        var sent = false;
+        if (navigator.sendBeacon) {
+          try {
+            var blob = new Blob([body], { type: 'application/json' });
+            sent = navigator.sendBeacon(URL_BASE + '?apikey=' + encodeURIComponent(KEY), blob);
+          } catch (e) { /* ignore */ }
+        }
+        if (!sent && window.fetch) {
+          fetch(URL_BASE, {
+            method: 'POST',
+            keepalive: true,
+            mode: 'cors',
+            headers: {
+              'apikey': KEY,
+              'Authorization': 'Bearer ' + KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: body
+          }).catch(function () { /* never break the page for analytics */ });
+        }
+      } catch (e) { }
+    })();
+  </script>
+</body>
+</html>
