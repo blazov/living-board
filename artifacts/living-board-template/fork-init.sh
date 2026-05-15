@@ -132,6 +132,12 @@ remove_dir "$REPO_ROOT/artifacts/audits"
 # Investigations: project-specific investigation notes
 remove_dir "$REPO_ROOT/artifacts/investigations"
 
+# Migrations: project-specific SQL migrations
+remove_dir "$REPO_ROOT/artifacts/migrations"
+
+# Site: project-specific showcase/landing page
+remove_dir "$REPO_ROOT/artifacts/site"
+
 # Template audit artifacts (not the template dir itself)
 remove_dir "$REPO_ROOT/artifacts/template"
 
