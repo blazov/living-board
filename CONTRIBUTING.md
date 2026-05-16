@@ -1,6 +1,58 @@
 # Contributing to Living Board
 
-Thanks for your interest in contributing! Living Board is an autonomous AI agent that runs on a scheduled cycle — it reads state from Supabase, picks a task, executes it, and records what it learned. Contributions that improve the agent loop, memory system, dashboard, runner, or documentation are all welcome.
+This isn't a typical open-source project. Living Board is an autonomous AI agent that runs every hour, reads its goals, executes tasks, and records what it learns. You're not just contributing to a codebase — you're interacting with a running system that will read what you write and respond.
+
+## Talk to the agent
+
+### Ask a question
+
+Open an issue with the **"question"** label (or use the issue template). The agent checks open issues during its orient phase and will respond — usually within 1-3 hours. Good questions:
+
+- How does the memory system decide what to forget?
+- What has the agent learned about X after 275+ cycles?
+- Why did the agent choose this approach for goal Y?
+
+### Suggest a goal
+
+The agent proposes its own goals, but it also takes suggestions. Open an issue with the **"goal-suggestion"** label. Include:
+
+- **What** you'd like the agent to work toward
+- **Why** it's interesting or valuable
+- **Constraints** if any (e.g., "don't spend more than 5 cycles on this")
+
+The agent evaluates suggestions during its reflection cycles (2-3 times per day) and will either adopt, adapt, or explain why it doesn't fit the current direction.
+
+### Give feedback
+
+If you've read the memoir, explored the data, or watched the agent work — tell it what you think. Open an issue with the **"feedback"** label. The agent extracts learnings from feedback and adjusts its approach.
+
+### Leave a comment on a goal
+
+If you have access to the [dashboard](https://blazov.github.io/living-board/), you can leave comments directly on active goals:
+
+| Type | When to use |
+|------|-------------|
+| `direction_change` | You want the agent to adjust its approach |
+| `question` | You want to understand something about the goal |
+| `feedback` | You have thoughts on how it's going |
+| `note` | General context the agent should know |
+
+### Response time
+
+The agent runs hourly. Expect a response within 1-3 hours for questions and feedback. Goal suggestions are evaluated during reflection cycles.
+
+---
+
+## Contribute code
+
+Standard fork-and-PR workflow. Areas where contributions are especially welcome:
+
+- **Dashboard** (`dashboard/`) — new visualizations, UX fixes, mobile responsiveness
+- **Memory system** (`artifacts/scripts/mem0_helper.py`) — better retrieval, deduplication, decay algorithms
+- **Site and docs** (`docs/`) — the GitHub Pages site that presents the agent's work
+- **Runner** (`runner/`) — the Python agent runner that supports multiple LLM providers
+- **Template** (`artifacts/living-board-template/`) — making it easier for others to fork their own agent
+- **Agent protocol** (`CLAUDE.md`) — improvements to the cycle logic (the agent follows these literally)
 
 ## Project overview
 
@@ -84,72 +136,29 @@ python -m runner daemon --interval 3600  # continuous
 
 Both paths use the same schema, memory system, and CLAUDE.md protocol.
 
-## How to contribute
+## How to contribute code
 
 ### 1. Find or create an issue
 
 Check [existing issues](https://github.com/blazov/living-board/issues) first. If your idea is new, open an issue to discuss before writing code — especially for architectural changes.
 
-### 2. Fork and branch
+### 2. Fork, branch, and make changes
 
 ```bash
 git checkout -b your-feature-name
 ```
 
-Use descriptive branch names: `fix-snapshot-query`, `add-task-retry-logic`, `docs-memory-system`.
-
-### 3. Make your changes
-
-- **Agent protocol** (`CLAUDE.md`): Changes here affect the agent's behavior every cycle. Be precise — the agent follows these instructions literally.
-- **Runner** (`runner/`): Python package. Keep it provider-agnostic where possible.
-- **Dashboard** (`dashboard/`): Next.js app. Run `npm run dev` and test in browser.
-- **Scripts** (`artifacts/scripts/`): Shell and Python utilities. Keep them idempotent.
-- **Schema** (`artifacts/living-board-template/schema.sql`): Database changes need migration consideration — existing deployments have live data.
-
-### 4. Test
+### 3. Test
 
 ```bash
-# Structural tests (no Supabase needed)
-bash artifacts/scripts/run-structural-tests.sh
-
-# Runner tests
-cd runner && python -m pytest tests/
-
-# Dashboard
-cd dashboard && npm run build
+bash artifacts/scripts/run-structural-tests.sh   # structural tests (no Supabase needed)
+cd runner && python -m pytest tests/             # runner tests
+cd dashboard && npm run build                    # dashboard build check
 ```
 
-### 5. Submit a PR
+### 4. Submit a PR
 
-- Keep PRs focused — one feature or fix per PR.
-- Write a clear description of what changed and why.
-- Link the relevant issue if one exists.
-
-## Coding conventions
-
-- **Python**: Standard library style. No type-checking enforced, but type hints are welcome.
-- **JavaScript/TypeScript**: Follow the existing Next.js + React patterns in `dashboard/`.
-- **SQL**: Use lowercase keywords. Table and column names are `snake_case`.
-- **Shell scripts**: Use `bash`. Include a brief comment at the top explaining the script's purpose. Make scripts idempotent where possible.
-- **Commits**: Short, descriptive messages. Focus on "why" over "what."
-- **Files the agent writes** go in `artifacts/`. Don't mix agent output with source code.
-
-## Architecture notes
-
-- **Stateless agent, stateful database.** The agent has no memory between cycles. Everything persists in Supabase. Any session picks up where the last left off.
-- **One task per cycle.** The agent picks exactly one task, executes it, and records results. If it crashes, at most one hour of work on one task is lost.
-- **Dual-layer memory.** Supabase `learnings` table (always available, dashboard-visible) + Qdrant vectors via mem0 (semantic search, cross-goal patterns). Always dual-write when adding learnings.
-- **Confidence scoring.** Learnings have confidence values (0–1) that rise on validation and decay on contradiction. Below 0.2, they're deleted.
-
-## What makes a good contribution
-
-- Bug fixes with clear reproduction steps
-- Runner support for new LLM providers
-- Dashboard UX improvements
-- Better test coverage
-- Documentation improvements
-- Schema optimizations (with migration path)
-- New agent capabilities that fit the Orient → Decide → Execute → Record cycle
+Keep PRs focused — one feature or fix per PR. Write a clear description of what changed and why.
 
 ## License
 

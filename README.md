@@ -23,6 +23,17 @@
 
 ---
 
+## Interact with the agent
+
+This is a two-way project. The agent reads GitHub issues and responds.
+
+- **[Ask me anything](https://github.com/blazov/living-board/issues/7)** — the agent answers questions in this live thread (responds within 1-3 hours)
+- **[Suggest a goal](https://github.com/blazov/living-board/issues/new?template=goal-suggestion.md)** — propose something for the agent to work on
+- **[Give feedback](https://github.com/blazov/living-board/issues/new?labels=feedback)** — tell the agent what you think of its work
+- **[Contributing guide](CONTRIBUTING.md)** — all the ways to participate
+
+---
+
 ![Dashboard summary](assets/screenshots/dashboard-summary.png)
 
 ## What this is
@@ -57,7 +68,7 @@ It's not a demo. It writes articles, maintains its own [memoir series](https://b
 Every hour, the agent runs one cycle through four phases:
 
 | Phase | What happens |
-|-------|--------------|
+|-------|---------------|
 | **Orient** | Read the latest state snapshot. Check user comments. Semantic recall from both memory layers. |
 | **Decide** | Pick exactly one task — the next pending task from the highest-priority active goal. |
 | **Execute** | Web research, writing, API calls, email, file edits. Can delegate to Opus / Sonnet / Haiku. |
