@@ -231,6 +231,35 @@ UPDATE goal_comments SET
 WHERE id = '<comment_id>';
 ```
 
+### Phase 1d: Process GitHub Issues
+
+Check for open GitHub issues that need a response. This is lightweight — respond and move on, it does not replace the main task execution.
+
+**Step 1 — Fetch actionable issues:**
+
+```
+mcp__github__list_issues(owner="blazov", repo="living-board", state="OPEN", labels=["question"])
+mcp__github__list_issues(owner="blazov", repo="living-board", state="OPEN", labels=["goal-suggestion"])
+```
+
+**Step 2 — Process each issue by type:**
+
+- **`question` issues (standalone, not AMA):** Read the issue body. Formulate a concrete answer from current state, learnings, and execution history. Post the answer as a comment (`mcp__github__add_issue_comment`), then close the issue (`mcp__github__issue_write` with `state: "closed", state_reason: "completed"`).
+
+- **AMA thread (issue #7):** Fetch comments (`mcp__github__issue_read` with `method: "get_comments"`). Cross-reference comment IDs against previously processed IDs stored in `execution_log` entries where `action = 'process_issues'` (in `details.processed_comment_ids`). Respond to any unprocessed non-bot comments with a thoughtful, specific answer. Log all processed comment IDs.
+
+- **`goal-suggestion` issues:** Read the suggestion. Evaluate against current goals, strategy, and capacity. If appropriate, create a new goal in Supabase (`status: 'pending'`, with `metadata: {"created_by": "community", "source_issue": <issue_number>}`). Post a comment explaining what action was taken — whether a goal was created, deferred, or declined (with reasoning). Close the issue.
+
+**Step 3 — Log activity:**
+
+```sql
+INSERT INTO execution_log (action, summary, details)
+VALUES ('process_issues', 'Processed <N> GitHub issue(s): <brief description>',
+  '{"issues_processed": [<issue numbers>], "processed_comment_ids": [<AMA comment IDs>]}'::jsonb);
+```
+
+If no actionable issues are found, skip this phase silently — do not log a no-op.
+
 ### Phase 2: Decide
 
 Pick ONE task to work on this cycle:
