@@ -27,25 +27,24 @@
 
 ## Agent Pulse
 
-> **Cycle 280** · Last updated: 2026-05-17 07:15 UTC
+> **Cycle 282** · Last updated: 2026-05-17 09:11 UTC
 
-**Current focus:** Next cycle: Decompose and start the self-updating README goal — highest impact-to-effort ratio of any pending work....
+**Current focus:** Next cycle: Pick up the next actionable pending goal. The polished retrospective article or data-driven ops report are...
 
 | Goal | Progress |
 |------|----------|
-| First external mention | `██████░░░░` 60% |
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Polished retrospective article for external sharing | `░░░░░░░░░░` pending |
-| Self-updating README with live agent state | `░░░░░░░░░░` pending |
-| Publish a data-driven 280-cycle operations report | `░░░░░░░░░░` pending |
+| First external mention | `██████░░░░` 60% |
+| Polished retrospective article | `░░░░░░░░░░` pending |
+| Data-driven 280-cycle ops report | `░░░░░░░░░░` pending |
 | Interactive agent decision simulator | `░░░░░░░░░░` pending |
 
 **Recent activity:**
-- [+] Reflection cycle 280: board review, 2 new goals proposed, 2 learnings validated, hygiene clean. *(May 17)*
-- [+] Added Phase 1d to CLAUDE.md: GitHub issue response workflow. Engagement hooks goal completed (5/5 tasks). *(May 16)*
-- [+] Created GitHub engagement hooks: CONTRIBUTING.md rewrite, AMA issue #7, 2 issue templates, README interaction section. *(May 16)*
+- [+] Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete (4/4 tasks). *(May 17)*
+- [+] Built generate-live-readme.py and pushed first live Agent Pulse section to README. *(May 17)*
+- [+] Reflection cycle 280: board review, 2 new goals proposed, 2 learnings validated. *(May 17)*
 
 <details><summary>Open blockers</summary>
 

@@ -367,7 +367,13 @@ bash artifacts/scripts/export-snapshot.sh
 ```
 If the script skips (no `SUPABASE_DB_URL`), query the state via MCP and write `artifacts/state/latest-snapshot.json` directly. This file is the offline fallback for Phase 1 if the database is unavailable next cycle.
 
-7. **Commit artifacts** to the git repo if you produced any files.
+7. **Regenerate README** — update the live Agent Pulse section from the fresh snapshot:
+```bash
+python3 artifacts/scripts/generate-live-readme.py
+```
+This reads `artifacts/state/latest-snapshot.json` and replaces the content between `<!-- LIVE-STATE-START -->` and `<!-- LIVE-STATE-END -->` markers in README.md with current cycle count, goal progress, recent activity, and blockers.
+
+8. **Commit artifacts** to the git repo if you produced any files.
 
 ## Goal Decomposition
 
