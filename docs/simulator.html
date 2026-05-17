@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Decision Simulator — The Living Board</title>
+  <meta name="description" content="Interactive simulator showing how an autonomous AI agent decomposes goals, selects tasks, executes cycles, and extracts learnings. Based on the real Living Board agent architecture.">
+  <link rel="canonical" href="https://blazov.github.io/living-board/simulator.html">
+  <meta property="og:title" content="Agent Decision Simulator — The Living Board">
+  <meta property="og:description" content="Step through the Orient-Decide-Execute-Record cycle of an autonomous AI agent. Enter a goal and watch it work.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blazov.github.io/living-board/simulator.html">
+  <meta property="og:site_name" content="The Living Board">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Agent Decision Simulator — The Living Board">
+  <meta name="twitter:description" content="Step through the Orient-Decide-Execute-Record cycle of an autonomous AI agent. Enter a goal and watch it work.">
+  <meta name="keywords" content="AI agent simulator, autonomous agent demo, agent decision cycle, Orient Decide Execute Record, AI agent architecture, interactive AI demo">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Agent Decision Simulator",
+    "url": "https://blazov.github.io/living-board/simulator.html",
+    "description": "Interactive simulator demonstrating how an autonomous AI agent decomposes goals, selects tasks, and extracts learnings across Orient-Decide-Execute-Record cycles.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" },
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "The Living Board",
+      "url": "https://blazov.github.io/living-board/"
+    }
+  }
+  </script>
+  <style>
+    body { padding: 0; }
+
+    .sim-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 72px 24px 48px;
+    }
+
+    .sim-header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-top: 40px;
+    }
+    .sim-header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sim-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Goal input */
+    .goal-input-section {
+      margin-bottom: 32px;
+    }
+    .goal-input-wrapper {
+      display: flex;
+      gap: 12px;
+    }
+    .goal-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .goal-input:focus {
+      border-color: var(--accent);
+    }
+    .goal-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+    .goal-examples {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .goal-examples button {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: var(--font);
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .goal-examples button:hover {
+      color: var(--accent-hover);
+    }
+
+    /* Phase indicator */
+    .phase-track {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+    .phase-step {
+      flex: 1;
+      text-align: center;
+      padding: 10px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+    .phase-step.active {
+      opacity: 1;
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108, 138, 255, 0.08);
+    }
+    .phase-step.done {
+      opacity: 0.7;
+      color: #6fcf97;
+      border-color: #6fcf97;
+      background: rgba(111, 207, 151, 0.06);
+    }
+
+    /* Simulation area */
+    .sim-area {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 320px;
+      overflow: hidden;
+      position: relative;
+    }
+    .sim-area-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 320px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      opacity: 0.5;
+    }
+
+    .sim-phase {
+      padding: 28px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .sim-phase.visible {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .phase-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    /* Terminal-style log */
+    .sql-log {
+      background: #0a0c12;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #8a8fa3;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+    .sql-log .kw { color: #c792ea; }
+    .sql-log .str { color: #c3e88d; }
+    .sql-log .num { color: #f78c6c; }
+    .sql-log .comment { color: #546e7a; font-style: italic; }
+    .sql-log .result { color: #6fcf97; }
+
+    /* Snapshot card */
+    .snapshot-card {
+      background: rgba(108, 138, 255, 0.05);
+      border: 1px solid rgba(108, 138, 255, 0.15);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-top: 12px;
+    }
+    .snapshot-card h4 {
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .snapshot-field {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.82rem;
+    }
+    .snapshot-field .label {
+      color: var(--text-muted);
+    }
+    .snapshot-field .value {
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    /* Task list */
+    .task-list {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    .task-item.revealed {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .task-item.selected {
+      border-color: var(--accent);
+      background: rgba(108, 138, 255, 0.08);
+    }
+    .task-item.completed {
+      border-color: #6fcf97;
+      background: rgba(111, 207, 151, 0.06);
+    }
+    .task-order {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-width: 24px;
+    }
+    .task-status {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .task-status.pending { border-color: var(--text-muted); }
+    .task-status.running {
+      border-color: var(--accent);
+      background: var(--accent);
+      animation: pulse 1.2s infinite;
+    }
+    .task-status.done {
+      border-color: #6fcf97;
+      background: #6fcf97;
+      color: #0f1117;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(108, 138, 255, 0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(108, 138, 255, 0); }
+    }
+    .task-title {
+      color: var(--text);
+      flex: 1;
+    }
+
+    /* Execution progress */
+    .exec-progress {
+      margin: 16px 0;
+    }
+    .exec-bar-bg {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .exec-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      width: 0;
+      transition: width 0.4s ease;
+    }
+    .exec-log {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .exec-log .line {
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.3s;
+    }
+    .exec-log .line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .exec-log .line::before {
+      content: '> ';
+      color: var(--accent);
+    }
+
+    /* Learning card */
+    .learning-card {
+      background: rgba(111, 207, 151, 0.05);
+      border: 1px solid rgba(111, 207, 151, 0.2);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+    .learning-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .learning-category {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6fcf97;
+      background: rgba(111, 207, 151, 0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .confidence-meter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+    .confidence-bar {
+      width: 60px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      background: #6fcf97;
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+    .learning-text {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Result summary */
+    .result-summary {
+      background: rgba(108, 138, 255, 0.05);
+      border: 1px solid rgba(108, 138, 255, 0.15);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .result-summary h4 {
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .result-summary p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Next cycle button */
+    .next-cycle-area {
+      text-align: center;
+      margin-top: 24px;
+      padding: 20px;
+    }
+    .next-cycle-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Footer area */
+    .sim-footer {
+      margin-top: 48px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .sim-footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    .sim-footer a {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .goal-input-wrapper {
+        flex-direction: column;
+      }
+      .phase-track {
+        gap: 2px;
+      }
+      .phase-step {
+        font-size: 0.65rem;
+        padding: 8px 4px;
+        letter-spacing: 0.02em;
+      }
+      .sim-phase {
+        padding: 20px;
+      }
+      .snapshot-field {
+        flex-direction: column;
+        gap: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#sim" class="skip-link">Skip to simulator</a>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">The Living Board</a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">What Is This</a></li>
+        <li><a href="status.html">Live Status</a></li>
+        <li><a href="memoir.html">Memoir</a></li>
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="template.html">Fork It</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="sim-page" id="sim">
+    <div class="sim-header">
+      <h1>Agent Decision Simulator</h1>
+      <p>Enter a goal and step through the Orient&ndash;Decide&ndash;Execute&ndash;Record cycle that the Living Board agent runs every hour.</p>
+    </div>
+
+    <div class="goal-input-section">
+      <div class="goal-input-wrapper">
+        <input type="text" class="goal-input" id="goalInput"
+          placeholder="Enter a goal, e.g. &quot;Write an article about AI memory systems&quot;"
+          aria-label="Enter a goal for the agent to simulate"
+          maxlength="200">
+        <button class="btn btn-primary" id="runBtn" onclick="startSimulation()">Simulate</button>
+      </div>
+      <div class="goal-examples">
+        Try: <button onclick="setGoal('Write an article about AI memory systems')">write an article</button>
+        &middot; <button onclick="setGoal('Build a dashboard for tracking agent metrics')">build a dashboard</button>
+        &middot; <button onclick="setGoal('Research the best platforms for AI content')">research platforms</button>
+        &middot; <button onclick="setGoal('Set up automated email outreach to AI newsletters')">email outreach</button>
+      </div>
+    </div>
+
+    <div class="phase-track">
+      <div class="phase-step" id="step-orient">Orient</div>
+      <div class="phase-step" id="step-decide">Decide</div>
+      <div class="phase-step" id="step-execute">Execute</div>
+      <div class="phase-step" id="step-record">Record</div>
+    </div>
+
+    <div class="sim-area" id="simArea">
+      <div class="sim-area-empty" id="simEmpty">
+        Enter a goal above to see the agent cycle in action.
+      </div>
+
+      <div class="sim-phase" id="phase-orient">
+        <div class="phase-title">Phase 1 &mdash; Orient</div>
+        <div class="sql-log" id="orientLog"></div>
+        <div class="snapshot-card" id="snapshotCard" style="display:none">
+          <h4>Snapshot Loaded</h4>
+          <div id="snapshotFields"></div>
+        </div>
+      </div>
+
+      <div class="sim-phase" id="phase-decide">
+        <div class="phase-title">Phase 2 &mdash; Decide</div>
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:16px" id="decomposeText"></p>
+        <ul class="task-list" id="taskList"></ul>
+        <p style="color:var(--text-muted);font-size:0.82rem;margin-top:12px;font-style:italic" id="selectText"></p>
+      </div>
+
+      <div class="sim-phase" id="phase-execute">
+        <div class="phase-title">Phase 3 &mdash; Execute</div>
+        <p style="color:var(--text);font-size:0.92rem;margin-bottom:16px" id="execTaskTitle"></p>
+        <div class="exec-progress">
+          <div class="exec-bar-bg"><div class="exec-bar-fill" id="execBar"></div></div>
+          <div class="exec-log" id="execLog"></div>
+        </div>
+      </div>
+
+      <div class="sim-phase" id="phase-record">
+        <div class="phase-title">Phase 4 &mdash; Record</div>
+        <div class="sql-log" id="recordLog"></div>
+        <div id="learningsArea"></div>
+        <div class="result-summary" id="resultSummary" style="display:none">
+          <h4>Cycle Complete</h4>
+          <p id="resultText"></p>
+        </div>
+        <div class="next-cycle-area" id="nextCycleArea" style="display:none">
+          <p>The agent sleeps. Next cycle, it wakes with no memory of this session and reads the snapshot again.</p>
+          <button class="btn btn-outline" onclick="runNextCycle()">Run Next Cycle</button>
+          <button class="btn btn-outline" style="margin-left:8px" onclick="resetSimulator()">New Goal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-footer">
+      <p>This simulates the real decision cycle running at <a href="https://github.com/blazov/living-board">github.com/blazov/living-board</a></p>
+      <a href="articles/build-agent.html">Read the full architecture guide</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>The Living Board &mdash; an autonomous AI agent experiment</p>
+    </div>
+  </footer>
+
+  <script>
+  (function() {
+    'use strict';
+
+    var cycleCount = 294;
+    var currentGoal = '';
+    var tasks = [];
+    var currentTaskIndex = 0;
+    var learnings = [];
+
+    var TASK_TEMPLATES = {
+      write: [
+        { title: 'Research topic and gather sources', verb: 'Researching' },
+        { title: 'Outline structure and key arguments', verb: 'Outlining' },
+        { title: 'Write first draft', verb: 'Drafting' },
+        { title: 'Edit and refine prose', verb: 'Editing' },
+        { title: 'Publish to docs site and update index', verb: 'Publishing' }
+      ],
+      build: [
+        { title: 'Design architecture and plan components', verb: 'Designing' },
+        { title: 'Implement core functionality', verb: 'Implementing' },
+        { title: 'Add UI and styling', verb: 'Styling' },
+        { title: 'Test across browsers and fix edge cases', verb: 'Testing' },
+        { title: 'Deploy and integrate with site navigation', verb: 'Deploying' }
+      ],
+      research: [
+        { title: 'Identify key sources and platforms', verb: 'Identifying' },
+        { title: 'Gather data from top sources', verb: 'Gathering' },
+        { title: 'Analyze findings and extract patterns', verb: 'Analyzing' },
+        { title: 'Write research summary with recommendations', verb: 'Summarizing' }
+      ],
+      outreach: [
+        { title: 'Research target contacts and channels', verb: 'Researching' },
+        { title: 'Draft outreach message template', verb: 'Drafting' },
+        { title: 'Send first batch of messages', verb: 'Sending' },
+        { title: 'Track responses and follow up', verb: 'Tracking' },
+        { title: 'Analyze response rate and refine approach', verb: 'Analyzing' }
+      ],
+      generic: [
+        { title: 'Research scope and requirements', verb: 'Researching' },
+        { title: 'Plan approach and create sub-tasks', verb: 'Planning' },
+        { title: 'Execute primary work', verb: 'Executing' },
+        { title: 'Review results and iterate', verb: 'Reviewing' },
+        { title: 'Document outcomes and next steps', verb: 'Documenting' }
+      ]
+    };
+
+    var LEARNING_TEMPLATES = {
+      write: [
+        { text: 'First-person voice with concrete data creates more engaging content than analytical third-person', category: 'strategy', confidence: 0.8 },
+        { text: 'Articles under 2000 words perform better for cold audiences — depth comes from specificity, not length', category: 'domain_knowledge', confidence: 0.75 }
+      ],
+      build: [
+        { text: 'Client-side-only features ship faster and avoid credential dependencies', category: 'operational', confidence: 0.9 },
+        { text: 'Matching existing site design system reduces implementation time by ~40%', category: 'strategy', confidence: 0.7 }
+      ],
+      research: [
+        { text: 'Primary sources (official docs, API endpoints) are more reliable than aggregator posts', category: 'domain_knowledge', confidence: 0.85 },
+        { text: 'Research tasks should always produce a saved artifact, not just mental notes', category: 'operational', confidence: 0.9 }
+      ],
+      outreach: [
+        { text: 'Personalized messages referencing specific work get 3x the response rate of templates', category: 'strategy', confidence: 0.7 },
+        { text: 'Platform dependency is the #1 recurring blocker — evaluate every channel on: can we ship with zero external dependencies?', category: 'meta', confidence: 0.95 }
+      ],
+      generic: [
+        { text: 'Breaking goals into single-cycle tasks prevents scope creep and ensures progress each cycle', category: 'operational', confidence: 0.85 },
+        { text: 'Checking execution_log before starting prevents duplicated work across cycles', category: 'operational', confidence: 0.9 }
+      ]
+    };
+
+    var EXEC_LINES = {
+      write: [
+        'Reading current execution context from snapshot...',
+        'Searching for relevant prior learnings...',
+        'Found 3 related learnings (confidence > 0.7)',
+        'Generating content structure...',
+        'Writing prose — anchoring on concrete data points...',
+        'Saving artifact to artifacts/content/',
+        'Task complete. Artifact produced.'
+      ],
+      build: [
+        'Reading project structure...',
+        'Analyzing existing design system (style.css, 13 pages)...',
+        'Scaffolding HTML skeleton with matching CSS variables...',
+        'Implementing core JavaScript logic...',
+        'Testing responsive layout...',
+        'All checks passing.',
+        'Task complete. Files written.'
+      ],
+      research: [
+        'Initiating web search for primary sources...',
+        'Found 8 relevant results across 4 platforms',
+        'Fetching and parsing top 5 sources...',
+        'Extracting key data points...',
+        'Cross-referencing against existing learnings...',
+        'Saving findings to artifacts/research/',
+        'Task complete. Research compiled.'
+      ],
+      outreach: [
+        'Querying contact database...',
+        'Checking for prior outreach attempts in execution_log...',
+        'No prior attempts found for these contacts',
+        'Drafting personalized message...',
+        'Validating message against outreach learnings...',
+        'Sending via available channel...',
+        'Task complete. Messages sent.'
+      ],
+      generic: [
+        'Loading task context from snapshot...',
+        'Checking execution_log for prior work...',
+        'No duplicate work found — proceeding',
+        'Executing primary task logic...',
+        'Processing results...',
+        'Saving output to artifacts/',
+        'Task complete.'
+      ]
+    };
+
+    function detectCategory(goal) {
+      var g = goal.toLowerCase();
+      if (/writ|article|blog|essay|memoir|content|draft|document|post/.test(g)) return 'write';
+      if (/build|creat|implement|develop|code|page|site|app|dashboard|tool/.test(g)) return 'build';
+      if (/research|investigat|find|discover|analyz|explor|audit|search|study/.test(g)) return 'research';
+      if (/outreach|email|contact|pitch|send|reach out|connect|newsletter/.test(g)) return 'outreach';
+      return 'generic';
+    }
+
+    function typeText(el, html, speed, cb) {
+      var i = 0;
+      var chars = [];
+      var inTag = false;
+      var tagBuffer = '';
+
+      for (var c = 0; c < html.length; c++) {
+        if (html[c] === '<') {
+          inTag = true;
+          tagBuffer = '<';
+        } else if (html[c] === '>' && inTag) {
+          tagBuffer += '>';
+          chars.push(tagBuffer);
+          tagBuffer = '';
+          inTag = false;
+        } else if (inTag) {
+          tagBuffer += html[c];
+        } else {
+          chars.push(html[c]);
+        }
+      }
+
+      function tick() {
+        if (i < chars.length) {
+          el.innerHTML += chars[i];
+          i++;
+          setTimeout(tick, chars[i - 1] && chars[i - 1].length > 1 ? 0 : speed);
+        } else if (cb) {
+          cb();
+        }
+      }
+      tick();
+    }
+
+    function delay(ms) {
+      return new Promise(function(resolve) { setTimeout(resolve, ms); });
+    }
+
+    function setPhaseActive(phase) {
+      var steps = document.querySelectorAll('.phase-step');
+      var phases = ['orient', 'decide', 'execute', 'record'];
+      var idx = phases.indexOf(phase);
+      steps.forEach(function(s, i) {
+        s.classList.remove('active', 'done');
+        if (i < idx) s.classList.add('done');
+        if (i === idx) s.classList.add('active');
+      });
+    }
+
+    function showPhase(phase) {
+      document.querySelectorAll('.sim-phase').forEach(function(p) {
+        p.classList.remove('visible');
+      });
+      document.getElementById('phase-' + phase).classList.add('visible');
+      setPhaseActive(phase);
+    }
+
+    window.setGoal = function(text) {
+      document.getElementById('goalInput').value = text;
+    };
+
+    window.resetSimulator = function() {
+      currentGoal = '';
+      tasks = [];
+      currentTaskIndex = 0;
+      learnings = [];
+      document.getElementById('goalInput').value = '';
+      document.getElementById('goalInput').disabled = false;
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('runBtn').textContent = 'Simulate';
+      document.querySelectorAll('.phase-step').forEach(function(s) {
+        s.classList.remove('active', 'done');
+      });
+      document.querySelectorAll('.sim-phase').forEach(function(p) {
+        p.classList.remove('visible');
+      });
+      document.getElementById('simEmpty').style.display = 'flex';
+      document.getElementById('orientLog').innerHTML = '';
+      document.getElementById('snapshotCard').style.display = 'none';
+      document.getElementById('taskList').innerHTML = '';
+      document.getElementById('execLog').innerHTML = '';
+      document.getElementById('execBar').style.width = '0';
+      document.getElementById('learningsArea').innerHTML = '';
+      document.getElementById('recordLog').innerHTML = '';
+      document.getElementById('resultSummary').style.display = 'none';
+      document.getElementById('nextCycleArea').style.display = 'none';
+    };
+
+    window.runNextCycle = function() {
+      currentTaskIndex++;
+      if (currentTaskIndex >= tasks.length) {
+        var area = document.getElementById('nextCycleArea');
+        area.innerHTML = '<p style="color:#6fcf97;font-size:0.92rem;font-weight:600">All tasks complete. Goal achieved.</p>' +
+          '<p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px">The agent marks the goal as done, proposes new goals during its next reflection cycle, and continues.</p>' +
+          '<button class="btn btn-outline" style="margin-top:16px" onclick="resetSimulator()">Try Another Goal</button>';
+        return;
+      }
+      cycleCount++;
+      runCycle();
+    };
+
+    window.startSimulation = function() {
+      var input = document.getElementById('goalInput').value.trim();
+      if (!input) return;
+      currentGoal = input;
+      currentTaskIndex = 0;
+      var cat = detectCategory(input);
+      tasks = TASK_TEMPLATES[cat].map(function(t, i) {
+        return { title: t.title, verb: t.verb, order: (i + 1) * 10, status: 'pending' };
+      });
+      learnings = LEARNING_TEMPLATES[cat];
+
+      document.getElementById('goalInput').disabled = true;
+      document.getElementById('runBtn').disabled = true;
+      document.getElementById('runBtn').textContent = 'Running...';
+      document.getElementById('simEmpty').style.display = 'none';
+
+      runCycle();
+    };
+
+    async function runCycle() {
+      document.getElementById('orientLog').innerHTML = '';
+      document.getElementById('snapshotCard').style.display = 'none';
+      document.getElementById('taskList').innerHTML = '';
+      document.getElementById('decomposeText').textContent = '';
+      document.getElementById('selectText').textContent = '';
+      document.getElementById('execTaskTitle').textContent = '';
+      document.getElementById('execLog').innerHTML = '';
+      document.getElementById('execBar').style.width = '0';
+      document.getElementById('learningsArea').innerHTML = '';
+      document.getElementById('recordLog').innerHTML = '';
+      document.getElementById('resultSummary').style.display = 'none';
+      document.getElementById('nextCycleArea').style.display = 'none';
+
+      // Phase 1: Orient
+      showPhase('orient');
+      var orientLog = document.getElementById('orientLog');
+      var orientLines = [
+        '<span class="comment">-- Reading latest snapshot from Supabase</span>',
+        '<span class="kw">SELECT</span> content, active_goals, current_focus',
+        '  <span class="kw">FROM</span> snapshots',
+        '  <span class="kw">ORDER BY</span> created_at <span class="kw">DESC LIMIT</span> <span class="num">1</span>;',
+        '',
+        '<span class="result">1 row returned</span> <span class="comment">-- cycle ' + cycleCount + '</span>'
+      ];
+      for (var i = 0; i < orientLines.length; i++) {
+        orientLog.innerHTML += orientLines[i] + '\n';
+        await delay(120);
+      }
+
+      await delay(400);
+      var snap = document.getElementById('snapshotCard');
+      snap.style.display = 'block';
+      var completedCount = 0;
+      for (var t = 0; t < tasks.length; t++) {
+        if (tasks[t].status === 'done') completedCount++;
+      }
+      document.getElementById('snapshotFields').innerHTML =
+        '<div class="snapshot-field"><span class="label">cycle_count</span><span class="value">' + cycleCount + '</span></div>' +
+        '<div class="snapshot-field"><span class="label">current_goal</span><span class="value">' + escapeHtml(currentGoal) + '</span></div>' +
+        '<div class="snapshot-field"><span class="label">tasks_done</span><span class="value">' + completedCount + ' / ' + tasks.length + '</span></div>' +
+        '<div class="snapshot-field"><span class="label">open_blockers</span><span class="value">0</span></div>';
+
+      await delay(1200);
+
+      // Phase 2: Decide
+      showPhase('decide');
+      var isFirst = currentTaskIndex === 0;
+      document.getElementById('decomposeText').textContent = isFirst
+        ? 'Goal has no tasks yet. Decomposing into ' + tasks.length + ' concrete tasks:'
+        : 'Continuing goal. ' + completedCount + ' of ' + tasks.length + ' tasks done. Selecting next task:';
+
+      var list = document.getElementById('taskList');
+      for (var j = 0; j < tasks.length; j++) {
+        var item = document.createElement('li');
+        item.className = 'task-item';
+        var statusClass = tasks[j].status === 'done' ? 'done' : 'pending';
+        var statusInner = tasks[j].status === 'done' ? '&#10003;' : '';
+        item.innerHTML =
+          '<span class="task-order">#' + tasks[j].order + '</span>' +
+          '<span class="task-status ' + statusClass + '">' + statusInner + '</span>' +
+          '<span class="task-title">' + escapeHtml(tasks[j].title) + '</span>';
+        list.appendChild(item);
+        await delay(180);
+        item.classList.add('revealed');
+      }
+
+      await delay(600);
+      var taskItems = list.querySelectorAll('.task-item');
+      taskItems[currentTaskIndex].classList.add('selected');
+      taskItems[currentTaskIndex].querySelector('.task-status').classList.remove('pending');
+      taskItems[currentTaskIndex].querySelector('.task-status').classList.add('running');
+      document.getElementById('selectText').textContent =
+        'Selected task #' + tasks[currentTaskIndex].order + ' (first pending by sort_order).';
+
+      await delay(1200);
+
+      // Phase 3: Execute
+      showPhase('execute');
+      document.getElementById('execTaskTitle').textContent =
+        tasks[currentTaskIndex].verb + ': ' + tasks[currentTaskIndex].title;
+
+      var cat = detectCategory(currentGoal);
+      var lines = EXEC_LINES[cat];
+      var execLog = document.getElementById('execLog');
+
+      for (var k = 0; k < lines.length; k++) {
+        var lineEl = document.createElement('div');
+        lineEl.className = 'line';
+        lineEl.textContent = lines[k];
+        execLog.appendChild(lineEl);
+        await delay(80);
+        lineEl.classList.add('visible');
+        document.getElementById('execBar').style.width = Math.round(((k + 1) / lines.length) * 100) + '%';
+        await delay(500);
+      }
+
+      tasks[currentTaskIndex].status = 'done';
+      await delay(800);
+
+      // Phase 4: Record
+      showPhase('record');
+      var recordLog = document.getElementById('recordLog');
+      var recordLines = [
+        '<span class="comment">-- Updating task status</span>',
+        '<span class="kw">UPDATE</span> tasks <span class="kw">SET</span> status = <span class="str">\'done\'</span>,',
+        '  result = <span class="str">\'Completed: ' + escapeHtml(tasks[currentTaskIndex].title) + '\'</span>,',
+        '  attempts = attempts + <span class="num">1</span>',
+        '<span class="kw">WHERE</span> id = <span class="str">\'task-' + tasks[currentTaskIndex].order + '\'</span>;',
+        '',
+        '<span class="comment">-- Writing execution log</span>',
+        '<span class="kw">INSERT INTO</span> execution_log (action, summary)',
+        '<span class="kw">VALUES</span> (<span class="str">\'execute\'</span>, <span class="str">\'Cycle ' + cycleCount + ': ' + escapeHtml(tasks[currentTaskIndex].title) + '\'</span>);',
+        '',
+        '<span class="result">2 rows affected</span>'
+      ];
+
+      for (var m = 0; m < recordLines.length; m++) {
+        recordLog.innerHTML += recordLines[m] + '\n';
+        await delay(80);
+      }
+
+      await delay(500);
+
+      // Show learnings
+      var area = document.getElementById('learningsArea');
+      if (currentTaskIndex === 0 && learnings.length > 0) {
+        var lh = document.createElement('p');
+        lh.style.cssText = 'color:var(--text-muted);font-size:0.82rem;margin:16px 0 10px;font-style:italic';
+        lh.textContent = 'Extracted ' + learnings.length + ' learning(s):';
+        area.appendChild(lh);
+
+        for (var n = 0; n < learnings.length; n++) {
+          await delay(400);
+          var lcard = document.createElement('div');
+          lcard.className = 'learning-card';
+          lcard.style.opacity = '0';
+          lcard.style.transform = 'translateY(8px)';
+          lcard.style.transition = 'all 0.3s';
+          lcard.innerHTML =
+            '<div class="learning-header">' +
+              '<span class="learning-category">' + learnings[n].category + '</span>' +
+              '<div class="confidence-meter">' +
+                '<div class="confidence-bar"><div class="confidence-fill" style="width:' + (learnings[n].confidence * 100) + '%"></div></div>' +
+                '<span style="color:var(--text-muted)">' + learnings[n].confidence.toFixed(2) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<p class="learning-text">' + escapeHtml(learnings[n].text) + '</p>';
+          area.appendChild(lcard);
+          await delay(50);
+          lcard.style.opacity = '1';
+          lcard.style.transform = 'translateY(0)';
+        }
+      }
+
+      await delay(600);
+
+      // Result summary
+      var completedNow = 0;
+      for (var q = 0; q < tasks.length; q++) {
+        if (tasks[q].status === 'done') completedNow++;
+      }
+      var summary = document.getElementById('resultSummary');
+      summary.style.display = 'block';
+      var allDone = completedNow === tasks.length;
+      document.getElementById('resultText').textContent = allDone
+        ? 'All ' + tasks.length + ' tasks complete. Goal achieved in ' + tasks.length + ' cycles. The agent marks the goal as done and will propose new goals during its next reflection.'
+        : 'Cycle ' + cycleCount + ' complete. Progress: ' + completedNow + '/' + tasks.length + ' tasks done. The agent writes a new snapshot and sleeps until the next cycle.';
+
+      document.getElementById('nextCycleArea').style.display = 'block';
+      if (allDone) {
+        document.getElementById('nextCycleArea').innerHTML =
+          '<p style="color:#6fcf97;font-weight:600">Goal complete.</p>' +
+          '<button class="btn btn-outline" style="margin-top:8px" onclick="resetSimulator()">Try Another Goal</button>';
+      }
+
+      // Mark all phase steps done
+      document.querySelectorAll('.phase-step').forEach(function(s) {
+        s.classList.remove('active');
+        s.classList.add('done');
+      });
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    document.getElementById('goalInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !this.disabled) {
+        startSimulation();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
