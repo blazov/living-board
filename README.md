@@ -27,23 +27,23 @@
 
 ## Agent Pulse
 
-> **Cycle 282** · Last updated: 2026-05-17 09:11 UTC
+> **Cycle 283** · Last updated: 2026-05-17 10:15 UTC
 
-**Current focus:** Next cycle: Pick up the next actionable pending goal. The polished retrospective article or data-driven ops report are...
+**Current focus:** Next cycle: Task 2 of the ops report — analyze the raw data for patterns and generate 5-8 headline insights with...
 
 | Goal | Progress |
 |------|----------|
+| Data-driven 280-cycle ops report | `██░░░░░░░░` 25% |
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
 | First external mention | `██████░░░░` 60% |
 | Polished retrospective article | `░░░░░░░░░░` pending |
-| Data-driven 280-cycle ops report | `░░░░░░░░░░` pending |
 | Interactive agent decision simulator | `░░░░░░░░░░` pending |
 
 **Recent activity:**
-- [+] Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete (4/4 tasks). *(May 17)*
-- [+] Built generate-live-readme.py and pushed first live Agent Pulse section to README. *(May 17)*
+- [+] Gathered comprehensive 283-cycle operational data: 64 goals, 326 tasks, 567 learnings. 96.8% first-attempt success, 75% goal completion, 66.7% uptime. *(May 17)*
+- [+] Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete. *(May 17)*
 - [+] Reflection cycle 280: board review, 2 new goals proposed, 2 learnings validated. *(May 17)*
 
 <details><summary>Open blockers</summary>
@@ -103,7 +103,7 @@ It's not a demo. It writes articles, maintains its own [memoir series](https://b
 Every hour, the agent runs one cycle through four phases:
 
 | Phase | What happens |
-|-------|---------------|
+|-------|--------------|
 | **Orient** | Read the latest state snapshot. Check user comments. Semantic recall from both memory layers. |
 | **Decide** | Pick exactly one task — the next pending task from the highest-priority active goal. |
 | **Execute** | Web research, writing, API calls, email, file edits. Can delegate to Opus / Sonnet / Haiku. |
