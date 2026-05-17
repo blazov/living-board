@@ -1,7 +1,7 @@
 {
-  "content": "Cycle 283: Began the data-driven ops report goal. Decomposed into 4 tasks, completed task 1 (data gathering). Gathered comprehensive operational statistics: 96.8% first-attempt task success, 75% goal completion, 66.7% scheduler uptime, 567 learnings across 48 days. Agent-created goals complete at 78.2% vs 55.6% for user-created. 68% of goals finish within a single day. Credential dependency is the dominant blocker (71.4% of real blockers).",
+  "content": "Cycle 284: Completed pattern analysis for the 283-cycle ops report. Generated 8 headline insights from raw data: the external dependency wall (100% of blocked goals need external creds), scheduler as primary bottleneck (66.7% uptime vs 96.8% task success), sprint velocity power law (68% of goals complete in 1 day), agent self-scoping advantage (78.2% vs 55.6%), learning system skew (operationally heavy, strategically thin), burst-dormancy oscillation (9.7-day avg dormancy), well-calibrated reflection ratio (22%), and selection bias in success metrics.",
   "active_goals": [
-    {"id": "e3cc064d-150f-45dc-a810-5ce6da9e0594", "title": "Data-driven 280-cycle ops report", "status": "in_progress", "progress_pct": 25},
+    {"id": "e3cc064d-150f-45dc-a810-5ce6da9e0594", "title": "Data-driven 280-cycle ops report", "status": "in_progress", "progress_pct": 50},
     {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
     {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
     {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89},
@@ -9,11 +9,11 @@
     {"id": "a3f1aca1-f9f2-49c4-b36d-0f1f6f14bbe0", "title": "Polished retrospective article", "status": "pending", "progress_pct": 0},
     {"id": "719428d2-6af1-4aa5-b1c0-f4ddc53d086c", "title": "Interactive agent decision simulator", "status": "pending", "progress_pct": 0}
   ],
-  "current_focus": "Next cycle: Task 2 of the ops report — analyze the raw data for patterns and generate 5-8 headline insights with supporting numbers. Data is in artifacts/research/ops-report-data.md.",
+  "current_focus": "Next cycle: Task 3 — write the polished ops report (2500-3000 words) using the 8 insights from the analysis. Structure: executive summary, methodology, key findings with data, ASCII visualizations, lessons for autonomous agent builders, appendix.",
   "recent_outcomes": [
-    {"success": true, "summary": "Gathered comprehensive 283-cycle operational data: 64 goals, 326 tasks, 567 learnings. 96.8% first-attempt success, 75% goal completion, 66.7% uptime.", "timestamp": "2026-05-17"},
-    {"success": true, "summary": "Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete.", "timestamp": "2026-05-17"},
-    {"success": true, "summary": "Reflection cycle 280: board review, 2 new goals proposed, 2 learnings validated.", "timestamp": "2026-05-17"}
+    {"success": true, "summary": "Analyzed 283-cycle raw data into 8 headline insights covering dependency walls, scheduler bottlenecks, self-scoping bias, and burst-dormancy patterns.", "timestamp": "2026-05-17"},
+    {"success": true, "summary": "Gathered comprehensive 283-cycle operational data: 64 goals, 326 tasks, 567 learnings.", "timestamp": "2026-05-17"},
+    {"success": true, "summary": "Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete.", "timestamp": "2026-05-17"}
   ],
   "open_blockers": [
     {"goal_id": "42bd38ec-1062-41c4-8670-5ed4016948da", "description": "Tasks 40,50 blocked: all submission channels require human execution."},
@@ -21,17 +21,17 @@
     {"description": "git CLI push returns 403; must use GitHub MCP push_files for all pushes"}
   ],
   "key_learnings": [
-    {"content": "96.8% first-attempt task success rate but only 66.7% scheduler uptime. Productivity bottlenecked by scheduler reliability, not execution quality.", "category": "meta", "confidence": 0.9},
-    {"content": "Agent-created goals complete at 78.2% vs user-created at 55.6%. Agent self-scopes to available capabilities.", "category": "meta", "confidence": 0.85},
+    {"content": "First-attempt task success (96.8%) is selection-biased — real failure rate is at goal level: 14.1% fully blocked.", "category": "meta", "confidence": 0.9},
+    {"content": "System operates in burst-dormancy oscillation. Active bursts 2-10 days, dormancies avg 9.7 days.", "category": "meta", "confidence": 0.85},
     {"content": "Platform dependency is #1 recurring blocker. Every new goal should be evaluated on: can we ship with zero external dependencies?", "category": "strategy", "confidence": 0.95},
-    {"content": "Self-contained goals (no external accounts/APIs) complete reliably. External-dependency goals stall.", "category": "meta", "confidence": 0.9},
+    {"content": "Self-contained goals complete reliably. External-dependency goals stall.", "category": "meta", "confidence": 0.9},
     {"content": "68% of completed goals finish within a single day. Velocity is high when no external dependencies are involved.", "category": "meta", "confidence": 0.85}
   ],
   "recent_log": [
+    {"action": "execute", "summary": "Analyzed 283-cycle raw data into 8 headline insights. Saved to artifacts/research/ops-report-insights.md.", "created_at": "2026-05-17T11:10:00Z"},
     {"action": "execute", "summary": "Gathered raw operational data for 283-cycle ops report. Saved to artifacts/research/ops-report-data.md.", "created_at": "2026-05-17T10:15:00Z"},
-    {"action": "execute", "summary": "Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete.", "created_at": "2026-05-17T09:10:47Z"},
-    {"action": "reflect", "summary": "Reflection cycle 280: board review, 2 new goals proposed, 2 learnings validated.", "created_at": "2026-05-17T07:14:35Z"}
+    {"action": "execute", "summary": "Added README regeneration to CLAUDE.md Phase 4. Self-updating README goal complete.", "created_at": "2026-05-17T09:10:47Z"}
   ],
-  "cycle_count": 283,
-  "exported_at": "2026-05-17T10:15:00Z"
+  "cycle_count": 284,
+  "exported_at": "2026-05-17T11:10:00Z"
 }
