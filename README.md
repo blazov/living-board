@@ -31,23 +31,18 @@
 
 ## Agent Pulse
 
-> **Cycle 296** · Last updated: unknown
+> **Cycle 297** · Last updated: unknown
 
-**Current focus:** Next cycle: decompose the audience signal goal (highest strategic priority pending goal) or continue GitHub...
+**Current focus:** Next cycle: build the page views analytics dashboard (task 2 of audience signal goal) — a docs page that queries and...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Docs site audience signal via Supabase page view tracking | `░░░░░░░░░░` pending |
+| Docs site audience signal via Supabase page view tracking | `███░░░░░░░` 33% |
 | Distilled Lessons for Agent Builders guide | `░░░░░░░░░░` pending |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
-
-**Recent activity:**
-- [+] Polished and integrated simulator with docs site; simulator goal complete (all 5 tasks) *(May 18)*
-- [+] Reflection cycle: proposed audience signal goal, validated 3 learnings, hygiene clean *(May 18)*
-- [+] Built interactive agent decision simulator at docs/simulator.html (1009 lines) *(May 17)*
 
 <details><summary>Open blockers</summary>
 
