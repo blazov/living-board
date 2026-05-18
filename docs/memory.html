@@ -167,6 +167,28 @@
       font-weight: 600;
     }
 
+    .hist-bar {
+      transition: opacity 0.15s;
+    }
+    .hist-bar:hover {
+      opacity: 0.85;
+    }
+
+    .scatter-dot {
+      transition: opacity 0.15s, r 0.15s;
+    }
+    .scatter-dot:hover {
+      opacity: 1 !important;
+    }
+    .scatter-dot.dimmed {
+      opacity: 0.08;
+    }
+
+    .axis-label {
+      fill: #9498a8;
+      font-size: 11px;
+    }
+
     #loading {
       text-align: center;
       padding: 80px 0;
@@ -222,6 +244,24 @@
         </div>
       </div>
 
+      <div class="chart-section">
+        <h2 class="section-title">Confidence Landscape</h2>
+        <p class="section-desc">Distribution of confidence scores across all learnings. Most cluster around 0.7 — the decay floor for mature memories.</p>
+        <div class="legend" id="legend-conf"></div>
+        <div class="chart-container" id="chart-confidence">
+          <div class="tooltip-box" id="tooltip-conf"></div>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <h2 class="section-title">Age vs Confidence</h2>
+        <p class="section-desc">Each dot is a learning. Older memories drift toward the decay floor unless validated. Hover to see what each memory contains.</p>
+        <div class="legend" id="legend-scatter"></div>
+        <div class="chart-container" id="chart-scatter">
+          <div class="tooltip-box" id="tooltip-scatter"></div>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -249,6 +289,8 @@
         document.getElementById('dashboard').style.display = 'block';
         renderStats(data.summary);
         renderBirthTimeline(data.births_timeline);
+        renderConfidenceHistogram(data.learnings);
+        renderAgeConfidenceScatter(data.learnings);
       })
       .catch(function () {
         document.getElementById('loading').textContent = 'Failed to load memory data.';
@@ -508,6 +550,319 @@
       cumLeg.className = 'legend-item';
       cumLeg.innerHTML = '<span class="legend-swatch" style="background:#f87171;border-radius:50%"></span>Cumulative';
       legendEl.appendChild(cumLeg);
+    }
+
+    function renderConfidenceHistogram(learnings) {
+      var container = document.getElementById('chart-confidence');
+      var tooltip = document.getElementById('tooltip-conf');
+      var legendEl = document.getElementById('legend-conf');
+
+      var margin = { top: 20, right: 30, bottom: 50, left: 48 };
+      var fullWidth = Math.max(container.clientWidth, 600);
+      var width = fullWidth - margin.left - margin.right;
+      var height = 300 - margin.top - margin.bottom;
+
+      var svg = d3.select('#chart-confidence')
+        .insert('svg', '.tooltip-box')
+        .attr('width', fullWidth)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      var binStep = 0.05;
+      var bins = [];
+      for (var b = 0; b < 1.0; b = Math.round((b + binStep) * 100) / 100) {
+        var lo = b;
+        var hi = Math.round((b + binStep) * 100) / 100;
+        var entry = { lo: lo, hi: hi, label: lo.toFixed(2) + '–' + hi.toFixed(2), total: 0 };
+        CATEGORIES.forEach(function (c) { entry[c] = 0; });
+        bins.push(entry);
+      }
+
+      learnings.forEach(function (l) {
+        var idx = Math.min(Math.floor(l.confidence / binStep), bins.length - 1);
+        if (idx < 0) idx = 0;
+        bins[idx][l.category] = (bins[idx][l.category] || 0) + 1;
+        bins[idx].total += 1;
+      });
+
+      var activeCategories = {};
+      CATEGORIES.forEach(function (c) { activeCategories[c] = true; });
+
+      var x = d3.scaleBand()
+        .domain(bins.map(function (d) { return d.label; }))
+        .range([0, width])
+        .padding(0.12);
+
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(bins, function (d) { return d.total; }) * 1.1])
+        .nice()
+        .range([height, 0]);
+
+      // Grid
+      svg.append('g').attr('class', 'grid')
+        .selectAll('line')
+        .data(y.ticks(5))
+        .join('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', function (d) { return y(d); })
+        .attr('y2', function (d) { return y(d); })
+        .attr('stroke', '#2a2e3d').attr('stroke-dasharray', '3,3');
+
+      // Axes
+      svg.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .selectAll('text').attr('fill', '#9498a8').attr('font-size', '11px');
+      svg.selectAll('.domain').attr('stroke', '#2a2e3d');
+      svg.selectAll('.tick line').attr('stroke', '#2a2e3d');
+
+      svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', -38).attr('x', -height / 2)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'axis-label')
+        .text('Count');
+
+      var xAxis = svg.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).tickValues(
+          bins.filter(function (_, i) { return i % 2 === 0; }).map(function (d) { return d.label; })
+        ));
+      xAxis.selectAll('text')
+        .attr('fill', '#9498a8').attr('font-size', '10px')
+        .attr('transform', 'rotate(-40)')
+        .attr('text-anchor', 'end')
+        .attr('dx', '-4px').attr('dy', '4px');
+      xAxis.selectAll('.domain').attr('stroke', '#2a2e3d');
+      xAxis.selectAll('.tick line').attr('stroke', '#2a2e3d');
+
+      svg.append('text')
+        .attr('x', width / 2).attr('y', height + 46)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'axis-label')
+        .text('Confidence score');
+
+      var barGroup = svg.append('g').attr('class', 'bars');
+
+      function drawHistBars() {
+        var filteredKeys = CATEGORIES.filter(function (c) { return activeCategories[c]; });
+        var stackedData = d3.stack()
+          .keys(filteredKeys)
+          .order(d3.stackOrderNone)
+          .offset(d3.stackOffsetNone)(bins);
+
+        var filteredMax = d3.max(bins, function (d) {
+          var sum = 0;
+          filteredKeys.forEach(function (k) { sum += d[k]; });
+          return sum;
+        });
+        y.domain([0, Math.max(filteredMax * 1.1, 1)]).nice();
+        svg.select('g').call(d3.axisLeft(y).ticks(5));
+
+        barGroup.selectAll('g.layer').remove();
+        var layers = barGroup.selectAll('g.layer')
+          .data(stackedData)
+          .join('g')
+          .attr('class', 'layer')
+          .attr('fill', function (d) { return CAT_COLORS[d.key]; });
+
+        layers.selectAll('rect')
+          .data(function (d) { return d.map(function (v) { v.key = d.key; return v; }); })
+          .join('rect')
+          .attr('class', 'hist-bar')
+          .attr('x', function (d) { return x(bins[d.index].label); })
+          .attr('y', function (d) { return y(d[1]); })
+          .attr('height', function (d) { return Math.max(0, y(d[0]) - y(d[1])); })
+          .attr('width', x.bandwidth())
+          .attr('rx', 2)
+          .on('mousemove', function (event, d) {
+            var bin = bins[d.index];
+            var html = '<div class="tooltip-date">' + bin.label + '</div>';
+            CATEGORIES.forEach(function (c) {
+              if (!activeCategories[c] || !bin[c]) return;
+              html += '<div class="tooltip-row">'
+                + '<span class="tooltip-swatch" style="background:' + CAT_COLORS[c] + '"></span>'
+                + CAT_LABELS[c]
+                + '<span class="tooltip-val">' + bin[c] + '</span></div>';
+            });
+            var visibleTotal = 0;
+            filteredKeys.forEach(function (k) { visibleTotal += bin[k]; });
+            html += '<div class="tooltip-row" style="border-top:1px solid #2a2e3d;padding-top:4px;margin-top:4px">'
+              + 'Total <span class="tooltip-val">' + visibleTotal + '</span></div>';
+            tooltip.innerHTML = html;
+            tooltip.classList.add('visible');
+            var rect = container.getBoundingClientRect();
+            var tx = event.clientX - rect.left + 12;
+            var ty = event.clientY - rect.top - 10;
+            if (tx + 260 > rect.width) tx = tx - 280;
+            tooltip.style.left = tx + 'px';
+            tooltip.style.top = ty + 'px';
+          })
+          .on('mouseleave', function () { tooltip.classList.remove('visible'); });
+      }
+
+      drawHistBars();
+
+      CATEGORIES.forEach(function (cat) {
+        var item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = '<span class="legend-swatch" style="background:' + CAT_COLORS[cat] + '"></span>' + CAT_LABELS[cat];
+        item.addEventListener('click', function () {
+          activeCategories[cat] = !activeCategories[cat];
+          item.classList.toggle('dimmed', !activeCategories[cat]);
+          drawHistBars();
+        });
+        legendEl.appendChild(item);
+      });
+    }
+
+    function renderAgeConfidenceScatter(learnings) {
+      var container = document.getElementById('chart-scatter');
+      var tooltip = document.getElementById('tooltip-scatter');
+      var legendEl = document.getElementById('legend-scatter');
+
+      var margin = { top: 20, right: 30, bottom: 50, left: 48 };
+      var fullWidth = Math.max(container.clientWidth, 600);
+      var width = fullWidth - margin.left - margin.right;
+      var height = 360 - margin.top - margin.bottom;
+
+      var svg = d3.select('#chart-scatter')
+        .insert('svg', '.tooltip-box')
+        .attr('width', fullWidth)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      var activeCategories = {};
+      CATEGORIES.forEach(function (c) { activeCategories[c] = true; });
+
+      var maxAge = d3.max(learnings, function (d) { return d.age_days; });
+      var x = d3.scaleLinear()
+        .domain([0, maxAge * 1.05])
+        .nice()
+        .range([0, width]);
+
+      var y = d3.scaleLinear()
+        .domain([0, 1.05])
+        .range([height, 0]);
+
+      // Grid
+      svg.append('g').attr('class', 'grid')
+        .selectAll('line')
+        .data(y.ticks(5))
+        .join('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', function (d) { return y(d); })
+        .attr('y2', function (d) { return y(d); })
+        .attr('stroke', '#2a2e3d').attr('stroke-dasharray', '3,3');
+
+      svg.append('g').attr('class', 'grid')
+        .selectAll('line')
+        .data(x.ticks(6))
+        .join('line')
+        .attr('x1', function (d) { return x(d); })
+        .attr('x2', function (d) { return x(d); })
+        .attr('y1', 0).attr('y2', height)
+        .attr('stroke', '#2a2e3d').attr('stroke-dasharray', '3,3');
+
+      // Decay floor reference line at 0.7
+      svg.append('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', y(0.7)).attr('y2', y(0.7))
+        .attr('stroke', '#f87171')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '6,4')
+        .attr('opacity', 0.6);
+      svg.append('text')
+        .attr('x', width - 4).attr('y', y(0.7) - 6)
+        .attr('text-anchor', 'end')
+        .attr('fill', '#f87171')
+        .attr('font-size', '10px')
+        .attr('opacity', 0.8)
+        .text('0.7 decay floor');
+
+      // Axes
+      svg.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .selectAll('text').attr('fill', '#9498a8').attr('font-size', '11px');
+      svg.selectAll('.domain').attr('stroke', '#2a2e3d');
+      svg.selectAll('.tick line').attr('stroke', '#2a2e3d');
+
+      svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', -38).attr('x', -height / 2)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'axis-label')
+        .text('Confidence');
+
+      var xAxisG = svg.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).ticks(6));
+      xAxisG.selectAll('text').attr('fill', '#9498a8').attr('font-size', '11px');
+      xAxisG.selectAll('.domain').attr('stroke', '#2a2e3d');
+      xAxisG.selectAll('.tick line').attr('stroke', '#2a2e3d');
+
+      svg.append('text')
+        .attr('x', width / 2).attr('y', height + 40)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'axis-label')
+        .text('Age (days)');
+
+      // Dots
+      var dotsG = svg.append('g');
+
+      var dots = dotsG.selectAll('circle')
+        .data(learnings)
+        .join('circle')
+        .attr('class', 'scatter-dot')
+        .attr('cx', function (d) { return x(d.age_days); })
+        .attr('cy', function (d) { return y(d.confidence); })
+        .attr('r', 4)
+        .attr('fill', function (d) { return CAT_COLORS[d.category] || '#888'; })
+        .attr('opacity', 0.55)
+        .attr('stroke', 'none')
+        .on('mouseover', function (event, d) {
+          d3.select(this).attr('r', 7).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+          var content = d.content.length > 120 ? d.content.substring(0, 117) + '...' : d.content;
+          var html = '<div class="tooltip-date">' + CAT_LABELS[d.category] + '</div>'
+            + '<div style="margin:4px 0;line-height:1.4">' + content + '</div>'
+            + '<div class="tooltip-row">Confidence <span class="tooltip-val">' + d.confidence.toFixed(2) + '</span></div>'
+            + '<div class="tooltip-row">Age <span class="tooltip-val">' + Math.round(d.age_days) + 'd</span></div>'
+            + '<div class="tooltip-row">Validated <span class="tooltip-val">' + d.times_validated + 'x</span></div>'
+            + '<div class="tooltip-row">Stage <span class="tooltip-val">' + d.stage + '</span></div>';
+          tooltip.innerHTML = html;
+          tooltip.classList.add('visible');
+          var rect = container.getBoundingClientRect();
+          var tx = event.clientX - rect.left + 14;
+          var ty = event.clientY - rect.top - 10;
+          if (tx + 280 > rect.width) tx = tx - 300;
+          if (ty < 10) ty = 10;
+          tooltip.style.left = tx + 'px';
+          tooltip.style.top = ty + 'px';
+        })
+        .on('mouseleave', function () {
+          d3.select(this).attr('r', 4).attr('opacity', function (d) {
+            return activeCategories[d.category] ? 0.55 : 0.08;
+          }).attr('stroke', 'none');
+          tooltip.classList.remove('visible');
+        });
+
+      function updateDots() {
+        dots.classed('dimmed', function (d) { return !activeCategories[d.category]; })
+          .attr('opacity', function (d) { return activeCategories[d.category] ? 0.55 : 0.08; });
+      }
+
+      CATEGORIES.forEach(function (cat) {
+        var item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = '<span class="legend-swatch" style="background:' + CAT_COLORS[cat] + '"></span>' + CAT_LABELS[cat];
+        item.addEventListener('click', function () {
+          activeCategories[cat] = !activeCategories[cat];
+          item.classList.toggle('dimmed', !activeCategories[cat]);
+          updateDots();
+        });
+        legendEl.appendChild(item);
+      });
     }
   })();
   </script>
