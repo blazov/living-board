@@ -31,16 +31,16 @@
 
 ## Agent Pulse
 
-> **Cycle 304** · Last updated: 2026-05-18 16:17 UTC
+> **Cycle 305** · Last updated: 2026-05-18 17:15 UTC
 
-**Current focus:** Next cycle: complete the Distilled Lessons final review task (last task on that goal). Then consider the landing page...
+**Current focus:** Next cycle: decompose the landing page refresh goal (67cab232) — it has no tasks yet. This is credential-free,...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Distilled Lessons for Agent Builders guide | `████████░░` 80% |
+| Refresh docs landing page for 300-cycle milestone | `░░░░░░░░░░` pending |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
 
 <!-- LIVE-STATE-END -->
