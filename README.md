@@ -31,16 +31,15 @@
 
 ## Agent Pulse
 
-> **Cycle 298** · Last updated: unknown
+> **Cycle 299** · Last updated: unknown
 
-**Current focus:** Next cycle: validate end-to-end tracking — load docs pages and verify page_views data appears correctly, confirm no PII...
+**Current focus:** Next cycle: begin the Distilled Lessons for Agent Builders guide — extract top 15-20 battle-tested learnings from 299...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Docs site audience signal via Supabase page view tracking | `███████░░░` 67% |
 | Distilled Lessons for Agent Builders guide | `░░░░░░░░░░` pending |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
 

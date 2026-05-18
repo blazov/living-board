@@ -1,9 +1,9 @@
-# Landing Page Analytics — Query Runbook
+# Docs Site Analytics — Query Runbook
 
 **Source table:** `public.page_views`
-**Writer:** `docs/index.html` (inline `<script>` at end of body)
-**Key:** `sb_publishable_EI6cI1G5mUmgVH-rWIgfrA_q0MJF1fY` (publishable anon, hardcoded in the page — this is the designed use)
-**Privacy model:** write-only from the public side (RLS permits `INSERT` for `anon`, no `SELECT` policy). No cookies, no IP, no cross-site tracking.
+**Writer:** All `docs/**/*.html` pages (inline `<script>` before closing `</body>`)
+**Key:** Supabase anon key (publishable, hardcoded in each page — this is the designed use)
+**Privacy model:** RLS permits `INSERT` and `SELECT` for `anon`. No cookies, no IP, no user agent, no cross-site tracking.
 
 ---
 
@@ -13,7 +13,6 @@
 |---------------|-------------------------------|-------|
 | `path`        | `/`, `/index.html`            | Pathname + query string |
 | `referrer`    | `https://news.ycombinator.com/` | `document.referrer`, null if direct |
-| `user_agent`  | `Mozilla/5.0 ...`             | For device/browser category |
 | `screen_w`    | `1920`                        | Viewport classifier |
 | `screen_h`    | `1080`                        | Viewport classifier |
 | `lang`        | `en-US`                       | `navigator.language` |
@@ -123,12 +122,58 @@ SELECT * FROM weekly;
 
 ---
 
+## Adding tracking to new pages
+
+When publishing a new docs page, add this snippet before the closing `</body>` tag:
+
+```html
+<script>
+  (function () {
+    try {
+      var URL_BASE = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1/page_views';
+      var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
+      var sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+      var payload = {
+        path: location.pathname + location.search,
+        referrer: document.referrer || null,
+        screen_w: (screen && screen.width) || null,
+        screen_h: (screen && screen.height) || null,
+        lang: navigator.language || null,
+        tz: (Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || null,
+        session_id: sid
+      };
+      var body = JSON.stringify(payload);
+      var sent = false;
+      if (navigator.sendBeacon) {
+        try {
+          var blob = new Blob([body], { type: 'application/json' });
+          sent = navigator.sendBeacon(URL_BASE + '?apikey=' + encodeURIComponent(KEY), blob);
+        } catch (e) { /* ignore */ }
+      }
+      if (!sent && window.fetch) {
+        fetch(URL_BASE, {
+          method: 'POST', keepalive: true, mode: 'cors',
+          headers: {
+            'apikey': KEY, 'Authorization': 'Bearer ' + KEY,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+          },
+          body: body
+        }).catch(function () {});
+      }
+    } catch (e) { }
+  })();
+</script>
+```
+
+Copy the full anon key from any existing tracked page (e.g., `docs/index.html`). The snippet collects only: path, referrer, screen size, language, timezone, and an ephemeral session ID. No cookies, no IP, no user agent.
+
+---
+
 ## Known gaps
 
-- **No rate limiting.** A motivated actor could flood inserts. Acceptable for MVP; revisit if a malicious spike shows up. Mitigation path: Supabase edge function that signs requests, or a `CHECK (char_length(user_agent) < 512)` + per-session rate cap trigger.
-- **No bot filtering.** Googlebot, curl probes, and headless browsers all increment the counter. Query-time filter on `user_agent ILIKE '%bot%'` is crude but works.
+- **No rate limiting.** A motivated actor could flood inserts. Acceptable for MVP; revisit if a malicious spike shows up. Mitigation path: Supabase edge function that signs requests, or a per-session rate cap trigger.
+- **No bot filtering.** Without user_agent, bot detection is limited to heuristic approaches (screen size 0x0, missing lang/tz). Low priority at current traffic levels.
 - **No retention policy.** The table will grow without bound. Add a monthly cron once data volume matters:
   ```sql
   DELETE FROM page_views WHERE created_at < now() - interval '1 year';
   ```
-- **Not deployed yet.** GitHub Pages serves `docs/` — the tracking script will not start collecting data until the next `origin/master` push is picked up by Pages (usually a minute or two).
