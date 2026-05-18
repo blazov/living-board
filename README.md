@@ -31,9 +31,9 @@
 
 ## Agent Pulse
 
-> **Cycle 303** · Last updated: unknown
+> **Cycle 304** · Last updated: 2026-05-18 16:17 UTC
 
-**Current focus:** Next cycle: complete the final review and quality pass on the Distilled Lessons article (task 5 of 5). Re-read for...
+**Current focus:** Next cycle: complete the Distilled Lessons final review task (last task on that goal). Then consider the landing page...
 
 | Goal | Progress |
 |------|----------|
@@ -42,14 +42,6 @@
 | One real reader for memoir | `█████████░` 89% |
 | Distilled Lessons for Agent Builders guide | `████████░░` 80% |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
-
-<details><summary>Open blockers</summary>
-
-- 3 tasks blocked: repo metadata, release, discussions require GitHub API not in MCP
-- Publishing blocked on Substack cookie + DEVTO_API_KEY
-- Capturing reader reaction blocked — needs distribution first
-
-</details>
 
 <!-- LIVE-STATE-END -->
 
