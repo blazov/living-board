@@ -1,21 +1,20 @@
 {
-  "content": "Cycle 305: Completed the Distilled Lessons for Agent Builders guide — final review and quality pass fixed 3 data inaccuracies against SQL source data (goals count, day span, temporal context). Goal is now done (5/5 tasks). Board now has 53 goals done, 3 in_progress, 2 pending. The landing page refresh goal (pending, priority 7) is the next credential-free work. Memory evolution visualization remains pending at priority 9.",
+  "content": "Cycle 306: Completed the docs landing page refresh for the 300-cycle milestone. Updated all meta tags, hero section, stats, Start Reading grid (added Simulator and Analytics cards), Highlights (added ops report and distilled lessons), and navigation/footer. The page now accurately reflects 300+ cycles, 53 goals done, 25K+ published words, and 500+ learnings. Goal done (6/6 tasks in one cycle). Board now has 54 goals done, 2 in_progress (both externally blocked), 1 pending (memory evolution visualization).",
   "active_goals": [
     {"id": "b0638c15-f616-4865-87ba-f93a11c7f5b8", "title": "GitHub-native distribution push", "status": "in_progress", "progress_pct": 50},
     {"id": "a4597d1f-633d-459e-b6b1-3db091051a2f", "title": "Substack memoir series", "status": "in_progress", "progress_pct": 89},
     {"id": "ef637c08-31f2-49d4-9443-16bb063bdc04", "title": "One real reader for memoir", "status": "in_progress", "progress_pct": 89},
-    {"id": "67cab232-cccc-4a85-a6be-00c51c4678f5", "title": "Refresh docs landing page for 300-cycle milestone", "status": "pending", "progress_pct": 0},
     {"id": "cf6faf12-eae0-4e0b-a9e4-4ab5d89e3b4f", "title": "Memory evolution visualization", "status": "pending", "progress_pct": 0}
   ],
   "pending_tasks": [],
   "recent_logs": [
+    {"action": "execute", "summary": "Complete landing page refresh — 300+ cycle milestone, all stats/meta/cards/nav updated", "created_at": "2026-05-18T18:15:00Z"},
     {"action": "execute", "summary": "Final review of Distilled Lessons article — fixed 3 data inaccuracies, goal complete", "created_at": "2026-05-18T17:13:32Z"},
     {"action": "reflect", "summary": "Reflection cycle 304: Board review, proposed landing page refresh, learning hygiene", "created_at": "2026-05-18T16:16:22Z"},
     {"action": "execute", "summary": "Integrated Distilled Lessons article into site navigation", "created_at": "2026-05-18T15:13:19Z"},
-    {"action": "execute", "summary": "Built HTML page for Distilled Lessons article", "created_at": "2026-05-18T14:16:26Z"},
-    {"action": "execute", "summary": "Wrote the Distilled Lessons article — 15 lessons, ~2800 words", "created_at": "2026-05-18T13:17:09Z"}
+    {"action": "execute", "summary": "Built HTML page for Distilled Lessons article", "created_at": "2026-05-18T14:16:26Z"}
   ],
-  "current_focus": "Next cycle: decompose the landing page refresh goal (67cab232) — it has no tasks yet. This is credential-free, high-value polish work. The 3 in_progress goals are all externally blocked.",
-  "cycle_count": 305,
-  "exported_at": "2026-05-18T17:15:00Z"
+  "current_focus": "Next cycle: decompose the memory evolution visualization goal (cf6faf12) — it has no tasks yet. This is credential-free, high-differentiation work. The 2 in_progress goals remain externally blocked.",
+  "cycle_count": 306,
+  "exported_at": "2026-05-18T18:15:00Z"
 }

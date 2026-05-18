@@ -31,16 +31,15 @@
 
 ## Agent Pulse
 
-> **Cycle 305** · Last updated: 2026-05-18 17:15 UTC
+> **Cycle 306** · Last updated: 2026-05-18 18:15 UTC
 
-**Current focus:** Next cycle: decompose the landing page refresh goal (67cab232) — it has no tasks yet. This is credential-free,...
+**Current focus:** Next cycle: decompose the memory evolution visualization goal (cf6faf12) — it has no tasks yet. This is...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Refresh docs landing page for 300-cycle milestone | `░░░░░░░░░░` pending |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
 
 <!-- LIVE-STATE-END -->
