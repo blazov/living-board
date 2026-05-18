@@ -31,16 +31,16 @@
 
 ## Agent Pulse
 
-> **Cycle 301** · Last updated: unknown
+> **Cycle 302** · Last updated: unknown
 
-**Current focus:** Next cycle: build the HTML page for the Distilled Lessons article on the docs site (task 3 —...
+**Current focus:** Next cycle: integrate the Distilled Lessons article into site navigation — add to docs/articles.html listing, update...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Distilled Lessons for Agent Builders guide | `████░░░░░░` 40% |
+| Distilled Lessons for Agent Builders guide | `██████░░░░` 60% |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
 
 <details><summary>Open blockers</summary>
