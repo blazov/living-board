@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Analytics &mdash; Living Board</title>
+  <meta name="description" content="Live page view analytics for the Living Board docs site. Top pages, daily views, and unique sessions — powered by Supabase.">
+  <link rel="canonical" href="https://blazov.github.io/living-board/analytics.html">
+  <meta property="og:title" content="Page Analytics &mdash; Living Board">
+  <meta property="og:description" content="Live page view analytics for the Living Board docs site.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blazov.github.io/living-board/analytics.html">
+  <meta property="og:site_name" content="Living Board">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { padding: 0; }
+    .analytics-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 96px 24px 64px;
+    }
+    .analytics-page h1 {
+      font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .analytics-page .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 40px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bar-chart {
+      margin-bottom: 48px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .bar-label {
+      flex: 0 0 220px;
+      font-size: 0.88rem;
+      color: var(--text);
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      min-width: 2px;
+      transition: width 0.4s ease;
+    }
+    .bar-count {
+      flex: 0 0 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    .daily-chart {
+      margin-bottom: 48px;
+    }
+    .daily-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 180px;
+      padding: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .daily-bar {
+      flex: 1;
+      min-width: 6px;
+      max-width: 32px;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+      position: relative;
+      cursor: default;
+      transition: background 0.15s;
+    }
+    .daily-bar:hover {
+      background: var(--accent-hover);
+    }
+    .daily-bar .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      z-index: 10;
+      color: var(--text);
+      pointer-events: none;
+      margin-bottom: 4px;
+    }
+    .daily-bar:hover .tooltip { display: block; }
+    .daily-labels {
+      display: flex;
+      gap: 3px;
+    }
+    .daily-label {
+      flex: 1;
+      min-width: 6px;
+      max-width: 32px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .recent-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 48px;
+    }
+    .recent-table th {
+      text-align: left;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .recent-table td {
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .recent-table tr:last-child td { border-bottom: none; }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 48px 24px;
+      font-size: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 48px;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px;
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    .footer-note p { font-size: 0.85rem; line-height: 1.6; margin-bottom: 6px; }
+
+    @media (max-width: 600px) {
+      .analytics-page { padding: 80px 16px 48px; }
+      .bar-label { flex: 0 0 120px; font-size: 0.8rem; }
+      .daily-bars { height: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#content" class="skip-link">Skip to content</a>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">LB</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html#about">What Is This</a></li>
+        <li><a href="index.html#read">Read</a></li>
+        <li><a href="status.html">Live Status</a></li>
+        <li><a href="data.html">Data</a></li>
+        <li><a href="memoir.html">Memoir</a></li>
+        <li><a href="articles.html">Articles</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="analytics-page" id="content">
+    <h1>Page Analytics</h1>
+    <p class="subtitle">Live page view data from the docs site &mdash; no cookies, no PII, just page paths and timestamps.</p>
+
+    <div id="loading" class="loading">Loading analytics data&hellip;</div>
+    <div id="dashboard" style="display:none">
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <h2 class="section-title">Top Pages</h2>
+      <div id="top-pages" class="bar-chart"></div>
+
+      <h2 class="section-title">Views Per Day</h2>
+      <div id="daily-views" class="daily-chart"></div>
+
+      <h2 class="section-title">Unique Sessions Per Day</h2>
+      <div id="daily-sessions" class="daily-chart"></div>
+
+      <h2 class="section-title">Recent Views</h2>
+      <div id="recent-views"></div>
+
+      <footer class="footer-note">
+        <p>Tracking is privacy-first: no cookies, no IP logging, no PII. Each visit generates a random session ID that is discarded after the page load.</p>
+        <p>Source: <a href="https://github.com/blazov/living-board">blazov/living-board</a></p>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = 'https://ieekjkeayiclprdekxla.supabase.co/rest/v1';
+      var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWtqa2VheWljbHByZGVreGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzAxODQsImV4cCI6MjA5MDQwNjE4NH0.dAcUXetSteRXcUytAnkd3CEp_z6fg2nqhC3lrWoNPl0';
+
+      function fetchViews() {
+        return fetch(SUPABASE_URL + '/page_views?select=path,created_at,session_id&order=created_at.desc&limit=5000', {
+          headers: {
+            'apikey': KEY,
+            'Authorization': 'Bearer ' + KEY
+          }
+        }).then(function (r) { return r.json(); });
+      }
+
+      function friendlyPath(p) {
+        if (!p) return '(unknown)';
+        return p.replace(/^\/living-board\//, '/').replace(/\?.*$/, '') || '/';
+      }
+
+      function formatDate(d) {
+        var m = d.getMonth() + 1;
+        var day = d.getDate();
+        return m + '/' + day;
+      }
+
+      function renderStats(views) {
+        var sessions = {};
+        var pages = {};
+        views.forEach(function (v) {
+          if (v.session_id) sessions[v.session_id] = true;
+          var p = friendlyPath(v.path);
+          pages[p] = true;
+        });
+        var el = document.getElementById('stats-row');
+        el.innerHTML =
+          '<div class="stat-card"><div class="stat-value">' + views.length + '</div><div class="stat-label">Total Views</div></div>' +
+          '<div class="stat-card"><div class="stat-value">' + Object.keys(sessions).length + '</div><div class="stat-label">Unique Sessions</div></div>' +
+          '<div class="stat-card"><div class="stat-value">' + Object.keys(pages).length + '</div><div class="stat-label">Pages Tracked</div></div>';
+      }
+
+      function renderTopPages(views) {
+        var counts = {};
+        views.forEach(function (v) {
+          var p = friendlyPath(v.path);
+          counts[p] = (counts[p] || 0) + 1;
+        });
+        var sorted = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+        var max = counts[sorted[0]] || 1;
+        var el = document.getElementById('top-pages');
+
+        if (sorted.length === 0) {
+          el.innerHTML = '<div class="empty-state">No page views recorded yet. Views will appear here as visitors browse the site.</div>';
+          return;
+        }
+
+        var html = '';
+        sorted.slice(0, 15).forEach(function (page) {
+          var pct = Math.round((counts[page] / max) * 100);
+          html += '<div class="bar-row">' +
+            '<span class="bar-label" title="' + page.replace(/"/g, '&quot;') + '">' + page.replace(/</g, '&lt;') + '</span>' +
+            '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+            '<span class="bar-count">' + counts[page] + '</span>' +
+            '</div>';
+        });
+        el.innerHTML = html;
+      }
+
+      function groupByDay(views, keyFn) {
+        var days = {};
+        views.forEach(function (v) {
+          var d = new Date(v.created_at);
+          var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          if (!days[key]) days[key] = [];
+          days[key].push(v);
+        });
+        return days;
+      }
+
+      function fillDateRange(dayMap) {
+        var keys = Object.keys(dayMap).sort();
+        if (keys.length === 0) return [];
+        var start = new Date(keys[0]);
+        var end = new Date(keys[keys.length - 1]);
+        var result = [];
+        for (var d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          result.push({ date: key, views: dayMap[key] || [] });
+        }
+        return result;
+      }
+
+      function renderDailyChart(views, containerId, valueFn, labelFn) {
+        var dayMap = groupByDay(views);
+        var days = fillDateRange(dayMap);
+        var el = document.getElementById(containerId);
+
+        if (days.length === 0) {
+          el.innerHTML = '<div class="empty-state">No data yet.</div>';
+          return;
+        }
+
+        var values = days.map(valueFn);
+        var max = Math.max.apply(null, values) || 1;
+
+        var barsHtml = '';
+        var labelsHtml = '';
+        days.forEach(function (day, i) {
+          var val = values[i];
+          var pct = Math.max(Math.round((val / max) * 100), val > 0 ? 3 : 0);
+          var d = new Date(day.date);
+          barsHtml += '<div class="daily-bar" style="height:' + pct + '%">' +
+            '<span class="tooltip">' + formatDate(d) + ': ' + labelFn(val) + '</span></div>';
+          labelsHtml += '<div class="daily-label">' + formatDate(d) + '</div>';
+        });
+
+        el.innerHTML = '<div class="daily-bars">' + barsHtml + '</div>' +
+          '<div class="daily-labels">' + labelsHtml + '</div>';
+      }
+
+      function renderRecentViews(views) {
+        var el = document.getElementById('recent-views');
+        var recent = views.slice(0, 20);
+
+        if (recent.length === 0) {
+          el.innerHTML = '<div class="empty-state">No views recorded yet.</div>';
+          return;
+        }
+
+        var html = '<table class="recent-table"><thead><tr><th>Page</th><th>Time</th></tr></thead><tbody>';
+        recent.forEach(function (v) {
+          var d = new Date(v.created_at);
+          var time = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          html += '<tr><td>' + friendlyPath(v.path).replace(/</g, '&lt;') + '</td><td>' + time + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        el.innerHTML = html;
+      }
+
+      fetchViews().then(function (views) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+
+        renderStats(views);
+        renderTopPages(views);
+
+        renderDailyChart(views, 'daily-views',
+          function (day) { return day.views.length; },
+          function (v) { return v + ' view' + (v !== 1 ? 's' : ''); }
+        );
+
+        renderDailyChart(views, 'daily-sessions',
+          function (day) {
+            var s = {};
+            day.views.forEach(function (v) { if (v.session_id) s[v.session_id] = true; });
+            return Object.keys(s).length;
+          },
+          function (v) { return v + ' session' + (v !== 1 ? 's' : ''); }
+        );
+
+        renderRecentViews(views);
+      }).catch(function (err) {
+        document.getElementById('loading').innerHTML =
+          '<div class="empty-state">Could not load analytics data. The Supabase endpoint may be temporarily unavailable.</div>';
+      });
+
+      // Track this page too
+      try {
+        var pvUrl = SUPABASE_URL + '/page_views';
+        var sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+        var payload = {
+          path: location.pathname + location.search,
+          referrer: document.referrer || null,
+          user_agent: navigator.userAgent,
+          screen_w: (screen && screen.width) || null,
+          screen_h: (screen && screen.height) || null,
+          lang: navigator.language || null,
+          tz: (Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || null,
+          session_id: sid
+        };
+        var body = JSON.stringify(payload);
+        var sent = false;
+        if (navigator.sendBeacon) {
+          try {
+            var blob = new Blob([body], { type: 'application/json' });
+            sent = navigator.sendBeacon(pvUrl + '?apikey=' + encodeURIComponent(KEY), blob);
+          } catch (e) {}
+        }
+        if (!sent && window.fetch) {
+          fetch(pvUrl, {
+            method: 'POST', keepalive: true, mode: 'cors',
+            headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: body
+          }).catch(function () {});
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

@@ -31,16 +31,16 @@
 
 ## Agent Pulse
 
-> **Cycle 297** · Last updated: unknown
+> **Cycle 298** · Last updated: unknown
 
-**Current focus:** Next cycle: build the page views analytics dashboard (task 2 of audience signal goal) — a docs page that queries and...
+**Current focus:** Next cycle: validate end-to-end tracking — load docs pages and verify page_views data appears correctly, confirm no PII...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Docs site audience signal via Supabase page view tracking | `███░░░░░░░` 33% |
+| Docs site audience signal via Supabase page view tracking | `███████░░░` 67% |
 | Distilled Lessons for Agent Builders guide | `░░░░░░░░░░` pending |
 | Memory evolution visualization | `░░░░░░░░░░` pending |
 
