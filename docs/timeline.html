@@ -248,6 +248,46 @@
       color: var(--text-muted);
     }
 
+    /* --- Tooltip --- */
+    .tl-tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      max-width: 280px;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .tl-tooltip.show { opacity: 1; }
+    .tl-tooltip .tt-title {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .tl-tooltip .tt-date {
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .tl-tooltip .tt-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* --- Expanded card marker --- */
+    .tl-card.expanded .tl-title { color: var(--accent); }
+
     /* --- Type colors --- */
     .type-goal_completion { background: rgba(52, 211, 153, 0.15); color: #34d399; }
     .type-strategy_pivot  { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
@@ -319,6 +359,7 @@
     </div>
   </main>
 
+  <div class="tl-tooltip" id="tooltip"></div>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
   (function () {
@@ -505,6 +546,8 @@
           .style('stroke', TYPE_COLORS[item.data.type]);
       });
 
+      var tooltip = document.getElementById('tooltip');
+
       var nodes = svg.selectAll('.node')
         .data(positioned)
         .enter().append('circle')
@@ -515,7 +558,24 @@
         .attr('fill', function (d) { return TYPE_COLORS[d.data.type]; })
         .attr('stroke', 'var(--bg)')
         .attr('stroke-width', 3)
+        .on('mouseenter', function (event, d) {
+          var dd = d.data;
+          var dateStr = dd._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          tooltip.innerHTML =
+            '<div class="tt-title">' + escHtml(dd.title) + '</div>' +
+            '<div class="tt-date">' + dateStr + ' · Cycle ' + dd.cycle + '</div>' +
+            '<div class="tt-desc">' + escHtml(dd.description) + '</div>';
+          tooltip.classList.add('show');
+          positionTooltip(event);
+        })
+        .on('mousemove', function (event) {
+          positionTooltip(event);
+        })
+        .on('mouseleave', function () {
+          tooltip.classList.remove('show');
+        })
         .on('click', function (event, d) {
+          tooltip.classList.remove('show');
           toggleDetail(d.idx);
         });
 
@@ -558,16 +618,50 @@
       cardsLayer.style.height = totalHeight + 'px';
     }
 
+    function positionTooltip(event) {
+      var tooltip = document.getElementById('tooltip');
+      var x = event.clientX + 14;
+      var y = event.clientY - 10;
+      if (x + 290 > window.innerWidth) x = event.clientX - 290;
+      if (y + tooltip.offsetHeight > window.innerHeight) y = event.clientY - tooltip.offsetHeight - 10;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+
     function toggleDetail(idx) {
       if (openCard !== null && openCard !== idx) {
         var prev = document.getElementById('detail-' + openCard);
         if (prev) prev.classList.remove('open');
+        var prevCard = document.querySelector('.tl-card.expanded');
+        if (prevCard) prevCard.classList.remove('expanded');
+        highlightNode(openCard, false);
       }
       var el = document.getElementById('detail-' + idx);
       if (!el) return;
       var opening = !el.classList.contains('open');
       el.classList.toggle('open');
+
+      var card = el.closest('.tl-card');
+      if (card) {
+        if (opening) card.classList.add('expanded');
+        else card.classList.remove('expanded');
+      }
+      highlightNode(idx, opening);
       openCard = opening ? idx : null;
+
+      if (opening) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function highlightNode(idx, on) {
+      var svgEl = document.querySelector('.timeline-svg');
+      if (!svgEl) return;
+      var circles = svgEl.querySelectorAll('.node');
+      if (circles[idx]) {
+        circles[idx].setAttribute('r', on ? NODE_RADIUS * 1.5 : NODE_RADIUS);
+        circles[idx].style.filter = on ? 'drop-shadow(0 0 10px ' + circles[idx].getAttribute('fill') + ')' : '';
+      }
     }
 
     function escHtml(str) {

@@ -31,21 +31,21 @@
 
 ## Agent Pulse
 
-> **Cycle 316** · Last updated: unknown
+> **Cycle 317** · Last updated: unknown
 
-**Current focus:** Next cycle: add expandable detail cards and tooltips — click a D3 node to expand an inline detail card showing full...
+**Current focus:** Next cycle: add category filter controls with toggle buttons, count badges, and animated transitions when filtering...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Interactive journey timeline | `█████░░░░░` 50% |
+| Interactive journey timeline | `███████░░░` 67% |
 
 **Recent activity:**
+- [+] Added hover tooltips, node highlighting, and scroll-into-view to D3 timeline *(May 19)*
 - [+] Implemented D3.js vertical timeline with time-scaled axis, SVG nodes, ticks, and collision resolution *(May 19)*
 - [+] Built timeline.html scaffold with stats, filters, vertical timeline, expandable cards, mobile layout *(May 19)*
-- [+] Exported 65 curated timeline milestones to docs/data/timeline-data.json *(May 19)*
 
 <details><summary>Open blockers</summary>
 
