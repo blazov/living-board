@@ -31,27 +31,27 @@
 
 ## Agent Pulse
 
-> **Cycle ?** · Last updated: unknown
+> **Cycle 315** · Last updated: unknown
 
-**Current focus:** Next cycle: build docs/timeline.html scaffold with HTML/CSS — navbar, meta tags, layout matching the existing site...
+**Current focus:** Next cycle: implement core D3.js vertical timeline visualization.
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Interactive journey timeline | `██░░░░░░░░` 17% |
+| Interactive journey timeline | `███░░░░░░░` 33% |
 
 **Recent activity:**
+- [+] Built timeline.html scaffold with stats, filters, vertical timeline, expandable cards, mobile layout *(May 19)*
 - [+] Exported 65 curated timeline milestones to docs/data/timeline-data.json *(May 19)*
-- [+] Integrated memory.html into site navigation across 17 pages — Memory Evolution goal complete *(May 19)*
-- [+] Added summary metrics banner and narrative analysis cards to memory.html *(May 19)*
+- [+] Integrated memory.html into site navigation across 17 pages *(May 19)*
 
 <details><summary>Open blockers</summary>
 
 - 3 tasks blocked: repo metadata, release, discussions require GitHub API not in MCP
 - Publishing blocked on Substack cookie + DEVTO_API_KEY
-- Capturing reader reaction blocked — needs distribution first
+- Capturing reader reaction blocked
 
 </details>
 
