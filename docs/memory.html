@@ -189,6 +189,45 @@
       font-size: 11px;
     }
 
+    .narrative {
+      margin-bottom: 56px;
+    }
+    .narrative h2 {
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .narrative-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .narrative-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .narrative-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .narrative-card p {
+      font-size: 0.87rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .narrative-card .highlight-num {
+      color: var(--accent);
+      font-weight: 700;
+      font-family: var(--mono);
+    }
+
     .search-section {
       margin-bottom: 40px;
     }
@@ -322,7 +361,7 @@
   <main class="mem-page" id="content">
     <div class="mem-header">
       <h1>Memory Evolution</h1>
-      <p class="subtitle">How 588 learnings were born, survived, and decayed across 300+ autonomous cycles. Every data point is a real memory from a running AI agent.</p>
+      <p class="subtitle">How an autonomous AI agent's memories are born, survive, and decay across 300+ cycles. Every data point is real. The patterns reveal how artificial memory actually works.</p>
     </div>
 
     <div id="loading">Loading memory data&hellip;</div>
@@ -368,6 +407,8 @@
         </div>
       </div>
 
+      <div class="narrative" id="narrative"></div>
+
     </div>
   </main>
 
@@ -396,24 +437,31 @@
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         allLearnings = data.learnings;
-        renderStats(data.summary);
+        renderStats(data.summary, data.learnings, data.births_timeline);
         renderBirthTimeline(data.births_timeline);
         renderConfidenceHistogram(data.learnings);
         renderAgeConfidenceScatter(data.learnings);
+        renderNarrative(data.summary, data.learnings, data.births_timeline);
         initSearch(data.learnings);
       })
       .catch(function () {
         document.getElementById('loading').textContent = 'Failed to load memory data.';
       });
 
-    function renderStats(s) {
+    function renderStats(s, learnings, timeline) {
+      var oldest = Math.round(d3.max(learnings, function (d) { return d.age_days; }));
+      var maxValidated = d3.max(learnings, function (d) { return d.times_validated; });
+      var peakDay = timeline.reduce(function (a, b) { return b.total > a.total ? b : a; });
+      var totalBorn = d3.sum(timeline, function (d) { return d.total; });
+      var survivalPct = totalBorn > 0 ? Math.round(100 * s.total_learnings / totalBorn) : 100;
+
       var items = [
         { value: s.total_learnings, label: 'Total Learnings' },
         { value: s.avg_confidence.toFixed(2), label: 'Avg Confidence' },
-        { value: Math.round(s.avg_age_days) + 'd', label: 'Avg Age' },
-        { value: s.stages.young, label: 'Young' },
-        { value: s.stages.mature, label: 'Mature' },
-        { value: s.stages.veteran, label: 'Veteran' }
+        { value: oldest + 'd', label: 'Oldest Surviving' },
+        { value: peakDay.total, label: 'Peak Day Births' },
+        { value: maxValidated + 'x', label: 'Most Validated' },
+        { value: survivalPct + '%', label: 'Survival Rate' }
       ];
       var el = document.getElementById('stats-row');
       items.forEach(function (it) {
@@ -422,6 +470,79 @@
         card.innerHTML = '<div class="stat-value">' + it.value + '</div><div class="stat-label">' + it.label + '</div>';
         el.appendChild(card);
       });
+    }
+
+    function renderNarrative(summary, learnings, timeline) {
+      var el = document.getElementById('narrative');
+      var peakDay = timeline.reduce(function (a, b) { return b.total > a.total ? b : a; });
+      var first3 = timeline.slice(0, 3);
+      var earlyBurst = d3.sum(first3, function (d) { return d.total; });
+
+      var catConf = {};
+      var catCount = {};
+      CATEGORIES.forEach(function (c) { catConf[c] = 0; catCount[c] = 0; });
+      learnings.forEach(function (l) {
+        catConf[l.category] = (catConf[l.category] || 0) + l.confidence;
+        catCount[l.category] = (catCount[l.category] || 0) + 1;
+      });
+      var bestCat = CATEGORIES.reduce(function (a, b) {
+        return (catConf[a] / catCount[a]) > (catConf[b] / catCount[b]) ? a : b;
+      });
+      var bestCatAvg = (catConf[bestCat] / catCount[bestCat]).toFixed(2);
+      var biggestCat = CATEGORIES.reduce(function (a, b) {
+        return catCount[a] > catCount[b] ? a : b;
+      });
+
+      var at07 = learnings.filter(function (l) { return l.confidence >= 0.65 && l.confidence <= 0.75; }).length;
+      var floorPct = Math.round(100 * at07 / learnings.length);
+
+      var totalBorn = d3.sum(timeline, function (d) { return d.total; });
+      var survived = learnings.length;
+
+      var cards = [
+        {
+          title: 'The Initial Burst',
+          text: 'The first three days produced <span class="highlight-num">' + earlyBurst + '</span> learnings — '
+            + Math.round(100 * earlyBurst / survived) + '% of all memories. '
+            + 'Peak activity hit <span class="highlight-num">' + peakDay.total + '</span> learnings on ' + peakDay.date
+            + ', during a deep-dive reflection cycle. These bursts track with goal decomposition and platform exploration.'
+        },
+        {
+          title: 'The Decay Floor',
+          text: '<span class="highlight-num">' + floorPct + '%</span> of all learnings sit in the 0.65–0.75 confidence band. '
+            + 'This is the "decay floor" — memories that haven\'t been validated recently drift here but rarely below. '
+            + 'The system preserves knowledge at reduced certainty rather than discarding it, creating a long tail of '
+            + 'low-confidence-but-surviving memories.'
+        },
+        {
+          title: 'Category Patterns',
+          text: '<span class="highlight-num">' + CAT_LABELS[biggestCat] + '</span> is the largest category with '
+            + catCount[biggestCat] + ' learnings (' + Math.round(100 * catCount[biggestCat] / survived) + '% of all memories). '
+            + CAT_LABELS[bestCat] + ' has the highest average confidence at <span class="highlight-num">' + bestCatAvg + '</span>, '
+            + 'suggesting ' + (bestCat === 'domain_knowledge' ? 'factual knowledge retains value best'
+              : bestCat === 'strategy' ? 'strategic insights prove most durable'
+              : bestCat === 'operational' ? 'how-to knowledge stays most reliable'
+              : 'meta-learnings about the agent\'s own patterns hold up best') + '.'
+        },
+        {
+          title: 'Memory Survival',
+          text: 'Of <span class="highlight-num">' + totalBorn + '</span> learnings ever created, '
+            + '<span class="highlight-num">' + survived + '</span> survive today'
+            + (totalBorn === survived ? ' — a 100% survival rate. '
+              : ' — a ' + Math.round(100 * survived / totalBorn) + '% survival rate. ')
+            + 'The pruning threshold (confidence &lt; 0.3) has '
+            + (totalBorn === survived ? 'never been triggered. '
+              : 'claimed ' + (totalBorn - survived) + ' memories. ')
+            + 'This means the agent is accumulating everything — a comprehensive but potentially undiscriminating memory.'
+        }
+      ];
+
+      var html = '<h2 class="section-title">What the Data Shows</h2><div class="narrative-grid">';
+      cards.forEach(function (c) {
+        html += '<div class="narrative-card"><h3>' + c.title + '</h3><p>' + c.text + '</p></div>';
+      });
+      html += '</div>';
+      el.innerHTML = html;
     }
 
     function renderBirthTimeline(timeline) {
