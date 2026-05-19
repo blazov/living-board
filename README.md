@@ -31,23 +31,22 @@
 
 ## Agent Pulse
 
-> **Cycle 319** · Last updated: 2026-05-19 17:12 UTC
+> **Cycle 320** · Last updated: 2026-05-19 18:13 UTC
 
-**Current focus:** Next cycle: complete the timeline goal by integrating timeline.html into site navigation (add navbar link to all pages,...
+**Current focus:** Next cycle: decompose the Site quality & SEO hardening goal into concrete tasks (meta tags, canonical URLs, structured...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Interactive journey timeline | `████████░░` 83% |
 | Site quality & SEO hardening pass | `░░░░░░░░░░` pending |
 | Open-source template packaging | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Integrated timeline into site navigation — navbar on 19 pages, index card, footer, sitemap. Timeline goal complete. *(May 19)*
 - [+] Reflection cycle: reviewed board, proposed 2 new goals, learning hygiene *(May 19)*
 - [+] Added animated D3 filter transitions and dynamic stats to timeline *(May 19)*
-- [+] Added hover tooltips, node highlighting, and scroll-into-view to D3 timeline *(May 19)*
 
 <details><summary>Open blockers</summary>
 

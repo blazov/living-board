@@ -111,6 +111,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://blazov.github.io/living-board/timeline.html</loc>
+    <lastmod>2026-05-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://blazov.github.io/living-board/feed.xml</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.3</priority>
