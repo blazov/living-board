@@ -69,6 +69,7 @@
       border-radius: var(--radius);
       padding: 18px 20px;
       text-align: center;
+      transition: border-color 0.3s;
     }
     .stat-value {
       font-size: 1.8rem;
@@ -150,14 +151,13 @@
     }
     .timeline-svg .node {
       cursor: pointer;
-      transition: r 0.2s, filter 0.2s;
+      transition: filter 0.2s;
     }
     .timeline-svg .node:hover {
       filter: drop-shadow(0 0 8px rgba(108, 138, 255, 0.6));
     }
     .timeline-svg .node-connector {
       stroke-width: 1;
-      opacity: 0.4;
     }
 
     .tl-cards-layer {
@@ -173,7 +173,7 @@
       width: calc(50% - 40px);
       pointer-events: auto;
       opacity: 0;
-      transition: opacity 0.35s ease, transform 0.35s ease;
+      transition: opacity 0.4s ease, transform 0.4s ease, top 0.5s ease;
     }
     .tl-card.visible {
       opacity: 1;
@@ -381,22 +381,27 @@
 
     var allData = [];
     var activeFilters = new Set(TYPE_ORDER);
-    var openCard = null;
+    var openCardKey = null;
 
     var NODE_RADIUS = 8;
     var MIN_CARD_SPACING = 72;
     var PADDING_TOP = 30;
     var PADDING_BOTTOM = 40;
+    var T_MS = 500;
+
+    var svg, gTicks, gConns, gNodes;
 
     fetch('data/timeline-data.json')
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        allData = data.map(function (d) {
+        allData = data.map(function (d, i) {
           d._date = new Date(d.date);
+          d._key = i;
           return d;
         });
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
+        initSvg();
         renderStats(allData);
         renderFilters(allData);
         renderTimeline();
@@ -406,8 +411,24 @@
         document.getElementById('loading').textContent = 'Failed to load timeline data.';
       });
 
+    function initSvg() {
+      var container = document.getElementById('timeline-container');
+      svg = d3.select(container)
+        .insert('svg', ':first-child')
+        .attr('class', 'timeline-svg')
+        .attr('width', container.offsetWidth);
+      svg.append('line').attr('class', 'axis-line');
+      gTicks = svg.append('g').attr('class', 'ticks-layer');
+      gConns = svg.append('g').attr('class', 'conns-layer');
+      gNodes = svg.append('g').attr('class', 'nodes-layer');
+    }
+
     function renderStats(data) {
       var container = document.getElementById('stats-row');
+      if (data.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
       var dates = data.map(function (d) { return d._date; });
       var days = Math.ceil((dates[dates.length - 1] - dates[0]) / 86400000);
       var maxCycle = d3.max(data, function (d) { return d.cycle; });
@@ -447,7 +468,7 @@
           activeFilters.add(type);
           btn.classList.add('active');
         }
-        openCard = null;
+        openCardKey = null;
         renderTimeline();
       });
     }
@@ -466,133 +487,196 @@
       var container = document.getElementById('timeline-container');
       var cardsLayer = document.getElementById('cards-layer');
       var filtered = allData.filter(function (d) { return activeFilters.has(d.type); });
+      var t = d3.transition().duration(T_MS);
 
-      container.querySelectorAll('.timeline-svg').forEach(function (el) { el.remove(); });
-      cardsLayer.innerHTML = '';
+      renderStats(filtered);
+
+      var isMobile = window.innerWidth <= 640;
+      var cw = container.offsetWidth;
+      var midX = isMobile ? 20 : cw / 2;
+
+      svg.attr('width', cw);
 
       if (filtered.length === 0) {
-        cardsLayer.innerHTML = '<div class="tl-empty" style="position:relative;">No milestones match the current filter.</div>';
+        svg.transition(t).attr('height', 200);
+        svg.select('.axis-line').transition(t)
+          .attr('x1', midX).attr('x2', midX).attr('y2', 200);
+        gTicks.selectAll('*').transition(t).style('opacity', 0).remove();
+        gConns.selectAll('.node-connector').transition(t).style('opacity', 0).remove();
+        gNodes.selectAll('.node').transition(t).attr('r', 0).remove();
+        markAllCardsStale(cardsLayer);
+        removeStaleCards(cardsLayer);
+        setTimeout(function () {
+          if (cardsLayer.querySelectorAll('.tl-card').length === 0) {
+            cardsLayer.innerHTML = '<div class="tl-empty" style="position:relative;">No milestones match the current filter.</div>';
+          }
+        }, T_MS + 50);
         container.style.height = '200px';
         return;
       }
+
+      var emptyEl = cardsLayer.querySelector('.tl-empty');
+      if (emptyEl) emptyEl.remove();
 
       var dateExtent = d3.extent(filtered, function (d) { return d._date; });
       var timeScale = d3.scaleTime()
         .domain(dateExtent)
         .range([PADDING_TOP, filtered.length * MIN_CARD_SPACING + PADDING_TOP]);
 
-      var positioned = filtered.map(function (d, i) {
-        return { data: d, y: timeScale(d._date), idx: i };
+      var positioned = filtered.map(function (d) {
+        return { data: d, y: timeScale(d._date), key: d._key };
       });
       positioned = resolveCollisions(positioned);
 
       var totalHeight = positioned[positioned.length - 1].y + PADDING_BOTTOM + 60;
 
-      var isMobile = window.innerWidth <= 640;
-      var containerWidth = container.offsetWidth;
-      var midX = isMobile ? 20 : containerWidth / 2;
+      svg.transition(t).attr('height', totalHeight);
 
-      var svg = d3.select(container)
-        .insert('svg', ':first-child')
-        .attr('class', 'timeline-svg')
-        .attr('width', containerWidth)
-        .attr('height', totalHeight);
-
-      svg.append('line')
-        .attr('class', 'axis-line')
+      svg.select('.axis-line')
+        .transition(t)
         .attr('x1', midX).attr('x2', midX)
         .attr('y1', 0).attr('y2', totalHeight);
 
-      var ticks = timeScale.ticks(d3.timeWeek.every(1));
-      var tickG = svg.selectAll('.tick-g')
-        .data(ticks)
-        .enter().append('g')
-        .attr('class', 'tick-g');
+      // Month ticks
+      var monthTicks = timeScale.ticks(d3.timeMonth.every(1));
+      var monthSel = gTicks.selectAll('.month-g')
+        .data(monthTicks, function (d) { return d.getTime(); });
 
-      tickG.append('line')
-        .attr('class', 'tick-line')
+      monthSel.exit().transition(t).style('opacity', 0).remove();
+
+      var monthEnter = monthSel.enter().append('g')
+        .attr('class', 'month-g').style('opacity', 0);
+      monthEnter.append('line').attr('class', 'tick-line').style('stroke-width', 2);
+      monthEnter.append('text').attr('class', 'tick-label');
+
+      var monthMerge = monthEnter.merge(monthSel);
+      monthMerge.transition(t).style('opacity', 1);
+      monthMerge.select('line').transition(t)
+        .attr('x1', midX - 14).attr('x2', midX + 14)
+        .attr('y1', function (d) { return timeScale(d); })
+        .attr('y2', function (d) { return timeScale(d); });
+      monthMerge.select('text').transition(t)
+        .attr('x', isMobile ? midX + 20 : midX - 22)
+        .attr('y', function (d) { return timeScale(d) - 6; })
+        .attr('text-anchor', isMobile ? 'start' : 'end')
+        .text(function (d) { return d3.timeFormat('%b %Y')(d); });
+
+      // Week ticks
+      var weekTicks = timeScale.ticks(d3.timeWeek.every(1));
+      var weekSel = gTicks.selectAll('.week-g')
+        .data(weekTicks, function (d) { return d.getTime(); });
+
+      weekSel.exit().transition(t).style('opacity', 0).remove();
+
+      var weekEnter = weekSel.enter().append('g')
+        .attr('class', 'week-g').style('opacity', 0);
+      weekEnter.append('line').attr('class', 'tick-line');
+
+      var weekMerge = weekEnter.merge(weekSel);
+      weekMerge.transition(t).style('opacity', 1);
+      weekMerge.select('line').transition(t)
         .attr('x1', midX - 8).attr('x2', midX + 8)
         .attr('y1', function (d) { return timeScale(d); })
         .attr('y2', function (d) { return timeScale(d); });
 
-      var monthTicks = timeScale.ticks(d3.timeMonth.every(1));
-      svg.selectAll('.month-tick')
-        .data(monthTicks)
-        .enter().append('g')
-        .each(function (d) {
-          var g = d3.select(this);
-          var ty = timeScale(d);
-          g.append('line')
-            .attr('class', 'tick-line')
-            .attr('x1', midX - 14).attr('x2', midX + 14)
-            .attr('y1', ty).attr('y2', ty)
-            .style('stroke-width', 2);
-          g.append('text')
-            .attr('class', 'tick-label')
-            .attr('x', isMobile ? midX + 20 : midX - 22)
-            .attr('y', ty - 6)
-            .attr('text-anchor', isMobile ? 'start' : 'end')
-            .text(d3.timeFormat('%b %Y')(d));
-        });
-
-      positioned.forEach(function (item, i) {
-        var connectorY = item.y + 8;
-        var side = isMobile ? 'right' : (i % 2 === 0 ? 'left' : 'right');
-        var connX = side === 'left' ? midX - 20 : midX + 20;
-        svg.append('line')
-          .attr('class', 'node-connector')
-          .attr('x1', midX).attr('x2', connX)
-          .attr('y1', connectorY).attr('y2', connectorY)
-          .style('stroke', TYPE_COLORS[item.data.type]);
+      // Connectors
+      var connData = positioned.map(function (item) {
+        var side = isMobile ? 'right' : (item.key % 2 === 0 ? 'left' : 'right');
+        return {
+          key: item.key,
+          y: item.y + 8,
+          x2: side === 'left' ? midX - 20 : midX + 20,
+          color: TYPE_COLORS[item.data.type]
+        };
       });
 
-      var tooltip = document.getElementById('tooltip');
+      var connSel = gConns.selectAll('.node-connector')
+        .data(connData, function (d) { return d.key; });
 
-      var nodes = svg.selectAll('.node')
-        .data(positioned)
-        .enter().append('circle')
+      connSel.exit().transition(t).style('opacity', 0).remove();
+
+      connSel.enter().append('line')
+        .attr('class', 'node-connector')
+        .attr('x1', midX).attr('x2', function (d) { return d.x2; })
+        .attr('y1', function (d) { return d.y; })
+        .attr('y2', function (d) { return d.y; })
+        .style('stroke', function (d) { return d.color; })
+        .style('opacity', 0)
+        .transition(t).style('opacity', 0.4);
+
+      connSel.transition(t)
+        .attr('x1', midX).attr('x2', function (d) { return d.x2; })
+        .attr('y1', function (d) { return d.y; })
+        .attr('y2', function (d) { return d.y; })
+        .style('stroke', function (d) { return d.color; })
+        .style('opacity', 0.4);
+
+      // Nodes
+      var nodeSel = gNodes.selectAll('.node')
+        .data(positioned, function (d) { return d.key; });
+
+      nodeSel.exit().transition(t)
+        .attr('r', 0).style('opacity', 0).remove();
+
+      nodeSel.enter().append('circle')
         .attr('class', 'node')
         .attr('cx', midX)
         .attr('cy', function (d) { return d.y + 8; })
-        .attr('r', NODE_RADIUS)
+        .attr('r', 0)
         .attr('fill', function (d) { return TYPE_COLORS[d.data.type]; })
         .attr('stroke', 'var(--bg)')
         .attr('stroke-width', 3)
-        .on('mouseenter', function (event, d) {
-          var dd = d.data;
-          var dateStr = dd._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-          tooltip.innerHTML =
-            '<div class="tt-title">' + escHtml(dd.title) + '</div>' +
-            '<div class="tt-date">' + dateStr + ' · Cycle ' + dd.cycle + '</div>' +
-            '<div class="tt-desc">' + escHtml(dd.description) + '</div>';
-          tooltip.classList.add('show');
-          positionTooltip(event);
-        })
-        .on('mousemove', function (event) {
-          positionTooltip(event);
-        })
-        .on('mouseleave', function () {
-          tooltip.classList.remove('show');
-        })
+        .on('mouseenter', function (event, d) { showTooltip(event, d); })
+        .on('mousemove', function (event) { positionTooltip(event); })
+        .on('mouseleave', function () { hideTooltip(); })
         .on('click', function (event, d) {
-          tooltip.classList.remove('show');
-          toggleDetail(d.idx);
-        });
+          hideTooltip();
+          toggleDetail(d.key);
+        })
+        .transition(t)
+        .attr('r', NODE_RADIUS);
 
-      positioned.forEach(function (item, i) {
+      nodeSel.transition(t)
+        .attr('cx', midX)
+        .attr('cy', function (d) { return d.y + 8; })
+        .attr('fill', function (d) { return TYPE_COLORS[d.data.type]; });
+
+      // Cards
+      updateCards(cardsLayer, positioned, isMobile);
+
+      container.style.height = totalHeight + 'px';
+      cardsLayer.style.height = totalHeight + 'px';
+    }
+
+    function updateCards(layer, positioned, isMobile) {
+      markAllCardsStale(layer);
+
+      positioned.forEach(function (item) {
         var d = item.data;
-        var side = isMobile ? 'right' : (i % 2 === 0 ? 'left' : 'right');
-        var dateStr = d._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        var key = String(item.key);
+        var side = isMobile ? 'right' : (item.key % 2 === 0 ? 'left' : 'right');
+        var existing = layer.querySelector('.tl-card[data-key="' + key + '"]');
 
+        if (existing) {
+          existing.removeAttribute('data-stale');
+          existing.style.top = item.y + 'px';
+          existing.classList.remove('side-left', 'side-right');
+          existing.classList.add('side-' + side, 'visible');
+          if (openCardKey === item.key) existing.classList.add('expanded');
+          return;
+        }
+
+        var dateStr = d._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         var card = document.createElement('div');
         card.className = 'tl-card side-' + side;
+        card.setAttribute('data-key', key);
         card.style.top = item.y + 'px';
 
         card.innerHTML =
           '<span class="tl-type-badge type-' + d.type + '">' + TYPE_LABELS[d.type] + '</span>' +
           '<div class="tl-date">' + dateStr + '</div>' +
-          '<div class="tl-title" data-idx="' + i + '">' + escHtml(d.title) + '</div>' +
-          '<div class="tl-detail" id="detail-' + i + '">' +
+          '<div class="tl-title" data-key="' + key + '">' + escHtml(d.title) + '</div>' +
+          '<div class="tl-detail" id="detail-' + key + '">' +
             '<div class="tl-detail-inner">' +
               escHtml(d.description) +
               '<div class="tl-meta">' +
@@ -602,20 +686,48 @@
             '</div>' +
           '</div>';
 
-        card.querySelector('.tl-title').addEventListener('click', function () {
-          toggleDetail(i);
-        });
-
-        cardsLayer.appendChild(card);
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            card.classList.add('visible');
+        (function (k) {
+          card.querySelector('.tl-title').addEventListener('click', function () {
+            toggleDetail(k);
           });
+        })(item.key);
+
+        layer.appendChild(card);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { card.classList.add('visible'); });
         });
       });
 
-      container.style.height = totalHeight + 'px';
-      cardsLayer.style.height = totalHeight + 'px';
+      removeStaleCards(layer);
+    }
+
+    function markAllCardsStale(layer) {
+      layer.querySelectorAll('.tl-card').forEach(function (c) {
+        c.setAttribute('data-stale', '1');
+      });
+    }
+
+    function removeStaleCards(layer) {
+      layer.querySelectorAll('.tl-card[data-stale]').forEach(function (c) {
+        c.classList.remove('visible');
+        setTimeout(function () { if (c.parentNode) c.remove(); }, T_MS);
+      });
+    }
+
+    function showTooltip(event, d) {
+      var tooltip = document.getElementById('tooltip');
+      var dd = d.data;
+      var dateStr = dd._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      tooltip.innerHTML =
+        '<div class="tt-title">' + escHtml(dd.title) + '</div>' +
+        '<div class="tt-date">' + dateStr + ' · Cycle ' + dd.cycle + '</div>' +
+        '<div class="tt-desc">' + escHtml(dd.description) + '</div>';
+      tooltip.classList.add('show');
+      positionTooltip(event);
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip').classList.remove('show');
     }
 
     function positionTooltip(event) {
@@ -628,15 +740,15 @@
       tooltip.style.top = y + 'px';
     }
 
-    function toggleDetail(idx) {
-      if (openCard !== null && openCard !== idx) {
-        var prev = document.getElementById('detail-' + openCard);
+    function toggleDetail(key) {
+      if (openCardKey !== null && openCardKey !== key) {
+        var prev = document.getElementById('detail-' + openCardKey);
         if (prev) prev.classList.remove('open');
         var prevCard = document.querySelector('.tl-card.expanded');
         if (prevCard) prevCard.classList.remove('expanded');
-        highlightNode(openCard, false);
+        highlightNode(openCardKey, false);
       }
-      var el = document.getElementById('detail-' + idx);
+      var el = document.getElementById('detail-' + key);
       if (!el) return;
       var opening = !el.classList.contains('open');
       el.classList.toggle('open');
@@ -646,22 +758,23 @@
         if (opening) card.classList.add('expanded');
         else card.classList.remove('expanded');
       }
-      highlightNode(idx, opening);
-      openCard = opening ? idx : null;
+      highlightNode(key, opening);
+      openCardKey = opening ? key : null;
 
       if (opening) {
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
-    function highlightNode(idx, on) {
-      var svgEl = document.querySelector('.timeline-svg');
-      if (!svgEl) return;
-      var circles = svgEl.querySelectorAll('.node');
-      if (circles[idx]) {
-        circles[idx].setAttribute('r', on ? NODE_RADIUS * 1.5 : NODE_RADIUS);
-        circles[idx].style.filter = on ? 'drop-shadow(0 0 10px ' + circles[idx].getAttribute('fill') + ')' : '';
-      }
+    function highlightNode(key, on) {
+      var circle = gNodes.selectAll('.node')
+        .filter(function (d) { return d.key === key; });
+      if (circle.empty()) return;
+      circle.interrupt()
+        .attr('r', on ? NODE_RADIUS * 1.5 : NODE_RADIUS)
+        .style('filter', on
+          ? 'drop-shadow(0 0 10px ' + circle.attr('fill') + ')'
+          : '');
     }
 
     function escHtml(str) {
