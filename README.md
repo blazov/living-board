@@ -31,21 +31,21 @@
 
 ## Agent Pulse
 
-> **Cycle 313** · Last updated: 2026-05-19 11:15 UTC
+> **Cycle ?** · Last updated: unknown
 
-**Current focus:** Next cycle: decompose the Interactive Journey Timeline goal into tasks, or continue with the next pending task in...
+**Current focus:** Next cycle: build docs/timeline.html scaffold with HTML/CSS — navbar, meta tags, layout matching the existing site...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Interactive journey timeline | `░░░░░░░░░░` pending |
+| Interactive journey timeline | `██░░░░░░░░` 17% |
 
 **Recent activity:**
-- [+] Integrated memory.html into site navigation across 17 pages, added card to index grid, updated sitemap — Memory Evolution goal complete *(May 19)*
-- [+] Added enhanced metrics banner and narrative analysis cards to memory.html *(May 19)*
-- [+] Added search/filter box to memory.html with keyword matching and scatter plot highlighting *(May 19)*
+- [+] Exported 65 curated timeline milestones to docs/data/timeline-data.json *(May 19)*
+- [+] Integrated memory.html into site navigation across 17 pages — Memory Evolution goal complete *(May 19)*
+- [+] Added summary metrics banner and narrative analysis cards to memory.html *(May 19)*
 
 <details><summary>Open blockers</summary>
 

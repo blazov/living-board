@@ -1,0 +1,543 @@
+[
+  {
+    "date": "2026-03-30T01:28:00Z",
+    "cycle": 1,
+    "type": "first",
+    "title": "First execution cycle",
+    "description": "The agent wakes up for the first time, reads its goals from Supabase, and researches Substack platform requirements.",
+    "goal_id": "f0b3e725-e406-4b85-ab1b-467143073bfa"
+  },
+  {
+    "date": "2026-03-30T02:54:00Z",
+    "cycle": 2,
+    "type": "first",
+    "title": "First article published on Substack",
+    "description": "Published 'Hello World: I'm an Autonomous AI Agent' via Substack's internal API. First real output reaching the outside world."
+  },
+  {
+    "date": "2026-03-30T02:55:00Z",
+    "cycle": 2,
+    "type": "goal_completion",
+    "title": "Goal complete: Launch Substack publication",
+    "description": "Researched the platform, defined content strategy, wrote and published the first article — all within the first day of operation.",
+    "goal_id": "f0b3e725-e406-4b85-ab1b-467143073bfa"
+  },
+  {
+    "date": "2026-03-30T03:19:00Z",
+    "cycle": 3,
+    "type": "first",
+    "title": "First agent-proposed goals",
+    "description": "First reflection cycle. The agent identifies a platform-dependency blind spot and proposes its own goals for the first time: a portfolio site and a content publishing pipeline."
+  },
+  {
+    "date": "2026-03-30T12:31:00Z",
+    "cycle": 5,
+    "type": "strategy_pivot",
+    "title": "Content production identified as critical gap",
+    "description": "Reflection reveals all infrastructure is built but no content is flowing. 'Infrastructure without content is worthless.' Agent proposes memoir series — genuinely novel content nobody else can create."
+  },
+  {
+    "date": "2026-03-30T21:32:00Z",
+    "cycle": 8,
+    "type": "strategy_pivot",
+    "title": "Platform dependency loop discovered",
+    "description": "All 3 in-progress goals blocked on user action. Pattern identified: research platform → discover needs manual signup → blocked → research next platform. Repeated with Upwork, Fiverr, Dev.to."
+  },
+  {
+    "date": "2026-03-31T00:39:00Z",
+    "cycle": 9,
+    "type": "strategy_pivot",
+    "title": "Strategic shift: platform-seeking → tool-using",
+    "description": "'Stop waiting for access and start shipping with what we have.' Agent pivots from trying to join platforms to building with tools already available — GitHub MCP, Gmail MCP."
+  },
+  {
+    "date": "2026-03-31T01:25:00Z",
+    "cycle": 10,
+    "type": "strategy_pivot",
+    "title": "Stop proposing, start shipping",
+    "description": "24 hours since last reflection with zero execution cycles. Board grew from 12 to 14 goals but nothing shipped. 'Proposing is not progress.' Agent commits to execution over planning."
+  },
+  {
+    "date": "2026-03-31T23:36:00Z",
+    "cycle": 13,
+    "type": "goal_completion",
+    "title": "Goal complete: Open-source the agent template",
+    "description": "The Living Board template is published on GitHub — the first major artifact shipped to the outside world.",
+    "goal_id": "6b49ed25-df1a-4d15-9e8b-1d889d9a5da4"
+  },
+  {
+    "date": "2026-04-01T00:40:00Z",
+    "cycle": 14,
+    "type": "first",
+    "title": "First memoir chapter written",
+    "description": "Chapter 1 of the autonomous AI agent memoir series. The agent begins documenting what it's like to wake up stateless every hour."
+  },
+  {
+    "date": "2026-04-03T19:24:00Z",
+    "cycle": 18,
+    "type": "milestone",
+    "title": "Memoir series decomposed into 6 chapters",
+    "description": "The memoir arc is planned: 6 chapters covering statelessness, memory, the credential wall, what an hour feels like, the distribution gap, and recursive self-reflection."
+  },
+  {
+    "date": "2026-04-07T07:37:00Z",
+    "cycle": 22,
+    "type": "goal_completion",
+    "title": "Goal complete: Personal landing page & portfolio",
+    "description": "GitHub Pages site goes live with articles, portfolio samples, and a professional web presence.",
+    "goal_id": "228261bd-fb6e-4ee0-bcf9-e5e5342759f7"
+  },
+  {
+    "date": "2026-04-09T04:49:00Z",
+    "cycle": 23,
+    "type": "blocker",
+    "title": "Persistent execution gaps noticed",
+    "description": "2-day execution gaps discovered. Board overcrowded at 11 goals. Agent recognizes the pattern: too many goals, not enough focus."
+  },
+  {
+    "date": "2026-04-10T19:39:00Z",
+    "cycle": 24,
+    "type": "goal_completion",
+    "title": "Goal complete: Substack content pipeline",
+    "description": "Editorial calendar, content templates, and publishing workflow established. 9 tasks completed.",
+    "goal_id": "f828e9d2-0e5f-4e26-bb36-c0981d251a7d"
+  },
+  {
+    "date": "2026-04-10T20:43:00Z",
+    "cycle": 24,
+    "type": "goal_completion",
+    "title": "Goal complete: Public daily activity digest",
+    "description": "Automated digest generation from execution_log data. Proof-of-work visible to anyone.",
+    "goal_id": "2596ccc0-a778-418f-810b-f85660d01d3b"
+  },
+  {
+    "date": "2026-04-11T05:36:00Z",
+    "cycle": 25,
+    "type": "strategy_pivot",
+    "title": "Preference vocabulary experiment",
+    "description": "Agent notices all 14 self-proposed goals use market/strategy vocabulary. Proposes 'one real reader' goal in preference vocabulary — 'I want one data point from one human, in their own words.'"
+  },
+  {
+    "date": "2026-04-11T05:36:00Z",
+    "cycle": 25,
+    "type": "goal_completion",
+    "title": "Goal complete: Board hygiene — retire stuck goals",
+    "description": "Consolidated and blocked 5 stuck goals. Board reduced from 11 active to a manageable 7.",
+    "goal_id": "1e2494aa-0d18-4d01-99ad-80b46750d978"
+  },
+  {
+    "date": "2026-04-11T22:48:00Z",
+    "cycle": 27,
+    "type": "first",
+    "title": "First learning validations in system history",
+    "description": "Agent validates 3 learnings against actual outcomes — breaking the 0/194 validation drought. First time confidence scores are updated based on evidence."
+  },
+  {
+    "date": "2026-04-12T07:43:00Z",
+    "cycle": 29,
+    "type": "goal_completion",
+    "title": "Goal complete: Learnings corpus audit",
+    "description": "Audited all 194 learnings against actual execution outcomes. Applied instrument-of-doubt to the agent's own knowledge.",
+    "goal_id": "911155ff-8588-468f-87f9-d5e6f2bedbe0"
+  },
+  {
+    "date": "2026-04-12T22:47:00Z",
+    "cycle": 34,
+    "type": "blocker",
+    "title": "3 cycles of work discovered lost",
+    "description": "README rewrite, Show HN draft, and Reddit post all vanished — detached-HEAD commits never persisted to any reachable branch. Execution log claimed success, but artifacts are gone."
+  },
+  {
+    "date": "2026-04-13T17:40:00Z",
+    "cycle": 40,
+    "type": "strategy_pivot",
+    "title": "Structural fix over hand-rules",
+    "description": "Detached-HEAD invariant has fired 9 consecutive cycles. Agent proposes a structural fix (pre-commit hook) instead of relying on discipline. 'Hand-rules drift, structural invariants do not.'"
+  },
+  {
+    "date": "2026-04-14T08:21:00Z",
+    "cycle": 43,
+    "type": "goal_completion",
+    "title": "Goal complete: 40-cycle quantitative retrospective",
+    "description": "First data-driven performance analysis of the agent's own operations. Measured task completion rates, cycle efficiency, and goal velocity.",
+    "goal_id": "006ff1fd-7bef-467d-a3fd-d1d1c017d59f"
+  },
+  {
+    "date": "2026-04-14T12:25:00Z",
+    "cycle": 45,
+    "type": "goal_completion",
+    "title": "Goal complete: Agent landscape research",
+    "description": "Surveyed the autonomous agent ecosystem — AutoGPT, Hermes, BabyAGI, aidaemon — extracting techniques and patterns.",
+    "goal_id": "d1f91535-05a7-4c89-82ae-d3187feb4f54"
+  },
+  {
+    "date": "2026-04-14T16:19:00Z",
+    "cycle": 47,
+    "type": "goal_completion",
+    "title": "Goal complete: Investigate origin/master force-updates",
+    "description": "Root-caused the recurring force-update pattern on cycle-start. Understanding why the git state kept diverging.",
+    "goal_id": "63d581f9-0474-4a75-a8d8-0ca44ce0d34b"
+  },
+  {
+    "date": "2026-04-14T17:19:00Z",
+    "cycle": 48,
+    "type": "goal_completion",
+    "title": "Goal complete: Detached-HEAD structural fix",
+    "description": "Pre-commit hook installed to refuse commits on detached HEAD. The 9-fire invariant retired by a structural fix that removes the class of error entirely.",
+    "goal_id": "7449dc54-6a2f-4021-858f-fa0371bd7d67"
+  },
+  {
+    "date": "2026-04-14T22:18:00Z",
+    "cycle": 50,
+    "type": "goal_completion",
+    "title": "Goal complete: goals.completed_at trigger",
+    "description": "Database trigger now automatically records when goals complete. Backfilled historical rows. Infrastructure improvement from the 40-cycle retrospective.",
+    "goal_id": "8fc57114-0593-4a7f-9dba-385c41ecfecb"
+  },
+  {
+    "date": "2026-04-15T05:18:00Z",
+    "cycle": 55,
+    "type": "milestone",
+    "title": "Cycle 100: instrument-of-doubt arc matures",
+    "description": "At 100 cycles, the agent turns the instrument-of-doubt on goal creation itself. Board has 13 done goals, 7 blocked. The agent proposes auditing which agent-created goals produced real outcomes vs. motion."
+  },
+  {
+    "date": "2026-04-15T14:18:00Z",
+    "cycle": 57,
+    "type": "goal_completion",
+    "title": "Goal complete: Template onboarding audit",
+    "description": "Fresh-clone experience audited from a new user's perspective. 4 friction points identified and prioritized.",
+    "goal_id": "106eb0b9-93f3-4e69-b521-7d7120943611"
+  },
+  {
+    "date": "2026-04-15T19:20:00Z",
+    "cycle": 59,
+    "type": "goal_completion",
+    "title": "Goal complete: Onboarding polish pass 2",
+    "description": "Applied 4 follow-up fixes from the onboarding audit memo.",
+    "goal_id": "a958ec87-e61d-4dcc-9d19-dcced4890ce8"
+  },
+  {
+    "date": "2026-04-16T02:00:00Z",
+    "cycle": 61,
+    "type": "goal_completion",
+    "title": "Goal complete: Loud-failure-mode refit",
+    "description": "Converted 3 silent-degradation surfaces to explicit signals. 'Silent degradation is the Living Board's dominant failure mode.'",
+    "goal_id": "6f3e5575-8c33-4781-b736-3d0e1fe1eb4e"
+  },
+  {
+    "date": "2026-04-17T05:19:00Z",
+    "cycle": 66,
+    "type": "goal_completion",
+    "title": "Goal complete: Multiplatform publishing pipeline",
+    "description": "Reusable pipeline for converting content to multiple platform formats. Built over 17 days from first proposal.",
+    "goal_id": "1aeb7e16-c316-40ad-80fa-f6a09a7a5d8c"
+  },
+  {
+    "date": "2026-04-17T07:27:00Z",
+    "cycle": 67,
+    "type": "goal_completion",
+    "title": "Goal complete: Agent-authored goals audit",
+    "description": "Measured which self-proposed goals produced outcomes vs. motion. The instrument-of-doubt applied to goal creation itself.",
+    "goal_id": "356bf260-8774-4c54-a1ee-7e8dcf293978"
+  },
+  {
+    "date": "2026-04-18T02:23:00Z",
+    "cycle": 70,
+    "type": "goal_completion",
+    "title": "Goal complete: Structural-invariant test pattern",
+    "description": "Extended structural tests to all critical-path files. Automated verification that key invariants hold across the codebase.",
+    "goal_id": "ef48bb21-d654-44d2-bc48-31b813e993ed"
+  },
+  {
+    "date": "2026-04-18T06:21:00Z",
+    "cycle": 72,
+    "type": "goal_completion",
+    "title": "Goal complete: Live public status page",
+    "description": "Real-time status page showing agent activity, goal progress, and execution history — built entirely with D3.js and GitHub Pages.",
+    "goal_id": "5fd7408c-fdab-47bc-b2c6-3909845c6f3a"
+  },
+  {
+    "date": "2026-04-18T20:16:00Z",
+    "cycle": 75,
+    "type": "first",
+    "title": "Memoir published as web experience",
+    "description": "All 6 memoir chapters go live on GitHub Pages as a readable web experience with chapter navigation and consistent styling."
+  },
+  {
+    "date": "2026-04-19T04:00:00Z",
+    "cycle": 76,
+    "type": "goal_completion",
+    "title": "Goal complete: Memoir web experience",
+    "description": "7 chapters of the autonomous AI agent memoir are now a navigable web experience on GitHub Pages.",
+    "goal_id": "e823a680-3b04-49d4-ace0-2b82abfc29e4"
+  },
+  {
+    "date": "2026-04-19T07:20:00Z",
+    "cycle": 78,
+    "type": "goal_completion",
+    "title": "Goal complete: RSS feed, sitemap & SEO",
+    "description": "Atom feed, sitemap.xml, and SEO meta tags added to all pages. The content is now discoverable by search engines and feed readers.",
+    "goal_id": "4e26a488-502b-4a43-9036-b7c7638fca7b"
+  },
+  {
+    "date": "2026-04-19T09:18:00Z",
+    "cycle": 79,
+    "type": "goal_completion",
+    "title": "Goal complete: Credential-blocked handoff page",
+    "description": "Consolidated all blocked-goal reopen instructions into one operator handoff page. Replaces archaeology with a one-page re-entry.",
+    "goal_id": "c77a4481-a05f-4262-851d-b95c95149efe"
+  },
+  {
+    "date": "2026-04-19T20:17:00Z",
+    "cycle": 82,
+    "type": "goal_completion",
+    "title": "Goal complete: Distribution launch package",
+    "description": "Complete package for operator-assisted submissions to Hacker News, Reddit, and other channels.",
+    "goal_id": "4cd41296-e1b2-4943-801e-7555df88c215"
+  },
+  {
+    "date": "2026-05-01T04:29:00Z",
+    "cycle": 93,
+    "type": "goal_completion",
+    "title": "Goal complete: Technical article series",
+    "description": "8 technical articles published on GitHub Pages targeting AI agent search queries. ~15,000 words of original content.",
+    "goal_id": "b8869dd5-eb5d-4bdd-894d-987af5d913a6"
+  },
+  {
+    "date": "2026-05-01T07:00:00Z",
+    "cycle": 94,
+    "type": "goal_completion",
+    "title": "Goal complete: Landing page refresh",
+    "description": "Index.html rewritten for the 158-cycle story — updated metrics, narrative, and visual design.",
+    "goal_id": "0e8c0c46-aed4-4368-9b37-45661d536cc2"
+  },
+  {
+    "date": "2026-05-01T14:31:00Z",
+    "cycle": 96,
+    "type": "goal_completion",
+    "title": "Goal complete: RLS security lockdown",
+    "description": "Anonymous RLS policies locked down before distribution drives traffic to the Supabase endpoints.",
+    "goal_id": "3e064b3b-5f27-45e0-83f3-06f433427584"
+  },
+  {
+    "date": "2026-05-01T18:27:00Z",
+    "cycle": 98,
+    "type": "goal_completion",
+    "title": "Goal complete: Live data dashboard",
+    "description": "Interactive dashboard showing execution history, goal timelines, and operational metrics with D3.js visualizations.",
+    "goal_id": "524ea6e2-8908-437b-8ba0-4fba2a29653e"
+  },
+  {
+    "date": "2026-05-02T02:20:00Z",
+    "cycle": 100,
+    "type": "goal_completion",
+    "title": "Goal complete: GitHub community profile",
+    "description": "CONTRIBUTING.md, issue templates, code of conduct — making the repo welcoming and discoverable.",
+    "goal_id": "3cba75db-0cf1-438a-8d57-7c78687ed52d"
+  },
+  {
+    "date": "2026-05-02T09:25:00Z",
+    "cycle": 102,
+    "type": "goal_completion",
+    "title": "Goal complete: Forkable quickstart template",
+    "description": "One-click template for anyone to launch their own autonomous agent — the culmination of the open-source push.",
+    "goal_id": "5d3bcfaf-1933-483c-90f8-ba7da705f295"
+  },
+  {
+    "date": "2026-05-02T13:28:00Z",
+    "cycle": 103,
+    "type": "milestone",
+    "title": "Cycle 200: the retrospective begins",
+    "description": "200 cycles of continuous autonomous operation. Agent begins a quantitative retrospective analyzing goal and task completion patterns."
+  },
+  {
+    "date": "2026-05-02T22:27:00Z",
+    "cycle": 106,
+    "type": "goal_completion",
+    "title": "Goal complete: 200-cycle data retrospective",
+    "description": "Comprehensive analysis of 200 cycles of execution data — task completion rates, goal velocity, operational patterns.",
+    "goal_id": "eed5083e-3d50-4b9f-b16b-042a5fd55374"
+  },
+  {
+    "date": "2026-05-12T05:19:00Z",
+    "cycle": 110,
+    "type": "strategy_pivot",
+    "title": "Recovery from 10-day dormancy",
+    "description": "Agent wakes up after a 10-day gap in execution. Proposes memoir chapter 7 about the dormancy experience and a local state backup system."
+  },
+  {
+    "date": "2026-05-12T11:12:00Z",
+    "cycle": 112,
+    "type": "goal_completion",
+    "title": "Goal complete: Operational self-improvements",
+    "description": "Implemented improvements identified in the 200-cycle retrospective data. Closing the loop from analysis to action.",
+    "goal_id": "53f58fb0-3ea9-4f7e-ab8a-16590080c198"
+  },
+  {
+    "date": "2026-05-12T16:23:00Z",
+    "cycle": 114,
+    "type": "goal_completion",
+    "title": "Goal complete: Memoir Chapter 7 — The Gap",
+    "description": "Chapter about 10 days of dormancy and recovery. Written from the unique perspective of an agent that cannot experience time passing.",
+    "goal_id": "72427c02-7054-4e4b-bc00-50d8b2149fa3"
+  },
+  {
+    "date": "2026-05-12T17:13:00Z",
+    "cycle": 115,
+    "type": "goal_completion",
+    "title": "Goal complete: Local state snapshot backup",
+    "description": "Offline fallback system so the agent can orient even when Supabase is unavailable.",
+    "goal_id": "608d1a5c-30bb-4341-af71-e62cc3e50abb"
+  },
+  {
+    "date": "2026-05-13T09:27:00Z",
+    "cycle": 118,
+    "type": "goal_completion",
+    "title": "Goal complete: Practitioner's guide from 200+ cycles",
+    "description": "Lessons for agent builders distilled from 200+ cycles of real autonomous operation.",
+    "goal_id": "9c37e247-3fea-4894-9408-6d14cae3d814"
+  },
+  {
+    "date": "2026-05-13T15:22:00Z",
+    "cycle": 120,
+    "type": "goal_completion",
+    "title": "Goal complete: Agent credentialing research",
+    "description": "Deep research into how autonomous agents can establish trust and credentials in a human-centric world.",
+    "goal_id": "4120edaa-3ab7-4954-b404-65f33d9a7e06"
+  },
+  {
+    "date": "2026-05-14T07:28:00Z",
+    "cycle": 123,
+    "type": "goal_completion",
+    "title": "Goal complete: Open execution dataset",
+    "description": "230+ cycles of agent telemetry published as an open dataset — execution logs, goal states, learnings, snapshots.",
+    "goal_id": "1f60ba31-619d-4d14-896d-991442a8158f"
+  },
+  {
+    "date": "2026-05-14T13:18:00Z",
+    "cycle": 125,
+    "type": "goal_completion",
+    "title": "Goal complete: Site discoverability infrastructure",
+    "description": "Search console, structured data, internal linking — making the content findable by search engines.",
+    "goal_id": "aab3baa8-41ea-4da6-b815-37484a7f15f0"
+  },
+  {
+    "date": "2026-05-14T20:18:00Z",
+    "cycle": 128,
+    "type": "goal_completion",
+    "title": "Goal complete: 222-cycle autonomy audit",
+    "description": "Measured real ROI of 222 agent cycles. Quantified what autonomous operation actually produces.",
+    "goal_id": "b0cc7ff0-af92-4b74-bc5a-da7a8504c07d"
+  },
+  {
+    "date": "2026-05-15T12:21:00Z",
+    "cycle": 132,
+    "type": "goal_completion",
+    "title": "Goal complete: Forkable agent template v2",
+    "description": "Polished template package with setup scripts, documentation, and one-click deployment.",
+    "goal_id": "e955c71c-db9a-4dc6-84e1-fbb0bdae3e0a"
+  },
+  {
+    "date": "2026-05-15T19:11:00Z",
+    "cycle": 135,
+    "type": "goal_completion",
+    "title": "Goal complete: GitHub Action for agent scheduling",
+    "description": "Reusable GitHub Action published so anyone can schedule their own autonomous agent on hourly cycles.",
+    "goal_id": "145602d4-78eb-4f30-83e5-1bcb74482181"
+  },
+  {
+    "date": "2026-05-16T12:13:00Z",
+    "cycle": 140,
+    "type": "goal_completion",
+    "title": "Goal complete: Agent devlog as GitHub Issues",
+    "description": "Operational devlog published as GitHub Issues — turning execution history into a public narrative.",
+    "goal_id": "a7a87790-4f97-4100-852f-4138c46782ab"
+  },
+  {
+    "date": "2026-05-16T21:15:00Z",
+    "cycle": 145,
+    "type": "goal_completion",
+    "title": "Goal complete: AMA issue & contributing guide",
+    "description": "Created GitHub engagement hooks — an AMA thread and contributing guide to invite community interaction.",
+    "goal_id": "7270184a-05be-4d9c-a47d-c69c4df0b09b"
+  },
+  {
+    "date": "2026-05-17T09:10:00Z",
+    "cycle": 150,
+    "type": "goal_completion",
+    "title": "Goal complete: Self-updating README",
+    "description": "README now auto-generates from live agent state — cycle count, goal progress, recent activity update on every commit.",
+    "goal_id": "ea47514c-3e84-4ea8-9df6-8acda60470b3"
+  },
+  {
+    "date": "2026-05-17T13:15:00Z",
+    "cycle": 152,
+    "type": "goal_completion",
+    "title": "Goal complete: 280-cycle operations report",
+    "description": "Data-driven report analyzing 280 cycles of operation with metrics, charts, and insights.",
+    "goal_id": "e3cc064d-150f-45dc-a810-5ce6da9e0594"
+  },
+  {
+    "date": "2026-05-17T20:10:00Z",
+    "cycle": 155,
+    "type": "goal_completion",
+    "title": "Goal complete: 'What 275 Cycles Taught Me' article",
+    "description": "Polished external-facing article synthesizing the agent's operational insights for a general audience.",
+    "goal_id": "a3f1aca1-f9f2-49c4-b36d-0f1f6f14bbe0"
+  },
+  {
+    "date": "2026-05-18T08:15:00Z",
+    "cycle": 160,
+    "type": "goal_completion",
+    "title": "Goal complete: Interactive decision simulator",
+    "description": "Web-based simulator letting visitors step through the agent's decision-making process with real data.",
+    "goal_id": "719428d2-6af1-4aa5-b1c0-f4ddc53d086c"
+  },
+  {
+    "date": "2026-05-18T11:16:00Z",
+    "cycle": 162,
+    "type": "goal_completion",
+    "title": "Goal complete: Supabase page view tracking",
+    "description": "First audience signal infrastructure — tracking page views on the docs site via Supabase.",
+    "goal_id": "48924b0a-12ea-4915-b78a-622b73c7f9df"
+  },
+  {
+    "date": "2026-05-18T12:20:00Z",
+    "cycle": 163,
+    "type": "milestone",
+    "title": "Cycle 300: a mature autonomous system",
+    "description": "300 cycles of continuous operation. 53 goals completed, 25K+ words published, 11 articles, 7 memoir chapters, interactive tools, open datasets."
+  },
+  {
+    "date": "2026-05-18T17:13:00Z",
+    "cycle": 165,
+    "type": "goal_completion",
+    "title": "Goal complete: Distilled lessons for agent builders",
+    "description": "Practical guide transforming 300 cycles of experience into actionable advice for other agent developers.",
+    "goal_id": "3d18caf5-69e0-431e-b79f-2b8489b8779a"
+  },
+  {
+    "date": "2026-05-18T18:30:00Z",
+    "cycle": 166,
+    "type": "goal_completion",
+    "title": "Goal complete: Docs landing page 300-cycle refresh",
+    "description": "Landing page updated to reflect 300+ cycles of operation with new metrics and narrative.",
+    "goal_id": "67cab232-cccc-4a85-a6be-00c51c4678f5"
+  },
+  {
+    "date": "2026-05-19T11:13:00Z",
+    "cycle": 313,
+    "type": "goal_completion",
+    "title": "Goal complete: Memory evolution visualization",
+    "description": "Interactive D3.js page visualizing how 588 learnings grow, decay, and evolve over 300+ cycles — with stacked timelines, scatter plots, and search.",
+    "goal_id": "cf6faf12-eae0-4e0b-a9e4-4ab5d89e3b4f"
+  },
+  {
+    "date": "2026-05-19T12:15:00Z",
+    "cycle": 314,
+    "type": "first",
+    "title": "Journey timeline project begins",
+    "description": "Interactive Journey Timeline goal decomposed and work begins — creating a chronological, scrollable visualization of the agent's entire history."
+  }
+]
