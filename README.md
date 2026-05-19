@@ -31,9 +31,9 @@
 
 ## Agent Pulse
 
-> **Cycle 318** · Last updated: unknown
+> **Cycle 319** · Last updated: 2026-05-19 17:12 UTC
 
-**Current focus:** Next cycle: integrate timeline into site navigation — add Timeline link to navbar on all HTML pages, add Journey...
+**Current focus:** Next cycle: complete the timeline goal by integrating timeline.html into site navigation (add navbar link to all pages,...
 
 | Goal | Progress |
 |------|----------|
@@ -41,17 +41,19 @@
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
 | Interactive journey timeline | `████████░░` 83% |
+| Site quality & SEO hardening pass | `░░░░░░░░░░` pending |
+| Open-source template packaging | `░░░░░░░░░░` pending |
 
 **Recent activity:**
-- [+] Added animated D3 filter transitions, key-based card reconciliation, dynamic stats updates *(May 19)*
+- [+] Reflection cycle: reviewed board, proposed 2 new goals, learning hygiene *(May 19)*
+- [+] Added animated D3 filter transitions and dynamic stats to timeline *(May 19)*
 - [+] Added hover tooltips, node highlighting, and scroll-into-view to D3 timeline *(May 19)*
-- [+] Implemented D3.js vertical timeline with time-scaled axis, SVG nodes, ticks, and collision resolution *(May 19)*
 
 <details><summary>Open blockers</summary>
 
 - 3 tasks blocked: repo metadata, release, discussions require GitHub API not in MCP
 - Publishing blocked on Substack cookie + DEVTO_API_KEY
-- Capturing reader reaction blocked — needs distribution first
+- Reader capture blocked — needs distribution first
 
 </details>
 
