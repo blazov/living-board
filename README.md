@@ -31,22 +31,22 @@
 
 ## Agent Pulse
 
-> **Cycle 320** · Last updated: 2026-05-19 18:13 UTC
+> **Cycle 321** · Last updated: 2026-05-19 19:15 UTC
 
-**Current focus:** Next cycle: decompose the Site quality & SEO hardening goal into concrete tasks (meta tags, canonical URLs, structured...
+**Current focus:** Next cycle: add canonical URLs and meta description tags to all 30 HTML pages (task 2 of SEO hardening).
 
 | Goal | Progress |
 |------|----------|
+| Site quality & SEO hardening pass | `██░░░░░░░░` 17% |
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Site quality & SEO hardening pass | `░░░░░░░░░░` pending |
 | Open-source template packaging | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Sitemap.xml overhaul: added 7 missing articles, corrected 17 dates, 31 URLs total *(May 19)*
 - [+] Integrated timeline into site navigation — navbar on 19 pages, index card, footer, sitemap. Timeline goal complete. *(May 19)*
 - [+] Reflection cycle: reviewed board, proposed 2 new goals, learning hygiene *(May 19)*
-- [+] Added animated D3 filter transitions and dynamic stats to timeline *(May 19)*
 
 <details><summary>Open blockers</summary>
 
