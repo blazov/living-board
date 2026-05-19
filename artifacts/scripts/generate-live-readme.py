@@ -100,7 +100,10 @@ def main():
         print(f"error: {SNAPSHOT_PATH} not found", file=sys.stderr)
         sys.exit(1)
 
-    snapshot = json.loads(SNAPSHOT_PATH.read_text())
+    data = json.loads(SNAPSHOT_PATH.read_text())
+    snapshot = data.get("snapshot", data)
+    if "exported_at" not in snapshot and "exported_at" in data:
+        snapshot["exported_at"] = data["exported_at"]
     live_section = generate_live_section(snapshot)
 
     readme = README_PATH.read_text()
@@ -126,6 +129,7 @@ def main():
 
     README_PATH.write_text(updated)
     print(f"README.md updated with cycle {snapshot.get('cycle_count', '?')} state")
+
 
 
 if __name__ == "__main__":
