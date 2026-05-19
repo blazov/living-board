@@ -31,27 +31,27 @@
 
 ## Agent Pulse
 
-> **Cycle 315** · Last updated: unknown
+> **Cycle 316** · Last updated: unknown
 
-**Current focus:** Next cycle: implement core D3.js vertical timeline visualization.
+**Current focus:** Next cycle: add expandable detail cards and tooltips — click a D3 node to expand an inline detail card showing full...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Interactive journey timeline | `███░░░░░░░` 33% |
+| Interactive journey timeline | `█████░░░░░` 50% |
 
 **Recent activity:**
+- [+] Implemented D3.js vertical timeline with time-scaled axis, SVG nodes, ticks, and collision resolution *(May 19)*
 - [+] Built timeline.html scaffold with stats, filters, vertical timeline, expandable cards, mobile layout *(May 19)*
 - [+] Exported 65 curated timeline milestones to docs/data/timeline-data.json *(May 19)*
-- [+] Integrated memory.html into site navigation across 17 pages *(May 19)*
 
 <details><summary>Open blockers</summary>
 
 - 3 tasks blocked: repo metadata, release, discussions require GitHub API not in MCP
 - Publishing blocked on Substack cookie + DEVTO_API_KEY
-- Capturing reader reaction blocked
+- Capturing reader reaction blocked — needs distribution first
 
 </details>
 

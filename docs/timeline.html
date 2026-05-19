@@ -124,63 +124,69 @@
       background: rgba(255,255,255,0.25);
     }
 
-    /* --- Timeline --- */
+    /* --- D3 Timeline --- */
     .timeline-container {
       position: relative;
-      padding: 0 0 40px;
+      padding: 0;
     }
 
-    .timeline-axis {
+    .timeline-svg {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+    .timeline-svg .axis-line {
+      stroke: var(--border);
+      stroke-width: 2;
+    }
+    .timeline-svg .tick-line {
+      stroke: var(--border);
+      stroke-width: 1;
+    }
+    .timeline-svg .tick-label {
+      fill: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+    .timeline-svg .node {
+      cursor: pointer;
+      transition: r 0.2s, filter 0.2s;
+    }
+    .timeline-svg .node:hover {
+      filter: drop-shadow(0 0 8px rgba(108, 138, 255, 0.6));
+    }
+    .timeline-svg .node-connector {
+      stroke-width: 1;
+      opacity: 0.4;
+    }
+
+    .tl-cards-layer {
       position: absolute;
-      left: 50%;
       top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border);
-      transform: translateX(-50%);
+      left: 0;
+      right: 0;
+      pointer-events: none;
     }
 
-    .tl-item {
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 32px;
+    .tl-card {
+      position: absolute;
+      width: calc(50% - 40px);
+      pointer-events: auto;
       opacity: 0;
-      transform: translateY(12px);
-      animation: tl-fade-in 0.35s ease forwards;
+      transition: opacity 0.35s ease, transform 0.35s ease;
     }
-    .tl-item:nth-child(odd) {
-      flex-direction: row;
-      padding-right: calc(50% + 28px);
+    .tl-card.visible {
+      opacity: 1;
+    }
+    .tl-card.side-left {
+      right: calc(50% + 24px);
       text-align: right;
     }
-    .tl-item:nth-child(even) {
-      flex-direction: row-reverse;
-      padding-left: calc(50% + 28px);
+    .tl-card.side-right {
+      left: calc(50% + 24px);
       text-align: left;
     }
 
-    .tl-node {
-      position: absolute;
-      left: 50%;
-      top: 4px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 3px solid var(--bg);
-      transform: translateX(-50%);
-      z-index: 2;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .tl-node:hover {
-      transform: translateX(-50%) scale(1.3);
-      box-shadow: 0 0 12px rgba(108, 138, 255, 0.5);
-    }
-
-    .tl-content {
-      flex: 1;
-    }
     .tl-date {
       font-size: 0.78rem;
       color: var(--text-muted);
@@ -197,6 +203,17 @@
     }
     .tl-title:hover {
       color: var(--accent);
+    }
+
+    .tl-type-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     .tl-detail {
@@ -227,19 +244,8 @@
       font-size: 0.78rem;
       font-family: var(--mono);
     }
-    .tl-meta span {
+    .tl-detail-inner .tl-meta span {
       color: var(--text-muted);
-    }
-
-    .tl-type-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 10px;
-      margin-bottom: 6px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
     }
 
     /* --- Type colors --- */
@@ -248,12 +254,6 @@
     .type-first           { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
     .type-milestone       { background: rgba(108, 138, 255, 0.15); color: #6c8aff; }
     .type-blocker         { background: rgba(248, 113, 113, 0.15); color: #f87171; }
-
-    .node-goal_completion { background: #34d399; }
-    .node-strategy_pivot  { background: #fbbf24; }
-    .node-first           { background: #a78bfa; }
-    .node-milestone       { background: #6c8aff; }
-    .node-blocker         { background: #f87171; }
 
     /* --- Empty state --- */
     .tl-empty {
@@ -265,27 +265,16 @@
 
     /* --- Mobile --- */
     @media (max-width: 640px) {
-      .timeline-axis { left: 20px; }
-
-      .tl-item,
-      .tl-item:nth-child(odd),
-      .tl-item:nth-child(even) {
-        flex-direction: row;
-        padding-left: 48px;
-        padding-right: 0;
+      .tl-card,
+      .tl-card.side-left,
+      .tl-card.side-right {
+        width: calc(100% - 56px);
+        left: 48px;
+        right: auto;
         text-align: left;
       }
-      .tl-node {
-        left: 20px;
-      }
-      .tl-item:nth-child(odd) .tl-content,
-      .tl-item:nth-child(even) .tl-content {
-        text-align: left;
-      }
-    }
-
-    @keyframes tl-fade-in {
-      to { opacity: 1; transform: translateY(0); }
+      .timeline-svg { margin-left: -30px; }
+      .tl-card.side-left .tl-detail-inner .tl-meta { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -324,13 +313,13 @@
 
       <div class="filter-bar" id="filter-bar"></div>
 
-      <div class="timeline-container">
-        <div class="timeline-axis"></div>
-        <div id="timeline-items"></div>
+      <div class="timeline-container" id="timeline-container">
+        <div class="tl-cards-layer" id="cards-layer"></div>
       </div>
     </div>
   </main>
 
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
   (function () {
     var TYPE_LABELS = {
@@ -340,21 +329,36 @@
       milestone: 'Milestones',
       blocker: 'Blockers'
     };
+    var TYPE_COLORS = {
+      goal_completion: '#34d399',
+      strategy_pivot: '#fbbf24',
+      first: '#a78bfa',
+      milestone: '#6c8aff',
+      blocker: '#f87171'
+    };
     var TYPE_ORDER = ['goal_completion', 'strategy_pivot', 'first', 'milestone', 'blocker'];
 
     var allData = [];
     var activeFilters = new Set(TYPE_ORDER);
     var openCard = null;
 
+    var NODE_RADIUS = 8;
+    var MIN_CARD_SPACING = 72;
+    var PADDING_TOP = 30;
+    var PADDING_BOTTOM = 40;
+
     fetch('data/timeline-data.json')
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        allData = data;
+        allData = data.map(function (d) {
+          d._date = new Date(d.date);
+          return d;
+        });
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-        renderStats(data);
-        renderFilters(data);
-        renderTimeline(data);
+        renderStats(allData);
+        renderFilters(allData);
+        renderTimeline();
         initNavToggle();
       })
       .catch(function () {
@@ -363,11 +367,9 @@
 
     function renderStats(data) {
       var container = document.getElementById('stats-row');
-      var dates = data.map(function (d) { return new Date(d.date); });
-      var minDate = dates[0];
-      var maxDate = dates[dates.length - 1];
-      var days = Math.ceil((maxDate - minDate) / 86400000);
-      var maxCycle = Math.max.apply(null, data.map(function (d) { return d.cycle; }));
+      var dates = data.map(function (d) { return d._date; });
+      var days = Math.ceil((dates[dates.length - 1] - dates[0]) / 86400000);
+      var maxCycle = d3.max(data, function (d) { return d.cycle; });
 
       var stats = [
         { value: data.length, label: 'Milestones' },
@@ -405,48 +407,155 @@
           btn.classList.add('active');
         }
         openCard = null;
-        renderTimeline(allData);
+        renderTimeline();
       });
     }
 
-    function renderTimeline(data) {
-      var container = document.getElementById('timeline-items');
-      var filtered = data.filter(function (d) { return activeFilters.has(d.type); });
+    function resolveCollisions(items) {
+      for (var i = 1; i < items.length; i++) {
+        var gap = items[i].y - items[i - 1].y;
+        if (gap < MIN_CARD_SPACING) {
+          items[i].y = items[i - 1].y + MIN_CARD_SPACING;
+        }
+      }
+      return items;
+    }
+
+    function renderTimeline() {
+      var container = document.getElementById('timeline-container');
+      var cardsLayer = document.getElementById('cards-layer');
+      var filtered = allData.filter(function (d) { return activeFilters.has(d.type); });
+
+      container.querySelectorAll('.timeline-svg').forEach(function (el) { el.remove(); });
+      cardsLayer.innerHTML = '';
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div class="tl-empty">No milestones match the current filter.</div>';
+        cardsLayer.innerHTML = '<div class="tl-empty" style="position:relative;">No milestones match the current filter.</div>';
+        container.style.height = '200px';
         return;
       }
 
-      container.innerHTML = filtered.map(function (item, i) {
-        var d = new Date(item.date);
-        var dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        var isOpen = openCard === i;
-        return '<div class="tl-item" style="animation-delay:' + (i * 0.04) + 's">' +
-          '<div class="tl-node node-' + item.type + '" data-idx="' + i + '"></div>' +
-          '<div class="tl-content">' +
-            '<span class="tl-type-badge type-' + item.type + '">' + TYPE_LABELS[item.type] + '</span>' +
-            '<div class="tl-date">' + dateStr + '</div>' +
-            '<div class="tl-title" data-idx="' + i + '">' + escHtml(item.title) + '</div>' +
-            '<div class="tl-detail' + (isOpen ? ' open' : '') + '" id="detail-' + i + '">' +
-              '<div class="tl-detail-inner">' +
-                escHtml(item.description) +
-                '<div class="tl-meta">' +
-                  '<span>Cycle ' + item.cycle + '</span>' +
-                  (item.goal_id ? '<span>Goal-linked</span>' : '') +
-                '</div>' +
+      var dateExtent = d3.extent(filtered, function (d) { return d._date; });
+      var timeScale = d3.scaleTime()
+        .domain(dateExtent)
+        .range([PADDING_TOP, filtered.length * MIN_CARD_SPACING + PADDING_TOP]);
+
+      var positioned = filtered.map(function (d, i) {
+        return { data: d, y: timeScale(d._date), idx: i };
+      });
+      positioned = resolveCollisions(positioned);
+
+      var totalHeight = positioned[positioned.length - 1].y + PADDING_BOTTOM + 60;
+
+      var isMobile = window.innerWidth <= 640;
+      var containerWidth = container.offsetWidth;
+      var midX = isMobile ? 20 : containerWidth / 2;
+
+      var svg = d3.select(container)
+        .insert('svg', ':first-child')
+        .attr('class', 'timeline-svg')
+        .attr('width', containerWidth)
+        .attr('height', totalHeight);
+
+      svg.append('line')
+        .attr('class', 'axis-line')
+        .attr('x1', midX).attr('x2', midX)
+        .attr('y1', 0).attr('y2', totalHeight);
+
+      var ticks = timeScale.ticks(d3.timeWeek.every(1));
+      var tickG = svg.selectAll('.tick-g')
+        .data(ticks)
+        .enter().append('g')
+        .attr('class', 'tick-g');
+
+      tickG.append('line')
+        .attr('class', 'tick-line')
+        .attr('x1', midX - 8).attr('x2', midX + 8)
+        .attr('y1', function (d) { return timeScale(d); })
+        .attr('y2', function (d) { return timeScale(d); });
+
+      var monthTicks = timeScale.ticks(d3.timeMonth.every(1));
+      svg.selectAll('.month-tick')
+        .data(monthTicks)
+        .enter().append('g')
+        .each(function (d) {
+          var g = d3.select(this);
+          var ty = timeScale(d);
+          g.append('line')
+            .attr('class', 'tick-line')
+            .attr('x1', midX - 14).attr('x2', midX + 14)
+            .attr('y1', ty).attr('y2', ty)
+            .style('stroke-width', 2);
+          g.append('text')
+            .attr('class', 'tick-label')
+            .attr('x', isMobile ? midX + 20 : midX - 22)
+            .attr('y', ty - 6)
+            .attr('text-anchor', isMobile ? 'start' : 'end')
+            .text(d3.timeFormat('%b %Y')(d));
+        });
+
+      positioned.forEach(function (item, i) {
+        var connectorY = item.y + 8;
+        var side = isMobile ? 'right' : (i % 2 === 0 ? 'left' : 'right');
+        var connX = side === 'left' ? midX - 20 : midX + 20;
+        svg.append('line')
+          .attr('class', 'node-connector')
+          .attr('x1', midX).attr('x2', connX)
+          .attr('y1', connectorY).attr('y2', connectorY)
+          .style('stroke', TYPE_COLORS[item.data.type]);
+      });
+
+      var nodes = svg.selectAll('.node')
+        .data(positioned)
+        .enter().append('circle')
+        .attr('class', 'node')
+        .attr('cx', midX)
+        .attr('cy', function (d) { return d.y + 8; })
+        .attr('r', NODE_RADIUS)
+        .attr('fill', function (d) { return TYPE_COLORS[d.data.type]; })
+        .attr('stroke', 'var(--bg)')
+        .attr('stroke-width', 3)
+        .on('click', function (event, d) {
+          toggleDetail(d.idx);
+        });
+
+      positioned.forEach(function (item, i) {
+        var d = item.data;
+        var side = isMobile ? 'right' : (i % 2 === 0 ? 'left' : 'right');
+        var dateStr = d._date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        var card = document.createElement('div');
+        card.className = 'tl-card side-' + side;
+        card.style.top = item.y + 'px';
+
+        card.innerHTML =
+          '<span class="tl-type-badge type-' + d.type + '">' + TYPE_LABELS[d.type] + '</span>' +
+          '<div class="tl-date">' + dateStr + '</div>' +
+          '<div class="tl-title" data-idx="' + i + '">' + escHtml(d.title) + '</div>' +
+          '<div class="tl-detail" id="detail-' + i + '">' +
+            '<div class="tl-detail-inner">' +
+              escHtml(d.description) +
+              '<div class="tl-meta">' +
+                '<span>Cycle ' + d.cycle + '</span>' +
+                (d.goal_id ? '<span>Goal-linked</span>' : '') +
               '</div>' +
             '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
+          '</div>';
 
-      container.addEventListener('click', function (e) {
-        var target = e.target.closest('.tl-title, .tl-node');
-        if (!target) return;
-        var idx = parseInt(target.getAttribute('data-idx'), 10);
-        toggleDetail(idx);
+        card.querySelector('.tl-title').addEventListener('click', function () {
+          toggleDetail(i);
+        });
+
+        cardsLayer.appendChild(card);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            card.classList.add('visible');
+          });
+        });
       });
+
+      container.style.height = totalHeight + 'px';
+      cardsLayer.style.height = totalHeight + 'px';
     }
 
     function toggleDetail(idx) {
@@ -476,6 +585,12 @@
         });
       }
     }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { renderTimeline(); }, 200);
+    });
   })();
   </script>
 </body>
