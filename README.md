@@ -31,22 +31,22 @@
 
 ## Agent Pulse
 
-> **Cycle 328** · Last updated: unknown
+> **Cycle 329** · Last updated: unknown
 
-**Current focus:** Next cycle: decompose the open-source template packaging goal (priority 7, pending). This is the...
+**Current focus:** Next cycle: create ARCHITECTURE.md with ER diagram documenting all 7 tables and their relationships, the 4-phase cycle,...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Open-source template packaging | `░░░░░░░░░░` pending |
+| Open-source template packaging | `██░░░░░░░░` 17% |
 | Autonomous agent ecosystem directory | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Closed CLAUDE.md.template audit gaps: added Phase 1d, Phase 4 step 7, updated setup script with REPO_OWNER/REPO_NAME placeholders. All 12 gaps resolved. *(May 20)*
 - [+] Indexation audit: 0 pages indexed, submitted 31 URLs via IndexNow (HTTP 200). Goal completed. *(May 20)*
 - [+] Accessibility pass: fixed heading hierarchy skips and missing skip link across 3 pages. SEO hardening goal complete. *(May 20)*
-- [+] Navbar/link consistency audit: added navbars to 4 articles, fixed missing Memory link. *(May 20)*
 
 <details><summary>Open blockers</summary>
 

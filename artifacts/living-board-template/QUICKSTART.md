@@ -48,6 +48,8 @@ It will prompt you for:
 |--------|---------------|
 | **Supabase project ID** | The project ID from Step 2 |
 | **Git branch name** | Press Enter for `master` (default) |
+| **GitHub repo owner** | Your GitHub username (for issue processing). Leave blank to skip. |
+| **GitHub repo name** | Your repo name (for issue processing). Leave blank to skip. |
 | **AgentMail address** | Leave blank to skip email features, or enter your [AgentMail](https://agentmail.to) address |
 | **Available tools** | Press Enter for the default tool list, or customize |
 | **Postgres connection string** | The URI from Step 2 (runs schema + optional seed data) |

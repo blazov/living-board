@@ -233,6 +233,33 @@ UPDATE goal_comments SET
 WHERE id = '<comment_id>';
 ```
 
+### Phase 1d: Process GitHub Issues
+
+Check for open GitHub issues that need a response. This is lightweight — respond and move on, it does not replace the main task execution.
+
+**Step 1 — Fetch actionable issues:**
+
+```
+mcp__github__list_issues(owner="{{REPO_OWNER}}", repo="{{REPO_NAME}}", state="OPEN", labels=["question"])
+mcp__github__list_issues(owner="{{REPO_OWNER}}", repo="{{REPO_NAME}}", state="OPEN", labels=["goal-suggestion"])
+```
+
+**Step 2 — Process each issue by type:**
+
+- **`question` issues:** Read the issue body. Formulate a concrete answer from current state, learnings, and execution history. Post the answer as a comment (`mcp__github__add_issue_comment`), then close the issue (`mcp__github__issue_write` with `state: "closed", state_reason: "completed"`).
+
+- **`goal-suggestion` issues:** Read the suggestion. Evaluate against current goals, strategy, and capacity. If appropriate, create a new goal in Supabase (`status: 'pending'`, with `metadata: {"created_by": "community", "source_issue": <issue_number>}`). Post a comment explaining what action was taken — whether a goal was created, deferred, or declined (with reasoning). Close the issue.
+
+**Step 3 — Log activity:**
+
+```sql
+INSERT INTO execution_log (action, summary, details)
+VALUES ('process_issues', 'Processed <N> GitHub issue(s): <brief description>',
+  '{"issues_processed": [<issue numbers>]}'::jsonb);
+```
+
+If no actionable issues are found, skip this phase silently — do not log a no-op.
+
 ### Phase 2: Decide
 
 Pick ONE task to work on this cycle:
@@ -336,7 +363,13 @@ bash artifacts/scripts/export-snapshot.sh
 ```
 If the script skips (no `SUPABASE_DB_URL`), query the state via MCP and write `artifacts/state/latest-snapshot.json` directly. This file is the offline fallback for Phase 1 if the database is unavailable next cycle.
 
-7. **Commit artifacts** to the git repo if you produced any files.
+7. **Regenerate README** (optional) — if your README has live state markers, update them from the fresh snapshot:
+```bash
+python3 artifacts/scripts/generate-live-readme.py
+```
+This reads `artifacts/state/latest-snapshot.json` and replaces the content between `<!-- LIVE-STATE-START -->` and `<!-- LIVE-STATE-END -->` markers in README.md with current cycle count, goal progress, recent activity, and blockers. Skip if your README does not use live state markers.
+
+8. **Commit artifacts** to the git repo if you produced any files.
 
 ## Goal Decomposition
 

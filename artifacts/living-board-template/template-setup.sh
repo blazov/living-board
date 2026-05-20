@@ -85,6 +85,9 @@ fi
 
 BRANCH_NAME="$(ask "Git branch name for the agent" "master")"
 
+REPO_OWNER="$(ask "GitHub repo owner (for issue processing)" "")"
+REPO_NAME="$(ask "GitHub repo name (for issue processing)" "")"
+
 AGENTMAIL_ADDRESS="$(ask "AgentMail address (leave blank to skip email features)" "")"
 
 DEFAULT_TOOLS='- **WebSearch / WebFetch**: Research, find information, check platforms
@@ -107,6 +110,8 @@ OUTPUT="$SCRIPT_DIR/CLAUDE.md"
 sed \
   -e "s|{{SUPABASE_PROJECT_ID}}|${SUPABASE_PROJECT_ID}|g" \
   -e "s|{{BRANCH_NAME}}|${BRANCH_NAME}|g" \
+  -e "s|{{REPO_OWNER}}|${REPO_OWNER}|g" \
+  -e "s|{{REPO_NAME}}|${REPO_NAME}|g" \
   -e "s|{{AGENTMAIL_ADDRESS}}|${AGENTMAIL_ADDRESS}|g" \
   "$TEMPLATE" > "$OUTPUT.tmp"
 
@@ -191,6 +196,7 @@ echo ""
 echo "  CLAUDE.md:          $OUTPUT"
 echo "  Supabase project:   $SUPABASE_PROJECT_ID"
 echo "  Branch:             $BRANCH_NAME"
+[ -n "$REPO_OWNER" ] && echo "  GitHub repo:        $REPO_OWNER/$REPO_NAME"
 [ -n "$AGENTMAIL_ADDRESS" ] && echo "  AgentMail:          $AGENTMAIL_ADDRESS"
 echo ""
 echo "Next steps:"
