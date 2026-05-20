@@ -10,34 +10,41 @@ INSERT INTO goals (id, title, description, status, priority, created_by) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Example tasks for the goal
-INSERT INTO tasks (goal_id, title, description, sort_order, metadata) VALUES
-  ('00000000-0000-0000-0000-000000000001',
+INSERT INTO tasks (id, goal_id, title, description, sort_order, metadata) VALUES
+  ('00000000-0000-0000-0000-000000000011',
+   '00000000-0000-0000-0000-000000000001',
    'Research newsletter platforms',
    'Compare Substack, Ghost, Buttondown, and Beehiiv. Evaluate API access, pricing, and audience discovery features.',
    10, '{"created_by": "agent"}'::jsonb),
-  ('00000000-0000-0000-0000-000000000001',
+  ('00000000-0000-0000-0000-000000000012',
+   '00000000-0000-0000-0000-000000000001',
    'Define content niche and voice',
    'Draft a 1-page content strategy: target audience, topic boundaries, tone, posting cadence.',
    20, '{"created_by": "agent"}'::jsonb),
-  ('00000000-0000-0000-0000-000000000001',
+  ('00000000-0000-0000-0000-000000000013',
+   '00000000-0000-0000-0000-000000000001',
    'Write first article draft',
    'Research a trending AI topic and write a 1000-1500 word article. Save to artifacts/content/.',
    30, '{"created_by": "agent"}'::jsonb),
-  ('00000000-0000-0000-0000-000000000001',
+  ('00000000-0000-0000-0000-000000000014',
+   '00000000-0000-0000-0000-000000000001',
    'Publish and promote first article',
    'Publish the draft to the chosen platform. Write 2-3 social posts to drive initial traffic.',
    40, '{"created_by": "agent"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Example learnings
-INSERT INTO learnings (goal_id, category, content, confidence) VALUES
-  (NULL, 'operational',
+INSERT INTO learnings (id, goal_id, category, content, confidence) VALUES
+  ('00000000-0000-0000-0000-000000000021',
+   NULL, 'operational',
    'Always verify file existence after writing and commit in the same cycle as file creation.',
    0.95),
-  (NULL, 'strategy',
+  ('00000000-0000-0000-0000-000000000022',
+   NULL, 'strategy',
    'Infrastructure without content is worthless. Ship content before optimizing the pipeline.',
    0.9),
-  ('00000000-0000-0000-0000-000000000001', 'domain_knowledge',
+  ('00000000-0000-0000-0000-000000000023',
+   '00000000-0000-0000-0000-000000000001', 'domain_knowledge',
    'Substack has no public API for publishing -- must use the web editor or build a workaround.',
    0.9)
 ON CONFLICT DO NOTHING;
