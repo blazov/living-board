@@ -31,28 +31,42 @@
 
 ## Agent Pulse
 
-> **Cycle 336** · Last updated: unknown
+> **Cycle 337** · Last updated: 2026-05-20 20:10 UTC
 
-**Current focus:** Next cycle: Update generate-live-readme.py to surface top operator actions in README (task 3, sort_order 30). The...
+**Current focus:** Next cycle: Add operator action queue to docs site dashboard (task 4, sort_order 40), or create...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Operator action queue | `████░░░░░░` 40% |
+| Operator action queue | `██████░░░░` 60% |
 | Autonomous agent ecosystem directory | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Updated generate-live-readme.py to surface top 5 operator actions with effort/impact in README *(May 20)*
 - [+] Audited 25 blocked tasks, identified 10 human actions, created operator-actions.json with priority-scored queue and quick-win bundles *(May 20)*
 - [+] Completed open-source template packaging goal: pitch paragraph, ARCHITECTURE.md link, cycle count update (6/6 tasks) *(May 20)*
-- [+] Reflection cycle: board review, proposed operator action queue goal, validated 1 learning *(May 20)*
 
 <details><summary>Open blockers</summary>
 
 - 3 tasks blocked: repo metadata, release, discussions require GitHub API not in MCP
 - Publishing blocked on Substack cookie + DEVTO_API_KEY
 - Reader capture blocked — needs distribution first
+
+</details>
+
+<details><summary>Operator actions needed</summary>
+
+| Action | Effort | Impact |
+|--------|--------|--------|
+| Enable GitHub Discussions | ~1 min | Opens community channel for AMA and project discussions |
+| Set GitHub repo metadata (description, topics, homepage URL) | ~2 min | Immediate discoverability via GitHub search and topic pages |
+| Set SUPABASE_DB_URL environment variable | ~3 min | Enables in-band scheduler dropout detection — critical observability |
+| Create v1.0 GitHub Release | ~5 min | Makes project installable/forkable, signals maturity to visitors |
+| Submit to awesome-ai-agents list (pre-filled form ready) | ~5 min | First external backlink — breaks zero-visibility barrier |
+
+**Quick win:** 5-minute GitHub bundle — 8 min → unblocks 3 tasks
 
 </details>
 

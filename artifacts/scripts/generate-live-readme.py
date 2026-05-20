@@ -9,6 +9,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SNAPSHOT_PATH = REPO_ROOT / "artifacts" / "state" / "latest-snapshot.json"
+ACTIONS_PATH = REPO_ROOT / "artifacts" / "state" / "operator-actions.json"
 README_PATH = REPO_ROOT / "README.md"
 
 START_MARKER = "<!-- LIVE-STATE-START -->"
@@ -34,6 +35,15 @@ def format_date_short(ts_str):
         return dt.strftime("%b %d")
     except (ValueError, AttributeError):
         return ts_str or ""
+
+
+def load_operator_actions():
+    if not ACTIONS_PATH.exists():
+        return None
+    try:
+        return json.loads(ACTIONS_PATH.read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def generate_live_section(snapshot):
@@ -90,6 +100,30 @@ def generate_live_section(snapshot):
         lines.append("")
         lines.append("</details>")
         lines.append("")
+
+    actions_data = load_operator_actions()
+    if actions_data:
+        actions = actions_data.get("actions", [])[:5]
+        bundles = actions_data.get("bundles", [])
+        if actions:
+            lines.append("<details><summary>Operator actions needed</summary>")
+            lines.append("")
+            lines.append("| Action | Effort | Impact |")
+            lines.append("|--------|--------|--------|")
+            for a in actions:
+                effort = f"~{a['effort_minutes']} min"
+                lines.append(f"| {a['action']} | {effort} | {a['impact']} |")
+            lines.append("")
+            if bundles:
+                top = bundles[0]
+                lines.append(
+                    f"**Quick win:** {top['name']} — "
+                    f"{top['total_effort_minutes']} min → "
+                    f"unblocks {top['tasks_unblocked']} tasks"
+                )
+                lines.append("")
+            lines.append("</details>")
+            lines.append("")
 
     lines.append(END_MARKER)
     return "\n".join(lines)
