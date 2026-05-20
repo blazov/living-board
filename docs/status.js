@@ -237,6 +237,115 @@
     container.innerHTML = html;
   }
 
+  // --- Operator Actions ---
+
+  var ACTIONS_URL = 'https://raw.githubusercontent.com/blazov/living-board/master/artifacts/state/operator-actions.json';
+  var actionsData = null;
+
+  function fetchActions() {
+    return fetch(ACTIONS_URL).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (data) {
+      actionsData = data;
+      renderActions();
+      renderBundles();
+    }).catch(function () {
+      $('actions-list').innerHTML = '<p class="status-empty">Action queue unavailable.</p>';
+    });
+  }
+
+  function getEffortClass(minutes) {
+    if (minutes <= 3) return 'effort-low';
+    if (minutes <= 10) return 'effort-med';
+    return 'effort-high';
+  }
+
+  function totalTasksUnblocked(action) {
+    var n = 0;
+    if (action.goals_unblocked) {
+      action.goals_unblocked.forEach(function (g) { n += g.tasks_unblocked || 0; });
+    }
+    return n;
+  }
+
+  function getSortedActions() {
+    if (!actionsData || !actionsData.actions) return [];
+    var actions = actionsData.actions.slice();
+    var sortBy = $('actions-sort').value;
+    var maxEffort = $('actions-filter').value;
+
+    if (maxEffort) {
+      var limit = parseInt(maxEffort);
+      actions = actions.filter(function (a) { return a.effort_minutes <= limit; });
+    }
+
+    actions.sort(function (a, b) {
+      if (sortBy === 'effort') return a.effort_minutes - b.effort_minutes;
+      if (sortBy === 'impact') return totalTasksUnblocked(b) - totalTasksUnblocked(a);
+      return (b.priority_score || 0) - (a.priority_score || 0);
+    });
+    return actions;
+  }
+
+  function renderActions() {
+    var actions = getSortedActions();
+    var list = $('actions-list');
+
+    if (!actions.length) {
+      list.innerHTML = '<p class="status-empty">No actions match the current filter.</p>';
+      return;
+    }
+
+    var html = '';
+    actions.forEach(function (a, i) {
+      var unblocked = totalTasksUnblocked(a);
+      var effortClass = getEffortClass(a.effort_minutes);
+      var goalsHtml = '';
+      if (a.goals_unblocked) {
+        a.goals_unblocked.forEach(function (g) {
+          goalsHtml += '<span class="action-goal-tag">' + escapeHtml(g.goal_title) + '</span>';
+        });
+      }
+      html +=
+        '<div class="action-card">' +
+          '<div class="action-rank">' + (i + 1) + '</div>' +
+          '<div class="action-body">' +
+            '<div class="action-title">' + escapeHtml(a.action) + '</div>' +
+            '<div class="action-how">' + escapeHtml(a.how) + '</div>' +
+            '<div class="action-goals">' + goalsHtml + '</div>' +
+          '</div>' +
+          '<div class="action-meta">' +
+            '<span class="action-effort ' + effortClass + '">' + a.effort_minutes + ' min</span>' +
+            '<span class="action-unblocks">' + unblocked + ' task' + (unblocked !== 1 ? 's' : '') + ' unblocked</span>' +
+            '<span class="action-priority-score">score ' + (a.priority_score || 0).toFixed(1) + '</span>' +
+          '</div>' +
+        '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function renderBundles() {
+    var el = $('actions-bundles');
+    if (!actionsData || !actionsData.bundles || !actionsData.bundles.length) {
+      el.innerHTML = '';
+      return;
+    }
+    var html = '';
+    actionsData.bundles.forEach(function (b) {
+      html +=
+        '<div class="bundle-card">' +
+          '<div class="bundle-card__name">' + escapeHtml(b.name) + '</div>' +
+          '<div class="bundle-card__desc">' + escapeHtml(b.description) + '</div>' +
+          '<div class="bundle-card__stats">' +
+            b.total_effort_minutes + ' min total &middot; ' +
+            b.tasks_unblocked + ' tasks unblocked' +
+          '</div>' +
+        '</div>';
+    });
+    el.innerHTML = html;
+  }
+
   // --- Render: Execution Log ---
 
   function renderLog(entries) {
@@ -439,7 +548,11 @@
     $('refresh-btn').addEventListener('click', function () {
       taskCache = {};
       fetchAll();
+      fetchActions();
     });
+
+    $('actions-sort').addEventListener('change', renderActions);
+    $('actions-filter').addEventListener('change', renderActions);
 
     var toggle = document.querySelector('.nav-toggle');
     var links = document.querySelector('.nav-links');
@@ -449,6 +562,7 @@
       });
     }
 
+    fetchActions();
     fetchAll().then(function () {
       startPolling();
     });

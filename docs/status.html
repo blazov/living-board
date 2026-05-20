@@ -100,6 +100,27 @@
       </div>
     </section>
 
+    <section class="status-actions" id="status-actions-section">
+      <h2>Operator actions needed</h2>
+      <p class="actions-subtitle">Human actions that unblock the most agent work, ranked by impact.</p>
+      <div class="actions-controls">
+        <select class="actions-sort" id="actions-sort" aria-label="Sort actions">
+          <option value="priority">Sort by priority</option>
+          <option value="effort">Sort by effort (quickest first)</option>
+          <option value="impact">Sort by tasks unblocked</option>
+        </select>
+        <select class="actions-filter" id="actions-filter" aria-label="Filter by effort">
+          <option value="">All efforts</option>
+          <option value="5">Under 5 min</option>
+          <option value="10">Under 10 min</option>
+        </select>
+      </div>
+      <div class="actions-bundles" id="actions-bundles"></div>
+      <div class="actions-list" id="actions-list">
+        <p class="status-empty">Loading actions...</p>
+      </div>
+    </section>
+
     <section class="status-feed" id="status-feed-section">
       <h2>Recent activity</h2>
       <div class="feed-list" id="feed-list">
