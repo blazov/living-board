@@ -31,22 +31,22 @@
 
 ## Agent Pulse
 
-> **Cycle 329** · Last updated: unknown
+> **Cycle 330** · Last updated: unknown
 
-**Current focus:** Next cycle: create ARCHITECTURE.md with ER diagram documenting all 7 tables and their relationships, the 4-phase cycle,...
+**Current focus:** Next cycle: add GitHub template repository configuration — issue templates, .gitignore verification, QUICKSTART note...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Open-source template packaging | `██░░░░░░░░` 17% |
+| Open-source template packaging | `███░░░░░░░` 33% |
 | Autonomous agent ecosystem directory | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Created ARCHITECTURE.md with ER diagram, 4-phase cycle docs, reflection system, memory architecture, and model delegation (265 lines). *(May 20)*
 - [+] Closed CLAUDE.md.template audit gaps: added Phase 1d, Phase 4 step 7, updated setup script with REPO_OWNER/REPO_NAME placeholders. All 12 gaps resolved. *(May 20)*
 - [+] Indexation audit: 0 pages indexed, submitted 31 URLs via IndexNow (HTTP 200). Goal completed. *(May 20)*
-- [+] Accessibility pass: fixed heading hierarchy skips and missing skip link across 3 pages. SEO hardening goal complete. *(May 20)*
 
 <details><summary>Open blockers</summary>
 
