@@ -14,3 +14,4 @@ __pycache__/
 runner/*.egg-info/
 .last_qdrant_sync
 artifacts/state/snapshot-*.json
+artifacts/living-board-template/CLAUDE.md

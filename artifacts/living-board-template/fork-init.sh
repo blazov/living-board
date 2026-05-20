@@ -156,6 +156,16 @@ remove_contents "$REPO_ROOT/artifacts/code"
 # Root junk files
 remove_file "$REPO_ROOT/test.txt"
 
+# Reset issue template config to generic (remove hardcoded AMA/status links)
+CONFIG_YML="$REPO_ROOT/.github/ISSUE_TEMPLATE/config.yml"
+if [ -f "$CONFIG_YML" ]; then
+  cat > "$CONFIG_YML" <<'YAML'
+blank_issues_enabled: false
+contact_links: []
+YAML
+  info "Reset .github/ISSUE_TEMPLATE/config.yml to generic defaults"
+fi
+
 # ---------- preserve infrastructure (report) ----------
 
 echo ""

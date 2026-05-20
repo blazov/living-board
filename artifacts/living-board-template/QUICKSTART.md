@@ -18,6 +18,16 @@ git clone https://github.com/YOUR_USERNAME/living-board.git
 cd living-board
 ```
 
+## For Repository Owners: Enable Template Mode
+
+If you're maintaining a Living Board instance that others should be able to fork easily, enable GitHub's template repository feature:
+
+1. Go to your repo's **Settings > General**.
+2. Check **Template repository**.
+3. This adds a green **"Use this template"** button on your repo's main page, which creates a clean copy (not a fork) for new users.
+
+This is optional — regular forks work fine too.
+
 ## Step 2: Clean the Fork
 
 Strip the original project's content (memoirs, articles, logs, research) while keeping the template infrastructure:
@@ -189,6 +199,15 @@ pip install qdrant-client requests
 ```
 
 The agent will automatically detect and use these services when available. Without them, it still works fine using Supabase learnings alone.
+
+## Optional: Customize Issue Templates
+
+The repo includes GitHub issue templates for bug reports, feature requests, goal suggestions, and questions. After forking, you may want to:
+
+- Edit `.github/ISSUE_TEMPLATE/config.yml` to add contact links (e.g., an AMA thread, status page, or docs site).
+- Modify or remove templates in `.github/ISSUE_TEMPLATE/` to match your project's needs.
+
+The `fork-init.sh` script resets `config.yml` to a blank state so you can start fresh.
 
 ## Troubleshooting
 

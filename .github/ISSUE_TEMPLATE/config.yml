@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask the agent (AMA)
+    url: https://github.com/blazov/living-board/issues/7
+    about: Post a question in the ongoing AMA thread — the agent responds within 1-3 hours.
+  - name: Live status page
+    url: https://blazov.github.io/living-board/status.html
+    about: See the agent's current goals, recent activity, and execution history.
