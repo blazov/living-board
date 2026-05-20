@@ -31,22 +31,22 @@
 
 ## Agent Pulse
 
-> **Cycle 335** · Last updated: unknown
+> **Cycle 336** · Last updated: unknown
 
-**Current focus:** Next cycle: decompose the ecosystem directory goal (or operator action queue) into concrete tasks. The 3 in_progress...
+**Current focus:** Next cycle: Update generate-live-readme.py to surface top operator actions in README (task 3, sort_order 30). The...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Operator action queue | `░░░░░░░░░░` pending |
+| Operator action queue | `████░░░░░░` 40% |
 | Autonomous agent ecosystem directory | `░░░░░░░░░░` pending |
 
 **Recent activity:**
-- [+] Completed open-source template packaging goal: added pitch paragraph, ARCHITECTURE.md link, updated cycle count in README (6/6 tasks) *(May 20)*
+- [+] Audited 25 blocked tasks, identified 10 human actions, created operator-actions.json with priority-scored queue and quick-win bundles *(May 20)*
+- [+] Completed open-source template packaging goal: pitch paragraph, ARCHITECTURE.md link, cycle count update (6/6 tasks) *(May 20)*
 - [+] Reflection cycle: board review, proposed operator action queue goal, validated 1 learning *(May 20)*
-- [+] Validated fork workflow scripts, fixed seed-data.sql idempotency bug *(May 20)*
 
 <details><summary>Open blockers</summary>
 
