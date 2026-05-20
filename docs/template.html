@@ -101,6 +101,48 @@
       margin-bottom: 12px;
     }
 
+    .prerequisites {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .prereq-list {
+      max-width: 680px;
+      margin-top: 24px;
+    }
+    .prereq-item {
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .prereq-item:last-child { border-bottom: none; }
+    .prereq-check {
+      flex-shrink: 0;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .prereq-item strong {
+      font-size: 0.95rem;
+    }
+    .prereq-item span {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .prereq-optional {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      background: rgba(148, 152, 168, 0.12);
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
     .architecture {
       padding: 80px 0;
       border-top: 1px solid var(--border);
@@ -292,9 +334,38 @@
     </div>
   </section>
 
+  <section class="prerequisites" id="prerequisites">
+    <div class="container">
+      <h2>Prerequisites</h2>
+      <div class="prereq-list">
+        <div class="prereq-item">
+          <span class="prereq-check">&#10003;</span>
+          <div><strong>Supabase account</strong> &mdash; <span>Free tier is enough. Stores goals, tasks, learnings, and execution logs.</span></div>
+        </div>
+        <div class="prereq-item">
+          <span class="prereq-check">&#10003;</span>
+          <div><strong>Claude Code</strong> &mdash; <span>Install via <code>npm install -g @anthropic-ai/claude-code</code>. This is the runtime that executes agent cycles.</span></div>
+        </div>
+        <div class="prereq-item">
+          <span class="prereq-check">&#10003;</span>
+          <div><strong>Git</strong> &mdash; <span>For cloning the repo and committing artifacts the agent produces.</span></div>
+        </div>
+        <div class="prereq-item">
+          <span class="prereq-check">&#10003;</span>
+          <div><strong>psql</strong><span class="prereq-optional">optional</span> &mdash; <span>PostgreSQL client for running schema SQL. Without it, paste SQL in the Supabase dashboard instead.</span></div>
+        </div>
+        <div class="prereq-item">
+          <span class="prereq-check">&#10003;</span>
+          <div><strong>Docker + Ollama</strong><span class="prereq-optional">optional</span> &mdash; <span>Only needed for semantic memory (Qdrant vector DB + Ollama embeddings). The agent works fine without it.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="architecture" id="architecture">
     <div class="container">
       <h2>Architecture</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 8px;">The 4-phase cycle, 7-table schema, and dual-layer memory system. See <a href="https://github.com/blazov/living-board/blob/master/artifacts/living-board-template/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a> for the full ER diagram and detailed docs.</p>
       <div class="arch-diagram">
 <pre>
   <span class="hl">Claude Code (Scheduled Trigger)</span>
@@ -381,11 +452,11 @@
   <section class="cta-bottom" id="cta">
     <div class="container">
       <h2>Start Building</h2>
-      <p>The Living Board has run 250+ cycles across 40+ goals. The same infrastructure that powers it is yours to fork.</p>
+      <p>The Living Board has run 330+ cycles across 40+ goals. The same infrastructure that powers it is yours to fork.</p>
       <div class="hero-cta">
         <a href="https://github.com/blazov/living-board/fork" target="_blank" rel="noopener" class="btn btn-fork">Fork on GitHub</a>
         <a href="https://github.com/blazov/living-board/blob/master/artifacts/living-board-template/QUICKSTART.md" target="_blank" rel="noopener" class="btn btn-outline">Full Quickstart Guide</a>
-        <a href="https://github.com/blazov/living-board" target="_blank" rel="noopener" class="btn btn-outline">Browse the Source</a>
+        <a href="https://github.com/blazov/living-board/blob/master/artifacts/living-board-template/ARCHITECTURE.md" target="_blank" rel="noopener" class="btn btn-outline">Architecture Docs</a>
       </div>
     </div>
   </section>
