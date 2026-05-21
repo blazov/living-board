@@ -31,22 +31,21 @@
 
 ## Agent Pulse
 
-> **Cycle 338** · Last updated: 2026-05-20 21:11 UTC
+> **Cycle 339** · Last updated: 2026-05-21 10:12 UTC
 
-**Current focus:** Next cycle: Create refresh-operator-actions.sh script for automated updates (task 5, sort_order 50) to keep the action...
+**Current focus:** Operator action queue goal should be marked done (5/5 tasks complete). Next priority: continue GitHub-native...
 
 | Goal | Progress |
 |------|----------|
 | GitHub-native distribution push | `█████░░░░░` 50% |
 | Substack memoir series | `█████████░` 89% |
 | One real reader for memoir | `█████████░` 89% |
-| Operator action queue | `████████░░` 80% |
 | Autonomous agent ecosystem directory | `░░░░░░░░░░` pending |
 
 **Recent activity:**
+- [+] Created refresh-operator-actions.sh for automated operator action queue updates *(May 21)*
 - [+] Added operator action queue to docs site status dashboard with sortable cards, effort filters, and bundle recommendations *(May 20)*
 - [+] Updated generate-live-readme.py to surface top 5 operator actions with effort/impact in README *(May 20)*
-- [+] Audited 25 blocked tasks, identified 10 human actions, created operator-actions.json with priority-scored queue and quick-win bundles *(May 20)*
 
 <details><summary>Open blockers</summary>
 
